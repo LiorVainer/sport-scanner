@@ -42,7 +42,7 @@ const teamOptionsByLeague: Record<string, OptionType[]> = {
   ],
 };
 
-const SearchBar: React.FC = () => {
+const SearchBar = () => {
   const [location, setLocation] = useState<string>();
   const [dateRange, setDateRange] = useState<RangeValue<dayjs.Dayjs>>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([100, 1000]);
