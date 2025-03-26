@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, DatePicker, Slider, Select, Button } from 'antd';
+import { DatePicker, Slider, Select, Button } from 'antd';
 import dayjs from 'dayjs';
 import {
   EnvironmentOutlined,
@@ -8,39 +8,15 @@ import {
   TrophyOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
+import { SoccerService } from '@/api/services/soccer.service';
+import { calculateCurrentSeason } from '@/utils/date.utils';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 type RangeValue<T> = [T | null, T | null] | null;
-type OptionType = { label: string; value: string };
-
-const countryOptions: OptionType[] = [
-  { label: 'Spain', value: 'spain' },
-  { label: 'England', value: 'england' },
-  { label: 'Germany', value: 'germany' },
-];
-
-const leagueOptionsByCountry: Record<string, OptionType[]> = {
-  spain: [{ label: 'La Liga', value: 'la_liga' }],
-  england: [{ label: 'Premier League', value: 'premier_league' }],
-  germany: [{ label: 'Bundesliga', value: 'bundesliga' }],
-};
-
-const teamOptionsByLeague: Record<string, OptionType[]> = {
-  la_liga: [
-    { label: 'Barcelona', value: 'barcelona' },
-    { label: 'Real Madrid', value: 'real_madrid' },
-  ],
-  premier_league: [
-    { label: 'Arsenal', value: 'arsenal' },
-    { label: 'Liverpool', value: 'liverpool' },
-  ],
-  bundesliga: [
-    { label: 'Bayern Munich', value: 'bayern' },
-    { label: 'Dortmund', value: 'dortmund' },
-  ],
-};
 
 const MIN_PRICE = 100;
 const MAX_PRICE = 1000;
@@ -51,7 +27,29 @@ const SearchBar = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([MIN_PRICE, MAX_PRICE]);
   const [country, setCountry] = useState<string>();
   const [league, setLeague] = useState<string>();
+  const [leagueId, setLeagueId] = useState<number>();
   const [team, setTeam] = useState<string>();
+
+  const selectedDate = dateRange?.[0]?.toDate();
+
+  const { data: countries = [] } = useQuery({
+    queryKey: ['countries'],
+    queryFn: SoccerService.getCountries,
+  });
+
+  const { data: leagues = [] } = useQueryOnDefinedParam(
+    'leagues',
+    country,
+    SoccerService.getLeagues
+  );
+
+  const { data: teams = [] } = useQueryOnDefinedParam(
+    'teams',
+    leagueId && selectedDate
+      ? { leagueId, season: calculateCurrentSeason(selectedDate) }
+      : undefined,
+    ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
+  );
 
   const handleSearch = () => {
     console.log({ location, dateRange, priceRange, country, league, team });
@@ -95,19 +93,23 @@ const SearchBar = () => {
           View upcoming events, explore personalized packages, and more
         </p>
       </div>
+
+      {/* Filters */}
       <div
-       style={{
-        backgroundColor: 'rgb(187, 187, 187)',
-        borderRadius: 50,
-        padding: '12px 24px',
-        display: 'flex',
-        gap: 12,
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-      }}
+        style={{
+          backgroundColor: 'rgb(187, 187, 187)',
+          borderRadius: 50,
+          padding: '12px 24px',
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1,
+        }}
       >
+        {/* Location */}
         <Select
           placeholder="Select Location"
           style={{ borderRadius: 32, width: 220 }}
@@ -115,13 +117,14 @@ const SearchBar = () => {
           onChange={(val) => setLocation(val)}
           suffixIcon={<EnvironmentOutlined />}
         >
-          {countryOptions.map((c) => (
-            <Option key={c.value} value={c.value}>
-              {c.label}
+          {countries.map((c) => (
+            <Option key={c.code} value={c.name}>
+              {c.name}
             </Option>
           ))}
         </Select>
 
+        {/* Date Range */}
         <RangePicker
           style={{ borderRadius: 5, width: 220 }}
           onChange={setDateRange}
@@ -129,16 +132,16 @@ const SearchBar = () => {
           suffixIcon={<CalendarOutlined />}
         />
 
+        {/* Price Range */}
         <Select
           value={`${priceRange[0]} - ${priceRange[1]}`}
           style={{ borderRadius: 32, width: 180 }}
           suffixIcon={<DollarOutlined />}
-          onClick={() => {}}
           dropdownRender={() => (
             <div style={{ padding: 12 }}>
               <Slider
                 range
-                min={0}
+                min={MIN_PRICE}
                 max={5000}
                 value={priceRange}
                 onChange={(val) => setPriceRange(val as [number, number])}
@@ -150,54 +153,59 @@ const SearchBar = () => {
           <Option value="budget">{`${priceRange[0]} - ${priceRange[1]}`}</Option>
         </Select>
 
+        {/* Country */}
         <Select
           placeholder="Select Country"
           style={{ borderRadius: 32, width: 200 }}
           value={country}
           onChange={(val) => {
             setCountry(val);
-            setLeague(undefined);
-            setTeam(undefined);
+            setLeague('');
+            setTeam('');
+            setLeagueId(undefined);
           }}
           suffixIcon={<EnvironmentOutlined />}
         >
-          {countryOptions.map((c) => (
-            <Option key={c.value} value={c.value}>
-              {c.label}
+          {countries.map((c) => (
+            <Option key={c.code} value={c.name}>
+              {c.name}
             </Option>
           ))}
         </Select>
 
+        {/* League */}
         <Select
           placeholder="Select League"
-          style={{ borderRadius: 5, width: 200, backgroundColor:  'grey' }}
+          style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
           value={league}
-          onChange={(val) => {
+          onChange={(val, option: any) => {
             setLeague(val);
-            setTeam(undefined);
+            setTeam('');
+            setLeagueId(option?.id);
           }}
           disabled={!country}
           suffixIcon={<TrophyOutlined />}
         >
-          {(leagueOptionsByCountry[country || ''] || []).map((l) => (
-            <Option key={l.value} value={l.value}>
-              {l.label}
+          {leagues.map((l) => (
+            <Option key={l.league.id} value={l.league.name} id={l.league.id}>
+              {l.league.name}
             </Option>
           ))}
         </Select>
 
+        {/* Team */}
         <Select
           placeholder="Select Team (Optional)"
-          style={{ borderRadius: 5, width: 200, backgroundColor:  'grey' }}
+          style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
           value={team}
           onChange={setTeam}
-          disabled={!league}
+          disabled={!league || !selectedDate}
           allowClear
           suffixIcon={<TeamOutlined />}
         >
-          {(teamOptionsByLeague[league || ''] || []).map((t) => (
-            <Option key={t.value} value={t.value}>
-              {t.label}
+          {teams.map((t) => (
+            <Option key={t.team.id} value={t.team.name}>
+              {t.team.name}
             </Option>
           ))}
         </Select>
