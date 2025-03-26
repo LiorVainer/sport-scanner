@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
-import { DatePicker, Slider, Select, Button, Space, Card } from 'antd';
+import { Input, DatePicker, Slider, Select, Button } from 'antd';
 import dayjs from 'dayjs';
+import {
+  EnvironmentOutlined,
+  CalendarOutlined,
+  DollarOutlined,
+  TrophyOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-type OptionType = { label: string; value: string };
 type RangeValue<T> = [T | null, T | null] | null;
+type OptionType = { label: string; value: string };
 
 const countryOptions: OptionType[] = [
   { label: 'Spain', value: 'spain' },
@@ -36,70 +43,146 @@ const teamOptionsByLeague: Record<string, OptionType[]> = {
 };
 
 const SearchBar: React.FC = () => {
+  const [location, setLocation] = useState('');
   const [dateRange, setDateRange] = useState<RangeValue<dayjs.Dayjs>>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([100, 1000]);
-  const [country, setCountry] = useState<string | undefined>();
-  const [league, setLeague] = useState<string | undefined>();
-  const [team, setTeam] = useState<string | undefined>();
+  const [country, setCountry] = useState<string>();
+  const [league, setLeague] = useState<string>();
+  const [team, setTeam] = useState<string>();
 
   const handleSearch = () => {
-    console.log({ dateRange, priceRange, country, league, team });
-    // Call API or navigate with these filters
+    console.log({ location, dateRange, priceRange, country, league, team });
   };
 
   return (
-    <Card style={{ borderRadius: 16, padding: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <RangePicker style={{ width: '100%' }} onChange={setDateRange} />
+    <div
+      style={{
+        position: 'relative',
+        backgroundImage: 'url("/stadium.avif")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: 24,
+        padding: '48px 24px',
+        margin: '0 auto',
+        maxWidth: 1200,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          borderRadius: 24,
+          zIndex: 0,
+        }}
+      />
 
-        <Slider
-          range
-          min={0}
-          max={5000}
-          defaultValue={priceRange}
-          onChange={(val) => setPriceRange(val as [number, number])}
-          tooltip={{ formatter: (val) => `$${val}` }}
+      {/* Filters */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          zIndex: 1,
+          position: 'relative',
+        }}
+      >
+        <Input
+          placeholder="Enter City or Country"
+          prefix={<EnvironmentOutlined />}
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          style={{ borderRadius: 32, width: 220 }}
+        />
+
+        <RangePicker
+          style={{ borderRadius: 32, width: 220 }}
+          onChange={setDateRange}
+          placeholder={['Start Date', 'End Date']}
+          suffixIcon={<CalendarOutlined />}
         />
 
         <Select
+          value={`${priceRange[0]} - ${priceRange[1]}`}
+          style={{ borderRadius: 32, width: 180 }}
+          suffixIcon={<DollarOutlined />}
+          onClick={() => {}}
+          dropdownRender={() => (
+            <div style={{ padding: 12 }}>
+              <Slider
+                range
+                min={0}
+                max={5000}
+                value={priceRange}
+                onChange={(val) => setPriceRange(val as [number, number])}
+                tooltip={{ formatter: (val) => `$${val}` }}
+              />
+            </div>
+          )}
+        >
+          <Option value="budget">{`${priceRange[0]} - ${priceRange[1]}`}</Option>
+        </Select>
+
+        <Select
           placeholder="Select Country"
-          style={{ width: '100%' }}
-          options={countryOptions}
+          style={{ borderRadius: 32, width: 200 }}
+          value={country}
           onChange={(val) => {
             setCountry(val);
             setLeague(undefined);
             setTeam(undefined);
           }}
-          value={country}
-        />
+          suffixIcon={<EnvironmentOutlined />}
+        >
+          {countryOptions.map((c) => (
+            <Option key={c.value} value={c.value}>
+              {c.label}
+            </Option>
+          ))}
+        </Select>
 
         <Select
           placeholder="Select League"
-          style={{ width: '100%' }}
-          disabled={!country}
-          options={leagueOptionsByCountry[country || ''] || []}
+          style={{ borderRadius: 32, width: 200 }}
+          value={league}
           onChange={(val) => {
             setLeague(val);
             setTeam(undefined);
           }}
-          value={league}
-        />
+          disabled={!country}
+          suffixIcon={<TrophyOutlined />}
+        >
+          {(leagueOptionsByCountry[country || ''] || []).map((l) => (
+            <Option key={l.value} value={l.value}>
+              {l.label}
+            </Option>
+          ))}
+        </Select>
 
         <Select
           placeholder="Select Team (Optional)"
-          style={{ width: '100%' }}
+          style={{ borderRadius: 32, width: 220 }}
+          value={team}
+          onChange={setTeam}
           disabled={!league}
           allowClear
-          options={teamOptionsByLeague[league || ''] || []}
-          onChange={setTeam}
-          value={team}
-        />
+          suffixIcon={<TeamOutlined />}
+        >
+          {(teamOptionsByLeague[league || ''] || []).map((t) => (
+            <Option key={t.value} value={t.value}>
+              {t.label}
+            </Option>
+          ))}
+        </Select>
 
-        <Button type="primary" size="large" block onClick={handleSearch}>
+        <Button type="primary" shape="round" size="large" onClick={handleSearch}>
           Search
         </Button>
-      </Space>
-    </Card>
+      </div>
+    </div>
   );
 };
 
