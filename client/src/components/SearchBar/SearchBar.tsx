@@ -42,10 +42,13 @@ const teamOptionsByLeague: Record<string, OptionType[]> = {
   ],
 };
 
+const MIN_PRICE = 100;
+const MAX_PRICE = 1000;
+
 const SearchBar = () => {
   const [location, setLocation] = useState<string>();
   const [dateRange, setDateRange] = useState<RangeValue<dayjs.Dayjs>>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([100, 1000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([MIN_PRICE, MAX_PRICE]);
   const [country, setCountry] = useState<string>();
   const [league, setLeague] = useState<string>();
   const [team, setTeam] = useState<string>();
