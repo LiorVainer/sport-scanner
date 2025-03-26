@@ -64,7 +64,6 @@ const SearchBar: React.FC = () => {
         borderRadius: 24,
         padding: '64px 24px',
         margin: '0 auto',
-        maxWidth: 1200,
         overflow: 'hidden',
         textAlign: 'center',
       }}
@@ -94,14 +93,17 @@ const SearchBar: React.FC = () => {
         </p>
       </div>
       <div
-        style={{
-          display: 'flex',
-          gap: 12,
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          zIndex: 1,
-          position: 'relative',
-        }}
+       style={{
+        backgroundColor: 'rgb(187, 187, 187)',
+        borderRadius: 50,
+        padding: '12px 24px',
+        display: 'flex',
+        gap: 12,
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+      }}
       >
         <Select
           placeholder="Select Location"
