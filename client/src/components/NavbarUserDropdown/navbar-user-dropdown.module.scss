@@ -1,0 +1,71 @@
+@use '../../theme/theme' as *;
+$bg-color: #f9f9f9;
+$text-color: #333;
+$link-hover-color: #000;
+
+.profileImageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.dropdownContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    width: 250px;
+}
+.profileImage {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+}
+
+.profileName {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+profileName.customizeProfileButton {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 14px;
+}
+
+.profileEmail {
+    display: block;
+    font-size: 14px;
+    color: gray;
+    text-align: center;
+}
+
+.divider {
+    margin: 15px auto;
+}
+
+.logoutButton {
+    display: flex;
+
+    width: 80%;
+}
+
+.textCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.avatarSmall {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}

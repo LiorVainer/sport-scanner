@@ -1,0 +1,118 @@
+.modal {
+    .ant-modal-header {
+        background-color: #f5f7fa;
+        color: #1a1a1a;
+    }
+
+    .ant-modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .form {
+        max-height: 80vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        .ant-form-item-label {
+            font-size: 0.875rem;
+            color: #333;
+        }
+
+        .ant-form-item-control-input {
+            border-radius: 0.5rem;
+            border: 0.0625rem solid #ccc;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .ant-form-item-control-input:focus {
+            border-color: #4f94ff;
+            box-shadow: 0 0 0 0.125rem rgba(79, 148, 255, 0.2);
+        }
+
+        .submitButton {
+            width: 100%;
+            background-color: #4f94ff;
+            color: #fff;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-top: 1rem;
+            height: 3.125rem;
+
+            &:hover {
+                background-color: #3577b3;
+            }
+        }
+
+        .uploadButton {
+            width: 29.5rem;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            text-align: center;
+            background-color: #f5f7fa;
+            border-radius: 0.5rem;
+            border: 0.0625rem solid #ccc;
+            color: #4f94ff;
+
+            &:hover {
+                background-color: #e1e9f4;
+            }
+        }
+
+        .formItem {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .descriptionContainer {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            width: 100%;
+        }
+
+        .textArea {
+            flex-grow: 1;
+        }
+
+        .aiButton {
+            white-space: nowrap;
+            height: 100%;
+            padding: 1rem;
+            text-align: center;
+            background-color: #f5f7fa;
+            border-radius: 0.5rem;
+            border: 0.0625rem solid #ccc;
+            color: #4f94ff;
+            cursor: pointer;
+            transition:
+                background-color 0.3s ease,
+                color 0.3s ease;
+
+            &:hover {
+                background-color: #e1e9f4;
+            }
+
+            &:disabled {
+                background-color: #eaecef;
+                color: #a0a0a0;
+                border-color: #d1d5da;
+                cursor: not-allowed;
+            }
+        }
+    }
+}
+
+.image-preview-container {
+    margin-top: 0.625rem;
+    display: flex;
+    justify-content: center;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 12.5rem;
+    border-radius: 0.5rem;
+    border: 0.0625rem solid #ddd;
+}

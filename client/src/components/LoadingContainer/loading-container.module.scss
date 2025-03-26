@@ -1,0 +1,13 @@
+@use '../../theme/theme' as *;
+
+.loadingContainer {
+    display: flex;
+    padding-inline: 30rem;
+    gap: 2rem;
+    padding-block: 5rem;
+}
+
+.loadingText {
+    font-size: 1.1rem;
+    color: #374151;
+}

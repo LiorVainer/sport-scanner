@@ -1,0 +1,10 @@
+@use '../theme/colors' as *;
+
+:export {
+    primary: $primary;
+    action: $action;
+    divider: $divider;
+    background: $background;
+    accent: $accent;
+    error: $error;
+}

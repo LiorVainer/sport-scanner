@@ -1,0 +1,117 @@
+@use '../../theme/theme' as *;
+
+:global(.ant-form-item-explain-error) {
+  text-align: left !important;
+}
+
+
+.uploadFormItem :global(.ant-form-item-explain-error) {
+  text-align: center !important;
+  display: block;
+}
+
+:global(.ant-form-item-explain-error) {
+  margin-bottom: 1.5rem !important; // Extra spacing when error is present
+}
+
+.password :global(.ant-form-item-explain-error) {
+  margin-bottom: 3rem !important; // Extra spacing when error is present
+}
+
+.screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.authBox {
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+  padding-inline: 3rem;
+  padding-block: 3rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 30rem;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+}
+
+.inputField {
+  width: 20rem;
+}
+
+.submitButton {
+  width: 10rem;
+}
+
+.switchText {
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.errorText {
+  margin-bottom: 10px;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  & > h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-family: 'Assistant', sans-serif;
+    color: gray-scale(25%);
+  }
+}
+
+
+.underline {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.underline::before,
+.underline::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+  margin: 0 10px;
+}
+
+.separatorText {
+  color: gray-scale(30%);
+  font-weight: 700;
+  white-space: nowrap;
+}

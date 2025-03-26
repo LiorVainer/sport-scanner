@@ -1,0 +1,21 @@
+@use '../../theme/theme' as *;
+$bg-color: #f9f9f9;
+$text-color: #333;
+$link-hover-color: #000;
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    align-items: center;
+}
+
+.uploadFormItem :global(.ant-form-item-explain-error) {
+    text-align: center !important;
+    display: block;
+}
+
+.inputField {
+    width: 20rem;
+}
