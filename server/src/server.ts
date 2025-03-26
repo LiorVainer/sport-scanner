@@ -13,6 +13,7 @@ import fileRoutes from './routes/file.route';
 import chatRoutes from './routes/chat.route';
 import soccerRoutes from './routes/soccer.route';
 import { ENV } from './env/env.config';
+import packageRoutes from "./routes/package.route";
 
 dotenv.config();
 export const app = express();
@@ -62,6 +63,7 @@ db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to database'));
 
 app.use('/auth', authRoutes);
+app.use('/packages', packageRoutes);
 app.use('/users', usersRoutes);
 app.use('/chat', chatRoutes);
 app.use('/match-experiences', matchExperienceRoutes);

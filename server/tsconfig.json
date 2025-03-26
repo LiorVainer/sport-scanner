@@ -2,13 +2,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
+    "target": "es2022",
+    "moduleResolution": "nodenext",
+    "type": "module",
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "./src",
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

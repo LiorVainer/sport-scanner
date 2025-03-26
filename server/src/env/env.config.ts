@@ -6,7 +6,6 @@ dotenv.config();
 export const EnvSchema = z.object({
     PORT: z.coerce.number().default(3000),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-    BASE_URL: z.string(),
 
     DB_CONNECT: z.string().url({ message: 'DB_CONNECT must be a valid MongoDB URL' }),
 
@@ -26,7 +25,10 @@ export const EnvSchema = z.object({
 
     SEASON: z.coerce.number(),
 
-    API_KEY: z.string(),
+    FOOTBALL_API_KEY: z.string(),
+    AMADEUS_API_KEY: z.string(),
+    AMADEUS_API_SECRET: z.string(),
+    AMADEUS_API_URL: z.string().url({ message: 'AMADEUS_API_URL must be a valid URL' }),
     GOOGLE_CLIENT_ID: z.string().regex(/^.+\.apps\.googleusercontent\.com$/, {
         message: 'Invalid Google Client ID format',
     }),
@@ -40,6 +42,7 @@ export type Env = z.infer<typeof EnvSchema>;
 const { data: parsedEnv, error } = EnvSchema.safeParse(process.env);
 
 if (error) {
+    console.error(error.errors);
     throw new Error(error.errors[0].message);
 }
 
