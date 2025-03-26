@@ -94,7 +94,6 @@ const SearchBar = () => {
         </p>
       </div>
 
-      {/* Filters */}
       <div
         style={{
           backgroundColor: 'rgb(187, 187, 187)',
@@ -109,7 +108,6 @@ const SearchBar = () => {
           zIndex: 1,
         }}
       >
-        {/* Location */}
         <Select
           placeholder="Select Location"
           style={{ borderRadius: 32, width: 220 }}
@@ -124,7 +122,6 @@ const SearchBar = () => {
           ))}
         </Select>
 
-        {/* Date Range */}
         <RangePicker
           style={{ borderRadius: 5, width: 220 }}
           onChange={setDateRange}
@@ -132,7 +129,6 @@ const SearchBar = () => {
           suffixIcon={<CalendarOutlined />}
         />
 
-        {/* Price Range */}
         <Select
           value={`${priceRange[0]} - ${priceRange[1]}`}
           style={{ borderRadius: 32, width: 180 }}
@@ -153,7 +149,6 @@ const SearchBar = () => {
           <Option value="budget">{`${priceRange[0]} - ${priceRange[1]}`}</Option>
         </Select>
 
-        {/* Country */}
         <Select
           placeholder="Select Country"
           style={{ borderRadius: 32, width: 200 }}
@@ -173,7 +168,6 @@ const SearchBar = () => {
           ))}
         </Select>
 
-        {/* League */}
         <Select
           placeholder="Select League"
           style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
@@ -193,7 +187,6 @@ const SearchBar = () => {
           ))}
         </Select>
 
-        {/* Team */}
         <Select
           placeholder="Select Team (Optional)"
           style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
