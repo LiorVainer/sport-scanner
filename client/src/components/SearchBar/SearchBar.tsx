@@ -69,7 +69,6 @@ const SearchBar: React.FC = () => {
         textAlign: 'center',
       }}
     >
-      {/* Overlay */}
       <div
         style={{
           position: 'absolute',
@@ -79,8 +78,6 @@ const SearchBar: React.FC = () => {
           zIndex: 0,
         }}
       />
-
-      {/* Hero Text */}
       <div
         style={{
           position: 'relative',
@@ -96,8 +93,6 @@ const SearchBar: React.FC = () => {
           View upcoming events, explore personalized packages, and more
         </p>
       </div>
-
-      {/* Filters */}
       <div
         style={{
           display: 'flex',
