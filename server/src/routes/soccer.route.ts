@@ -4,7 +4,7 @@ import { authMiddleware } from '../middlewares/auth.middlware';
 
 const router = Router();
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 /**
  * @swagger

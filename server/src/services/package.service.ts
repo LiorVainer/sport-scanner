@@ -1,23 +1,58 @@
-import { PackageSearchFilters } from '../models/package-search-filters.model';
-import { AmadeusService } from './amadeus.service';
+import {PackageGenerateParams} from '../models/package-generate-params.model';
+import {convertPackageGenerateParamsToFlightSearchParams} from "../converters/package-to-flights";
+import {soccerService} from "./soccer.service";
+import {convertPackageGenerateParamsToFixtureQueryParams} from "../converters/package-to-fixtures";
+import {convertFixtureToFlightSearchParams} from "../converters/fixtures-to-flights";
+import {ExtendedFixtureItem, FixtureItem} from "../models/fixture.model";
+import {AIService} from "./ai.service";
 
 class PackageService {
-    generatePackage = async (packageSearchFilters: PackageSearchFilters) => {
-        const flightParams = {
-            origin: 'LHR', // example default or inferred origin
-            destination: 'ATH', // example default or inferred destination
-            dateFrom: packageSearchFilters.date?.from ?? '2024-07-01',
-            dateTo: packageSearchFilters.date?.to ?? '2024-07-07',
-            minPrice: packageSearchFilters.price?.min,
-            maxPrice: packageSearchFilters.price?.max,
-            adults: 1,
-        };
+    generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
+        const fixturesQueryParams = convertPackageGenerateParamsToFixtureQueryParams(packageSearchFilters);
+        const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
+        const soccerFixturesWithCountryCodes = await this.getFixturesWithCountryCodes(soccerFixtures);
 
-        const result = await AmadeusService.searchFlights(flightParams);
+        console.dir({soccerFixturesWithCountryCodes}, {depth: Infinity});
+
+        const flightParamsFromGenerateParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
+        const flightParamsFromSoccerFixtures = convertFixtureToFlightSearchParams(soccerFixtures[0]);
+
+        console.log({flightParamsFromGenerateParams, flightParamsFromSoccerFixtures});
+
+        const avgPriceForFixture = await AIService.generateObject(
+            soccerFixturesWithCountryCodes[0],
+            packageSearchFilters
+        )
 
 
-        return result;
+        // TODO: Implement flight search after soccer fixtures are fetched
+        // const flightParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
+        // const flightOffers = await AmadeusService.searchFlights(flightParams);
+
+        return soccerFixtures;
     };
+
+    getFixturesWithCountryCodes = async (fixtures: FixtureItem[]) => {
+        const countries = await soccerService.getCountries();
+        const countryNamesToCodesMap = countries.reduce((acc, country) => {
+            acc[country.name] = country.code;
+            return acc;
+        }, {} as Record<string, string>);
+
+        const extendedFixtures: ExtendedFixtureItem[] = fixtures.map((fixture) => {
+            const homeCountryName = fixture.fixture.venue.country ?? fixture.teams.home.country ?? fixture.league.country
+
+            return homeCountryName ? ({
+                ...fixture,
+                fixture: {
+                    ...fixture.fixture,
+                    countryCode: countryNamesToCodesMap[homeCountryName]
+                }
+            }) : fixture;
+        });
+
+        return extendedFixtures;
+    }
 }
 
 export const packageService = new PackageService();

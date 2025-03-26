@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import {zodDate} from "../utils/zod.utils";
 
-export const PackageSearchFiltersSchema = z.object({
+export const PackageGenerateParamsSchema = z.object({
     date: z
         .object({
-            from: z.string().optional(), // ISO date string
-            to: z.string().optional(),
+            from: zodDate, // ISO date string
+            to: zodDate,
         })
         .optional(),
     price: z
@@ -40,4 +41,4 @@ export const PackageSearchFiltersSchema = z.object({
     }
 );
 
-export type PackageSearchFilters = z.infer<typeof PackageSearchFiltersSchema>;
+export type PackageGenerateParams = z.infer<typeof PackageGenerateParamsSchema>;
