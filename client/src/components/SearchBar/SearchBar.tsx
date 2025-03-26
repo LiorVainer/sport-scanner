@@ -62,10 +62,11 @@ const SearchBar: React.FC = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         borderRadius: 24,
-        padding: '48px 24px',
+        padding: '64px 24px',
         margin: '0 auto',
         maxWidth: 1200,
         overflow: 'hidden',
+        textAlign: 'center',
       }}
     >
       {/* Overlay */}
@@ -78,6 +79,23 @@ const SearchBar: React.FC = () => {
           zIndex: 0,
         }}
       />
+
+      {/* Hero Text */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          color: '#fff',
+          marginBottom: 40,
+        }}
+      >
+        <h1 style={{ fontSize: 36, fontWeight: 'bold', margin: 0 }}>
+          Find your next soccer experience
+        </h1>
+        <p style={{ fontSize: 16, marginTop: 8 }}>
+          View upcoming events, explore personalized packages, and more
+        </p>
+      </div>
 
       {/* Filters */}
       <div
@@ -146,7 +164,7 @@ const SearchBar: React.FC = () => {
 
         <Select
           placeholder="Select League"
-          style={{ borderRadius: 32, width: 200 }}
+          style={{ borderRadius: !country ? 5 : 32, width: 200, backgroundColor:  'grey' }}
           value={league}
           onChange={(val) => {
             setLeague(val);
@@ -164,7 +182,7 @@ const SearchBar: React.FC = () => {
 
         <Select
           placeholder="Select Team (Optional)"
-          style={{ borderRadius: 32, width: 220 }}
+          style={{ borderRadius: !league ? 5 : 32, width: 200, backgroundColor:  'grey' }}
           value={team}
           onChange={setTeam}
           disabled={!league}
