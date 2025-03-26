@@ -11,7 +11,6 @@ export default defineConfig({
                 changeOrigin: true,
             },
         },
-        port: 4000,
     },
     plugins: [react(), tsonfigpathes()],
     css: {},
