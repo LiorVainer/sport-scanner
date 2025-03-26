@@ -123,7 +123,7 @@ const SearchBar: React.FC = () => {
         </Select>
 
         <RangePicker
-          style={{ borderRadius: 32, width: 220 }}
+          style={{ borderRadius: 5, width: 220 }}
           onChange={setDateRange}
           placeholder={['Start Date', 'End Date']}
           suffixIcon={<CalendarOutlined />}
