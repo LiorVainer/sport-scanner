@@ -43,7 +43,7 @@ const teamOptionsByLeague: Record<string, OptionType[]> = {
 };
 
 const SearchBar: React.FC = () => {
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState<string>();
   const [dateRange, setDateRange] = useState<RangeValue<dayjs.Dayjs>>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([100, 1000]);
   const [country, setCountry] = useState<string>();
@@ -108,13 +108,19 @@ const SearchBar: React.FC = () => {
           position: 'relative',
         }}
       >
-        <Input
-          placeholder="Enter City or Country"
-          prefix={<EnvironmentOutlined />}
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
+        <Select
+          placeholder="Select Location"
           style={{ borderRadius: 32, width: 220 }}
-        />
+          value={location}
+          onChange={(val) => setLocation(val)}
+          suffixIcon={<EnvironmentOutlined />}
+        >
+          {countryOptions.map((c) => (
+            <Option key={c.value} value={c.value}>
+              {c.label}
+            </Option>
+          ))}
+        </Select>
 
         <RangePicker
           style={{ borderRadius: 32, width: 220 }}
