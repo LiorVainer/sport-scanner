@@ -170,7 +170,7 @@ const SearchBar: React.FC = () => {
 
         <Select
           placeholder="Select League"
-          style={{ borderRadius: !country ? 5 : 32, width: 200, backgroundColor:  'grey' }}
+          style={{ borderRadius: 5, width: 200, backgroundColor:  'grey' }}
           value={league}
           onChange={(val) => {
             setLeague(val);
@@ -188,7 +188,7 @@ const SearchBar: React.FC = () => {
 
         <Select
           placeholder="Select Team (Optional)"
-          style={{ borderRadius: !league ? 5 : 32, width: 200, backgroundColor:  'grey' }}
+          style={{ borderRadius: 5, width: 200, backgroundColor:  'grey' }}
           value={team}
           onChange={setTeam}
           disabled={!league}
