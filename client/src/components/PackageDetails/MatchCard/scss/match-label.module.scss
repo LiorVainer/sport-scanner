@@ -1,0 +1,18 @@
+.match-label-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f0f2f5;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+}
+
+.match-tag {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.match-location {
+    font-size: 16px;
+    font-weight: 600;
+}

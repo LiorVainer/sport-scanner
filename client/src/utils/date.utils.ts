@@ -31,3 +31,10 @@ export const formatMessageDate = (date: Date | undefined) => {
 export const areDatesInSameHour = (date1: Date, date2: Date): boolean => {
     return dayjs(date1).isSame(date2, 'hour');
 };
+
+export const formattedDate = (date: Date | string): string => {
+    return new Date(date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+    });
+};

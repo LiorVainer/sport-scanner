@@ -1,0 +1,71 @@
+Tag.match-details-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    margin: auto;
+    gap: 1rem;
+}
+
+.match-image {
+    width: 120px;
+    height: 80px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+}
+
+.match-info {
+    flex: 1;
+}
+
+.match-teams {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+}
+
+.match-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.match-date-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.match-date {
+    font-size: 16px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.match-price-info {
+    display: flex;
+    align-items: center;
+}
+
+.price-text {
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.price-amount {
+    font-size: 1.25rem;
+    color: #2f4f6f;
+    font-weight: 700;
+    margin: 0 0.5rem;
+}
+
+.match-ticket-button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+}

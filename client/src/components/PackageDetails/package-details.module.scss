@@ -1,0 +1,80 @@
+.package-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.package-header {
+    text-align: center;
+    .description {
+        margin-top: 10px;
+        color: #777;
+    }
+    .package-dates {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+}
+
+.section-block {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.flight-card,
+.match-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.flight-card .flight-info,
+.match-card p {
+    margin: 10px 0;
+    color: #555;
+}
+
+.flight-price,
+.match-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0073e6;
+}
+
+.cta {
+    background-color: #0073e6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+        background-color: #005bb5;
+    }
+}
+
+.destination-block {
+    margin-top: 20px;
+    .destination-label {
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.package-dates {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}

@@ -1,0 +1,59 @@
+.flight-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flight-route-info {
+    display: flex;
+    align-items: center;
+}
+
+.arrow-icon {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+.flight-route {
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.flight-date {
+    font-size: 0.875rem;
+    color: #8c8c8c;
+    margin-left: 0.5rem;
+}
+
+.flight-price-info {
+    display: flex;
+    align-items: center;
+}
+
+.price-text {
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.price-amount {
+    font-size: 1.25rem;
+    color: #2f4f6f;
+    font-weight: 700;
+    margin: 0 0.5rem;
+}
+
+.flight-ticket-button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+}
+
+.airplane-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    color: #2f4f6f;
+}
