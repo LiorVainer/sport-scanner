@@ -1,35 +1,58 @@
-Tag.match-details-container {
+.match-details-container {
     display: flex;
     align-items: center;
     background-color: white;
     padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 70%;
-    margin: auto;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    width: 100%;
     gap: 1rem;
 }
 
 .match-image {
-    width: 120px;
-    height: 80px;
+    width: 337px;
+    height: 160px;
     border-radius: 0.5rem;
     object-fit: cover;
 }
 
 .match-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5.9rem;
+}
+
+.stadium-tag {
+    font-size: 20px;
+    font-weight: 600;
+    padding: 0.4rem;
+    border-radius: 10px;
+    background-color: #2F4F6F;
+    color: white
+}
+
+.league-tag {
+    font-size: 20px;
+    font-weight: 600;
+    padding: 0.4rem;
+    border: none;
+    color: #2F4F6F
 }
 
 .match-teams {
-    font-size: 20px;
-    font-weight: bold;
-    color: #000;
+    color: #2F4F6F;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 36px;
+    line-height: 36px;
+    letter-spacing: -1.5px;
+    vertical-align: middle;
+
 }
 
 .match-meta {
     display: flex;
-    gap: 0.5rem;
     margin-top: 0.5rem;
 }
 
@@ -37,35 +60,69 @@ Tag.match-details-container {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    gap: 5.8rem;
+}
+
+.match-day-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .match-date {
-    font-size: 16px;
-    color: #555;
+    color: #6B7280;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
+    font-weight: 600;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 22px;
+}
+
+.match-day {
+    font-size: 20px;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+}
+
+.stadium-icon {
+    width: 20px;
+    height: 20px;
 }
 
 .match-price-info {
     display: flex;
     align-items: center;
+    gap: 0.8rem;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
 }
 
 .price-text {
-    font-size: 1.125rem;
-    color: #000;
+    font-size: 15px;
+    color: #6B7280;
+    font-weight: 400;
 }
 
 .price-amount {
-    font-size: 1.25rem;
-    color: #2f4f6f;
-    font-weight: 700;
-    margin: 0 0.5rem;
+    font-size: 18px;
+    color: #2F4F6F;
+    font-weight: bold;
 }
 
 .match-ticket-button {
     font-size: 1rem;
     font-weight: 500;
-    padding: 0.5rem 1rem;
+    padding: 1.3rem;
 }
+
+

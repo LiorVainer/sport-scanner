@@ -13,7 +13,7 @@ interface FlightLabelProps {
 
 const FlightLabel = ({ label, from, to }: FlightLabelProps) => (
     <div className="flight-label-container">
-        <Tag color="#2F4F6F" className={styles['flight-tag']}>
+        <Tag className={styles['flight-tag']}>
             {label}
         </Tag>
         <Text strong className={styles['flight-route']}>

@@ -3,16 +3,26 @@
     align-items: center;
     justify-content: space-between;
     background-color: #f0f2f5;
-    padding: 1rem 1.25rem;
     border-radius: 0.5rem;
 }
 
 .match-tag {
-    font-size: 14px;
+    margin-right: 1.25rem;
+    font-size: 20px;
     font-weight: 600;
+    padding: 0.4rem;
+    border-radius: 10px;
+    background-color: #2F4F6F;
+    color: white
 }
 
 .match-location {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 22px;
+    color: #000;
+    font-weight: 700;
+}
+
+.arrow-icon {
+    color: #000;
+    font-size: 20px;
 }

@@ -15,7 +15,7 @@ interface MatchLabelProps {
 
 const MatchLabel = ({ label, location, departureDate, matchDate }: MatchLabelProps) => (
     <div className={styles['match-label-container']}>
-        <Tag color="#2F4F6F" className={styles['match-tag']}>
+        <Tag className={styles['match-tag']}>
             {label}
         </Tag>
         <Text strong className={styles['match-location']}>
