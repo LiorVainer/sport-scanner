@@ -35,6 +35,10 @@ export const EnvSchema = z.object({
     AI_TEMPERATURE: z.coerce.number().min(0).max(1),
 
     SEASON: z.coerce.number(),
+    FLIGHT_DATE_OFFSET_DAYS: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS must be a positive integer' }),
 
     FOOTBALL_API_KEY: z.string(),
     AMADEUS_API_KEY: z.string(),

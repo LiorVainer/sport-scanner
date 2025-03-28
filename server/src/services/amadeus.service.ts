@@ -20,12 +20,6 @@ export const AmadeusService = {
 
             const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
 
-            console.log({ flightOffers: data.length });
-
-            const priceRange = AmadeusService.findPriceRange(validatedFlightsOffers);
-
-            console.log({ priceRange });
-
             return validatedFlightsOffers.filter((o) => {
                 const price = parseFloat(o.price.total);
                 return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
@@ -51,8 +45,6 @@ export const AmadeusService = {
                 keyword: city,
                 subType: 'AIRPORT',
             });
-
-            console.log({ res: res.data });
 
             return res.data?.at(0)?.iataCode ?? null;
         } catch (err) {
