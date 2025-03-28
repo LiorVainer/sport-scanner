@@ -15,7 +15,7 @@ const currSeason = calculateCurrentSeason(new Date());
 const soccerApiClient = axios.create({
     baseURL: 'https://v3.football.api-sports.io',
     headers: {
-        'x-apisports-key': ENV.FOOTBALL_API_KEY,
+        'x-apisports-key': ENV.SOCCER_API_KEY,
     },
 });
 

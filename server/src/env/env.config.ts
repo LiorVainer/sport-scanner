@@ -40,7 +40,7 @@ export const EnvSchema = z.object({
         .int()
         .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS must be a positive integer' }),
 
-    FOOTBALL_API_KEY: z.string(),
+    SOCCER_API_KEY: z.string(),
     AMADEUS_API_KEY: z.string(),
     AMADEUS_API_SECRET: z.string(),
     AMADEUS_API_URL: z.string().url({ message: 'AMADEUS_API_URL must be a valid URL' }),
