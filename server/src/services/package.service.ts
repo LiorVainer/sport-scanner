@@ -1,16 +1,16 @@
 import { PackageGenerateParams } from '../models/package-generate-params.model';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
-import { generateFlightSearchParams } from '../converters/fixtures-to-flights';
 import { FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema } from '../models/fixture.model';
 import { AIService } from '../ai/ai.service';
 import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
 import { FlightSearchParams } from '../models/flights-search-params.model';
-import { generateSystemMessageForPackageGeneration } from '../ai/utils/packages-generate-context-messages';
+import { generateContextMessagesForPackageGeneration } from '../ai/utils/packages-generate-context-messages';
 import { FlightOffer } from '../models/flight-offer.model';
 import { Package, PackageArraySchema } from '../models/package.model';
 import { ENV } from '../env/env.config';
+import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
@@ -18,11 +18,10 @@ class PackageService {
         const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
         const soccerFixturesWithPriceRange = await this.getFixturesWithTicketPriceRange(soccerFixtures);
 
-        const generateflightSearchParamsPromises = soccerFixturesWithPriceRange.map((fixture) =>
-            generateFlightSearchParams(fixture, packageSearchFilters)
+        const { flightSearchParamsArray, cityToIATACodeMap } = await generateFlightSearchParamsForFixtures(
+            soccerFixturesWithPriceRange,
+            packageSearchFilters
         );
-
-        const flightSearchParamsArray: FlightSearchParams[] = await Promise.all(generateflightSearchParamsPromises);
 
         const flightOffersSearchPromises = flightSearchParamsArray.map((params) =>
             AmadeusService.searchFlights(params)
@@ -32,7 +31,9 @@ class PackageService {
 
         const allFlightOffers = flightOffersNested.flat();
 
-        return this.generatePackageCombinations(soccerFixturesWithPriceRange, allFlightOffers);
+        const originIataCode = cityToIATACodeMap[packageSearchFilters.originCity];
+
+        return this.generatePackageCombinations(soccerFixturesWithPriceRange, allFlightOffers, originIataCode);
     };
 
     private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
@@ -52,12 +53,14 @@ class PackageService {
 
     private generatePackageCombinations = async (
         fixtures: FixtureItemWithPrice[],
-        flightOffers: FlightOffer[]
+        flightOffers: FlightOffer[],
+        originIATACode: string
     ): Promise<Package[]> => {
-        const contextMessages = generateSystemMessageForPackageGeneration(
+        const contextMessages = generateContextMessagesForPackageGeneration(
             fixtures,
             flightOffers,
-            ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH
+            ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
+            originIATACode
         );
 
         return await AIService.generateObject({

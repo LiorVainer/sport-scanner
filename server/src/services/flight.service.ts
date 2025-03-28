@@ -1,10 +1,12 @@
 import { AIService } from '../ai/ai.service';
+import { generateMessagesForGettingCitiesIATACodes } from '../ai/utils/cities-to-iata-messages';
+import { CityToIATACodeMap, CityWithIATASchemaArray } from '../models/iata.model';
 import { AmadeusService } from './amadeus.service';
 
 export const FlightsService = {
     getIATACodeByCity: async (city: string): Promise<string | null> => {
         try {
-            const code = await FlightsService.getIATAFromAI(city);
+            const code = await FlightsService.getOneIATAFromAI(city);
             if (code) return code;
             return await AmadeusService.getIATACodeByCity(city);
         } catch (err) {
@@ -12,8 +14,21 @@ export const FlightsService = {
             return null;
         }
     },
+    getCityToIATACodeMap: async (cities: string[]): Promise<CityToIATACodeMap> => {
+        try {
+            const iataCodes = await AIService.generateObject({
+                schema: CityWithIATASchemaArray, // <- expects output like: [ "TLV", "BCN", "LHR" ]
+                saveOutputToFile: true,
+                messages: generateMessagesForGettingCitiesIATACodes(cities),
+            });
 
-    getIATAFromAI: async (city: string): Promise<string | null> => {
+            return Object.fromEntries(cities.map((city, index) => [city, iataCodes[index].iataCode]));
+        } catch (err) {
+            console.error(`AI failed to provide IATA codes for ${cities}`, err);
+            throw new Error(`AI failed to provide IATA codes for ${cities}`);
+        }
+    },
+    getOneIATAFromAI: async (city: string): Promise<string | null> => {
         try {
             const response = await AIService.generateText(
                 `What is the most likely IATA airport code for the city "${city}"? Respond with only the 3-letter code.`
