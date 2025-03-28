@@ -63,8 +63,12 @@ export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
     price: PriceRangeSchema.optional(),
 });
 
-export type FixtureItem = z.infer<typeof FixtureItemSchema>;
+export const FixtureItemWithPriceSchema = FixtureItemSchema.extend({
+    price: PriceRangeSchema.optional(),
+});
 
+export type FixtureItem = z.infer<typeof FixtureItemSchema>;
+export type FixtureItemWithPrice = z.infer<typeof FixtureItemWithPriceSchema>;
 export type ExtendedFixtureItem = z.infer<typeof ExtendedFixtureItemSchema>;
 
 export const FixtureResponseSchema = z.object({

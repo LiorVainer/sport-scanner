@@ -2,7 +2,7 @@ import { PackageGenerateParams } from '../models/package-generate-params.model';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
 import { generateFlightSearchParams } from '../converters/fixtures-to-flights';
-import { ExtendedFixtureItem, FixtureItem, FixturePriceRangeListSchema } from '../models/fixture.model';
+import { FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema } from '../models/fixture.model';
 import { AIService } from '../ai/ai.service';
 import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
@@ -15,9 +15,9 @@ class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
         const fixturesQueryParams = convertPackageGenerateParamsToFixtureQueryParams(packageSearchFilters);
         const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
-        const extendedInfoFixtures = await this.getExtendedInfoFixtures(soccerFixtures);
+        const soccerFixturesWithPriceRange = await this.getFixturesWithTicketPriceRange(soccerFixtures);
 
-        const generateflightSearchParamsPromises = extendedInfoFixtures.map((fixture) =>
+        const generateflightSearchParamsPromises = soccerFixturesWithPriceRange.map((fixture) =>
             generateFlightSearchParams(fixture, packageSearchFilters)
         );
 
@@ -32,10 +32,10 @@ class PackageService {
 
         const allFlightOffers = flightOffersNested.flat();
 
-        return this.generatePackageCombinations(extendedInfoFixtures, allFlightOffers);
+        return this.generatePackageCombinations(soccerFixturesWithPriceRange, allFlightOffers);
     };
 
-    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]) => {
+    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
         const priceRangeList = await AIService.generateObject({
             schema: FixturePriceRangeListSchema,
             saveOutputToFile: true,
@@ -51,7 +51,7 @@ class PackageService {
     };
 
     private generatePackageCombinations = async (
-        fixtures: ExtendedFixtureItem[],
+        fixtures: FixtureItemWithPrice[],
         flightOffers: FlightOffer[]
     ): Promise<Package[]> => {
         const contextMessages = generateSystemMessageForPackageGeneration(fixtures, flightOffers, 5);
@@ -62,8 +62,6 @@ class PackageService {
             messages: contextMessages,
         });
     };
-
-    private getExtendedInfoFixtures = async (fixtures: FixtureItem[]) => this.getFixturesWithTicketPriceRange(fixtures);
 }
 
 export const packageService = new PackageService();
