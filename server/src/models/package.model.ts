@@ -62,4 +62,8 @@ export const PackageSchema = z
 
 export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
 
+export type Match = z.infer<typeof MatchSchema>;
+export type Flight = z.infer<typeof FlightSchema>;
+export type Team = z.infer<typeof TeamSchema>;
+export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
