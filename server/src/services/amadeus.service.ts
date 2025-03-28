@@ -1,7 +1,7 @@
-import Amadeus, { FlightOffer } from 'amadeus-ts';
+import Amadeus, { CurrencyCode, FlightOffersSearchPostParams, FlightOffer as RawFlightOffer } from 'amadeus-ts';
 import { ENV } from '../env/env.config';
 import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights-search-params.model';
-import { FlightOffersArraySchema } from '../models/flight-offer.model';
+import { FlightOffer, FlightOffersArraySchema } from '../models/flight-offer.model';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -10,31 +10,33 @@ const AmadeusClient = new Amadeus({
 
 export const AmadeusService = {
     searchFlights: async (params: FlightSearchParams) => {
-        const valid = FlightSearchParamsSchema.parse(params);
+        const validatedParams = FlightSearchParamsSchema.parse(params);
+        const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
+
+        console.dir({ postReqParams }, { depth: Infinity });
 
         try {
-            const { data } = await AmadeusClient.shopping.flightOffersSearch.get({
-                originLocationCode: valid.origin,
-                destinationLocationCode: valid.destination,
-                departureDate: valid.dateFrom,
-                adults: valid.adults,
-                currencyCode: 'EUR',
-                maxPrice: valid.maxPrice,
-            });
+            const { data } = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
 
-            const validatedData = FlightOffersArraySchema.parse(data);
+            const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
 
-            return validatedData.filter((o) => {
+            console.log({ flightOffers: data.length });
+
+            const priceRange = AmadeusService.findPriceRange(validatedFlightsOffers);
+
+            console.log({ priceRange });
+
+            return validatedFlightsOffers.filter((o) => {
                 const price = parseFloat(o.price.total);
-                return valid.minPrice ? price >= valid.minPrice : true;
+                return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
             });
         } catch (err) {
-            console.error(`Flight search failed for ${valid.dateFrom}:`, err);
+            console.error(`Flight search failed for ${validatedParams.dateFrom}:`, err);
             return [];
         }
     },
 
-    priceFlight: async (offer: FlightOffer) => {
+    priceFlight: async (offer: RawFlightOffer) => {
         return await AmadeusClient.shopping.flightOffers.pricing.post({
             data: {
                 type: 'flight-offers-pricing',
@@ -42,15 +44,74 @@ export const AmadeusService = {
             },
         });
     },
-};
 
-function getDateRange(from: string, to: string): string[] {
-    const dates: string[] = [];
-    const start = new Date(from);
-    const end = new Date(to);
-    while (start <= end) {
-        dates.push(start.toISOString().split('T')[0]);
-        start.setDate(start.getDate() + 1);
-    }
-    return dates;
-}
+    getIATACodeByCity: async (city: string): Promise<string | null> => {
+        try {
+            const res = await AmadeusClient.referenceData.locations.get({
+                keyword: city,
+                subType: 'AIRPORT',
+            });
+
+            console.log({ res: res.data });
+
+            return res.data?.at(0)?.iataCode ?? null;
+        } catch (err) {
+            console.error(`Failed to get IATA code for city: ${city}`, err);
+            return null;
+        }
+    },
+
+    buildFlightSearchRequest: (params: FlightSearchParams): FlightOffersSearchPostParams => ({
+        originDestinations: [
+            {
+                id: '1',
+                originLocationCode: params.origin,
+                destinationLocationCode: params.destination,
+                departureDateTimeRange: {
+                    date: params.dateFrom,
+                },
+            },
+            {
+                id: '2',
+                originLocationCode: params.destination,
+                destinationLocationCode: params.origin,
+                departureDateTimeRange: {
+                    date: params.dateTo,
+                },
+            },
+        ],
+        travelers: [
+            {
+                id: '1',
+                travelerType: 'ADULT',
+            },
+        ],
+        sources: ['GDS'],
+        currencyCode: ENV.CURRENCY_CODE as CurrencyCode,
+        searchCriteria: {
+            maxPrice: params.maxPrice,
+        },
+    }),
+
+    findPriceRange: (offers: FlightOffer[]) => {
+        if (!offers.length) {
+            return { min: null, max: null };
+        }
+
+        let min = Number.POSITIVE_INFINITY;
+        let max = Number.NEGATIVE_INFINITY;
+
+        for (const offer of offers) {
+            const price = parseFloat(offer.price.total);
+            if (!isNaN(price)) {
+                if (price < min) min = price;
+                if (price > max) max = price;
+            }
+        }
+
+        return {
+            min: min === Number.POSITIVE_INFINITY ? null : min,
+            max: max === Number.NEGATIVE_INFINITY ? null : max,
+        };
+    },
+};

@@ -18,6 +18,8 @@ export const EnvSchema = z.object({
         message: "REFRESH_TOKEN_EXPIRES must be a valid duration string (e.g., '7d', '12h')",
     }),
 
+    CURRENCY_CODE: z.string().length(3, { message: 'CURRENCY_CODE must be a 3-letter currency code' }),
+
     GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
     AI_MODEL: z.string(),
     AI_MAX_TOKENS: z.coerce.number().int().min(1),

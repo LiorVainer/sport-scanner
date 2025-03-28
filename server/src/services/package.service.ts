@@ -2,7 +2,7 @@ import { PackageGenerateParams } from '../models/package-generate-params.model';
 import { convertPackageGenerateParamsToFlightSearchParams } from '../converters/package-to-flights';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
-import { convertFixtureToFlightSearchParams } from '../converters/fixtures-to-flights';
+import { generateFlightSearchParams } from '../converters/fixtures-to-flights';
 import { ExtendedFixtureItem, FixtureItem, FixturePriceRangeListSchema } from '../models/fixture.model';
 import { AIService } from '../ai/ai.service';
 import { PriceRangeSchema } from '../models/price-range.model';
@@ -11,30 +11,47 @@ import {
     generateUserMessageForFixturePriceMap,
 } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
+import { FlightSearchParams } from '../models/flights-search-params.model';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
         const fixturesQueryParams = convertPackageGenerateParamsToFixtureQueryParams(packageSearchFilters);
         const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
-        const soccerFixturesWithCountryCodes = await this.getFixturesWithCountryCodes(soccerFixtures);
+        const extendedInfoFixtures = await this.getExtendedInfoFixtures(soccerFixtures);
 
-        console.dir({ soccerFixturesWithCountryCodes }, { depth: Infinity });
+        const generateflightSearchParamsPromises = extendedInfoFixtures.map((fixture) =>
+            generateFlightSearchParams(fixture, packageSearchFilters)
+        );
 
-        const flightParamsFromGenerateParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
-        const flightParamsFromSoccerFixtures = convertFixtureToFlightSearchParams(soccerFixtures[0]);
+        const flightSearchParamsArray: FlightSearchParams[] = await Promise.all(generateflightSearchParamsPromises);
 
-        const extendedInfoFixtures = await this.getExtendedInfoFixtures(soccerFixturesWithCountryCodes);
+        const flightOffersSearchPromises = flightSearchParamsArray.map((params) =>
+            AmadeusService.searchFlights(params)
+        );
 
-        // TODO: Implement flight search after soccer fixtures are fetched
-        const flightParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
-        const flightOffers = await AmadeusService.searchFlights(flightParams);
-
-        console.log({ flightOffers });
+        const flightOffers = await Promise.all(flightOffersSearchPromises);
 
         return flightOffers;
     };
 
-    getFixturesWithCountryCodes = async (fixtures: FixtureItem[]) => {
+    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]) => {
+        const priceRangeList = await AIService.generateObject({
+            schema: FixturePriceRangeListSchema,
+            saveOutputToFile: true,
+            messages: generateUserMessageForFixturePriceMap(fixtures),
+        });
+
+        const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
+
+        return fixtures.map((fixture) => ({
+            ...fixture,
+            price: priceMap[fixture.fixture.id.toString()],
+        }));
+    };
+
+    private getExtendedInfoFixtures = async (fixtures: FixtureItem[]) => this.getFixturesWithTicketPriceRange(fixtures);
+
+    private getFixturesWithCountryCodes = async (fixtures: FixtureItem[]) => {
         const countries = await soccerService.getCountries();
         const countryNamesToCodesMap = countries.reduce(
             (acc, country) => {
@@ -63,26 +80,6 @@ class PackageService {
         });
 
         return extendedFixtures;
-    };
-
-    getFixturesWithTicketPriceRange = async (fixtures: ExtendedFixtureItem[]) => {
-        const priceRangeList = await AIService.generateObject({
-            schema: FixturePriceRangeListSchema,
-            saveOutputToFile: true,
-            messages: generateUserMessageForFixturePriceMap(fixtures),
-        });
-
-        const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
-
-        return fixtures.map((fixture) => ({
-            ...fixture,
-            price: priceMap[fixture.fixture.id.toString()],
-        }));
-    };
-
-    getExtendedInfoFixtures = async (fixtures: FixtureItem[]) => {
-        const fixturesWithCountryCodes = await this.getFixturesWithCountryCodes(fixtures);
-        return this.getFixturesWithTicketPriceRange(fixturesWithCountryCodes);
     };
 }
 
