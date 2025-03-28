@@ -1,12 +1,10 @@
-import { FlightSearchParams } from '../models/flights.model';
-import {PackageGenerateParams} from "../models/package-generate-params.model";
+import { FlightSearchParams } from '../models/flights-search-params.model';
+import { PackageGenerateParams } from '../models/package-generate-params.model';
 
-export const convertPackageGenerateParamsToFlightSearchParams = (
-    params: PackageGenerateParams
-): FlightSearchParams => {
+export const convertPackageGenerateParamsToFlightSearchParams = (params: PackageGenerateParams): FlightSearchParams => {
     return {
         origin: params.country ?? 'TLV', // fallback or dynamic logic
-        destination: params.country ?? 'TLV',
+        destination: params.country ?? 'PAR',
         dateFrom: params.date?.from
             ? new Date(params.date.from).toISOString().slice(0, 10)
             : new Date().toISOString().slice(0, 10),

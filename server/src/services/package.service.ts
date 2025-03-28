@@ -10,6 +10,7 @@ import {
     generateSystemMessagesFromFixture,
     generateUserMessageForFixturePriceMap,
 } from '../ai/utils/fixture-to-system-messages';
+import { AmadeusService } from './amadeus.service';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
@@ -25,10 +26,12 @@ class PackageService {
         const extendedInfoFixtures = await this.getExtendedInfoFixtures(soccerFixturesWithCountryCodes);
 
         // TODO: Implement flight search after soccer fixtures are fetched
-        // const flightParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
-        // const flightOffers = await AmadeusService.searchFlights(flightParams);
+        const flightParams = convertPackageGenerateParamsToFlightSearchParams(packageSearchFilters);
+        const flightOffers = await AmadeusService.searchFlights(flightParams);
 
-        return extendedInfoFixtures;
+        console.log({ flightOffers });
+
+        return flightOffers;
     };
 
     getFixturesWithCountryCodes = async (fixtures: FixtureItem[]) => {

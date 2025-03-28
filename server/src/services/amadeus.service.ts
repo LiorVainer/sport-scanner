@@ -1,6 +1,7 @@
-import Amadeus, {FlightOffer} from 'amadeus-ts';
+import Amadeus, { FlightOffer } from 'amadeus-ts';
 import { ENV } from '../env/env.config';
-import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights.model';
+import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights-search-params.model';
+import { FlightOffersArraySchema } from '../models/flight-offer.model';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -10,33 +11,27 @@ const AmadeusClient = new Amadeus({
 export const AmadeusService = {
     searchFlights: async (params: FlightSearchParams) => {
         const valid = FlightSearchParamsSchema.parse(params);
-        const dates = getDateRange(valid.dateFrom, valid.dateTo);
 
-        const results = await Promise.allSettled(
-            dates.map(date =>
-                AmadeusClient.shopping.flightOffersSearch.get({
-                    originLocationCode: valid.origin,
-                    destinationLocationCode: valid.destination,
-                    departureDate: date,
-                    adults: valid.adults,
-                    currencyCode: 'EUR',
-                    maxPrice: valid.maxPrice,
-                })
-            )
-        );
+        try {
+            const { data } = await AmadeusClient.shopping.flightOffersSearch.get({
+                originLocationCode: valid.origin,
+                destinationLocationCode: valid.destination,
+                departureDate: valid.dateFrom,
+                adults: valid.adults,
+                currencyCode: 'EUR',
+                maxPrice: valid.maxPrice,
+            });
 
-        results.forEach((res, i) => {
-            if (res.status === 'rejected') {
-                console.error(`Flight search failed for ${dates[i]}:`, res.reason);
-            }
-        });
+            const validatedData = FlightOffersArraySchema.parse(data);
 
-        return results
-            .flatMap(r => (r.status === 'fulfilled' ? r.value.data : []))
-            .filter(o => {
+            return validatedData.filter((o) => {
                 const price = parseFloat(o.price.total);
                 return valid.minPrice ? price >= valid.minPrice : true;
             });
+        } catch (err) {
+            console.error(`Flight search failed for ${valid.dateFrom}:`, err);
+            return [];
+        }
     },
 
     priceFlight: async (offer: FlightOffer) => {

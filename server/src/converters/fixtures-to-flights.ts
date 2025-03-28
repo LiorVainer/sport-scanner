@@ -1,11 +1,8 @@
-import {FixtureItem} from "../models/fixture.model";
-import {FlightSearchParams} from "../models/flights.model";
-import moment from "moment";
+import { FixtureItem } from '../models/fixture.model';
+import { FlightSearchParams } from '../models/flights-search-params.model';
+import moment from 'moment';
 
-
-export const convertFixtureToFlightSearchParams = (
-    fixture: FixtureItem
-): FlightSearchParams => {
+export const convertFixtureToFlightSearchParams = (fixture: FixtureItem): FlightSearchParams => {
     const baseDate = moment(fixture.fixture.date);
 
     return {
