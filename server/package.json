@@ -18,7 +18,7 @@
         "test:coverage": "cp .env.test .env && jest --coverage --runInBand --coverageDirectory=coverage"
     },
     "dependencies": {
-        "@ai-sdk/google": "^1.1.2",
+        "@ai-sdk/google": "^1.2.3",
         "@types/body-parser": "^1.19.5",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
@@ -31,7 +31,7 @@
         "@types/swagger-ui-express": "^4.1.7",
         "@typescript-eslint/eslint-plugin": "^8.17.0",
         "@typescript-eslint/parser": "^8.17.0",
-        "ai": "^4.1.5",
+        "ai": "^4.2.8",
         "amadeus": "^11.0.0",
         "amadeus-ts": "^5.1.1",
         "axios": "^1.8.1",

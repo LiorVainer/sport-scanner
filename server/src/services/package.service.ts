@@ -10,6 +10,7 @@ import { FlightSearchParams } from '../models/flights-search-params.model';
 import { generateSystemMessageForPackageGeneration } from '../ai/utils/packages-generate-context-messages';
 import { FlightOffer } from '../models/flight-offer.model';
 import { Package, PackageArraySchema } from '../models/package.model';
+import { ENV } from '../env/env.config';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
@@ -53,7 +54,11 @@ class PackageService {
         fixtures: FixtureItemWithPrice[],
         flightOffers: FlightOffer[]
     ): Promise<Package[]> => {
-        const contextMessages = generateSystemMessageForPackageGeneration(fixtures, flightOffers, 30);
+        const contextMessages = generateSystemMessageForPackageGeneration(
+            fixtures,
+            flightOffers,
+            ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH
+        );
 
         return await AIService.generateObject({
             schema: PackageArraySchema,

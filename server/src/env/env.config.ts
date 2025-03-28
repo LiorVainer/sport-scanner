@@ -20,6 +20,15 @@ export const EnvSchema = z.object({
 
     CURRENCY_CODE: z.string().length(3, { message: 'CURRENCY_CODE must be a 3-letter currency code' }),
 
+    MAX_FLIGHT_OFFERS_PER_FIXTURE: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'MAX_FLIGHT_OFFERS_PER_FIXTURE must be a positive integer' }),
+    MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH must be a positive integer' }),
+
     GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
     AI_MODEL: z.string(),
     AI_MAX_TOKENS: z.coerce.number().int().min(1),

@@ -4,9 +4,11 @@ import { PriceRangeSchema } from './price-range.model';
 export const FlightSchema = z.object({
     id: z.number().describe('Unique identifier of the flight'),
     origin: z.string().describe('IATA code of the origin airport'),
-    destination: z.string().describe('IATA code of the destination airport'),
+    destinationIATA: z.string().describe('IATA code of the destination airport'),
+    destinationCity: z.string().describe('City of the destination airport'),
     price: z.number().describe('Total flight price in EUR'),
     departureDate: z.string().describe('Flight departure date'),
+    searchFlightTicketsLink: z.string().describe('Real link to search for the flight on skyscanner website'),
 });
 
 export const MatchSchema = z.object({
@@ -17,12 +19,17 @@ export const MatchSchema = z.object({
     stadium: z.string().describe('Stadium where the match takes place'),
     date: z.string().describe('Date of the match'),
     price: PriceRangeSchema.describe('Price range of the match tickets'),
+    searchMatchTicketsLink: z.string().describe('Real link to search for match tickets on viagogo website'),
 });
 
 export const PackageSchema = z
     .object({
         id: z.number().describe('Unique identifier of the package'),
-        title: z.string().describe('Title of the travel package'),
+        title: z
+            .string()
+            .describe(
+                'Title of the travel package, make it catchy and attractive, if it is only one match, include the name of the teams and the league'
+            ),
         description: z.string().describe('Description of what the package includes'),
         fromDate: z.string().describe('Start date of the package'),
         toDate: z.string().describe('End date of the package'),

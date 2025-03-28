@@ -90,6 +90,10 @@ export const AmadeusService = {
         currencyCode: ENV.CURRENCY_CODE as CurrencyCode,
         searchCriteria: {
             maxPrice: params.maxPrice,
+            maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_FIXTURE,
+            flightFilters: {
+                returnToDepartureAirport: true,
+            },
         },
     }),
 
