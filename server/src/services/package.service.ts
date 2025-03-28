@@ -1,17 +1,15 @@
 import { PackageGenerateParams } from '../models/package-generate-params.model';
-import { convertPackageGenerateParamsToFlightSearchParams } from '../converters/package-to-flights';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
 import { generateFlightSearchParams } from '../converters/fixtures-to-flights';
 import { ExtendedFixtureItem, FixtureItem, FixturePriceRangeListSchema } from '../models/fixture.model';
 import { AIService } from '../ai/ai.service';
-import { PriceRangeSchema } from '../models/price-range.model';
-import {
-    generateSystemMessagesFromFixture,
-    generateUserMessageForFixturePriceMap,
-} from '../ai/utils/fixture-to-system-messages';
+import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
 import { FlightSearchParams } from '../models/flights-search-params.model';
+import { generateSystemMessageForPackageGeneration } from '../converters/aggregated-data-to-packages';
+import { FlightOffer } from '../models/flight-offer.model';
+import { Package, PackageArraySchema } from '../models/package.model';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
@@ -24,14 +22,17 @@ class PackageService {
         );
 
         const flightSearchParamsArray: FlightSearchParams[] = await Promise.all(generateflightSearchParamsPromises);
+        console.log({ flightSearchParamsArray });
 
         const flightOffersSearchPromises = flightSearchParamsArray.map((params) =>
             AmadeusService.searchFlights(params)
         );
 
-        const flightOffers = await Promise.all(flightOffersSearchPromises);
+        const flightOffersNested: FlightOffer[][] = await Promise.all(flightOffersSearchPromises);
 
-        return flightOffers;
+        const allFlightOffers = flightOffersNested.flat();
+
+        return this.generatePackageCombinations(extendedInfoFixtures, allFlightOffers);
     };
 
     private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]) => {
@@ -49,38 +50,20 @@ class PackageService {
         }));
     };
 
-    private getExtendedInfoFixtures = async (fixtures: FixtureItem[]) => this.getFixturesWithTicketPriceRange(fixtures);
+    private generatePackageCombinations = async (
+        fixtures: ExtendedFixtureItem[],
+        flightOffers: FlightOffer[]
+    ): Promise<Package[]> => {
+        const contextMessages = generateSystemMessageForPackageGeneration(fixtures, flightOffers, 5);
 
-    private getFixturesWithCountryCodes = async (fixtures: FixtureItem[]) => {
-        const countries = await soccerService.getCountries();
-        const countryNamesToCodesMap = countries.reduce(
-            (acc, country) => {
-                acc[country.name] = country.code;
-                return acc;
-            },
-            {} as Record<string, string>
-        );
-
-        const extendedFixtures: ExtendedFixtureItem[] = fixtures.map((fixture) => {
-            const homeCountryName =
-                fixture.fixture.venue.country ?? fixture.teams.home.country ?? fixture.league.country;
-
-            return homeCountryName
-                ? {
-                      ...fixture,
-                      fixture: {
-                          ...fixture.fixture,
-                          venue: {
-                              ...fixture.fixture.venue,
-                              countryCode: countryNamesToCodesMap[homeCountryName],
-                          },
-                      },
-                  }
-                : fixture;
+        return await AIService.generateObject({
+            schema: PackageArraySchema,
+            saveOutputToFile: true,
+            messages: contextMessages,
         });
-
-        return extendedFixtures;
     };
+
+    private getExtendedInfoFixtures = async (fixtures: FixtureItem[]) => this.getFixturesWithTicketPriceRange(fixtures);
 }
 
 export const packageService = new PackageService();
