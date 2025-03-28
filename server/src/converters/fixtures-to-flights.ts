@@ -4,6 +4,8 @@ import moment from 'moment';
 import { PackageGenerateParams } from '../models/package-generate-params.model';
 import { AmadeusService } from '../services/amadeus.service';
 import { calculateAdjustedPrice } from '../utils/price.utils';
+import { AIService } from '../ai/ai.service';
+import { FlightsService } from '../services/flight.service';
 
 export const generateFlightSearchParams = async (
     fixture: ExtendedFixtureItem,
@@ -14,18 +16,21 @@ export const generateFlightSearchParams = async (
     const originCity = generateParams.originCity;
     const destinationCity = fixture.fixture.venue.city;
 
-    const [originResult, destination] = await Promise.all([
-        AmadeusService.getIATACodeByCity(originCity).catch((err) => {
-            console.error(`Failed to get IATA code for city: ${originCity}`, err);
-            return null;
-        }),
-        AmadeusService.getIATACodeByCity(destinationCity),
+    const [origin, destination] = await Promise.all([
+        FlightsService.getIATACodeByCity(originCity),
+        FlightsService.getIATACodeByCity(destinationCity),
     ]);
-
-    const origin = originResult ?? 'TLV';
 
     const minPrice = calculateAdjustedPrice(generateParams.price?.min, fixture.price?.min);
     const maxPrice = calculateAdjustedPrice(generateParams.price?.max, fixture.price?.min);
+
+    if (!origin && !destination) {
+        throw new Error(`Could not find IATA codes for cities: ${originCity}, ${destinationCity}`);
+    }
+
+    if (!origin) {
+        throw new Error(`Could not find IATA code for city: ${originCity}`);
+    }
 
     if (!destination) {
         throw new Error(`Could not find IATA code for city: ${destinationCity}`);

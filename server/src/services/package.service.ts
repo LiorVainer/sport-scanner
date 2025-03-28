@@ -7,7 +7,7 @@ import { AIService } from '../ai/ai.service';
 import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
 import { FlightSearchParams } from '../models/flights-search-params.model';
-import { generateSystemMessageForPackageGeneration } from '../converters/aggregated-data-to-packages';
+import { generateSystemMessageForPackageGeneration } from '../ai/utils/packages-generate-context-messages';
 import { FlightOffer } from '../models/flight-offer.model';
 import { Package, PackageArraySchema } from '../models/package.model';
 
@@ -22,7 +22,6 @@ class PackageService {
         );
 
         const flightSearchParamsArray: FlightSearchParams[] = await Promise.all(generateflightSearchParamsPromises);
-        console.log({ flightSearchParamsArray });
 
         const flightOffersSearchPromises = flightSearchParamsArray.map((params) =>
             AmadeusService.searchFlights(params)
@@ -54,7 +53,7 @@ class PackageService {
         fixtures: FixtureItemWithPrice[],
         flightOffers: FlightOffer[]
     ): Promise<Package[]> => {
-        const contextMessages = generateSystemMessageForPackageGeneration(fixtures, flightOffers, 5);
+        const contextMessages = generateSystemMessageForPackageGeneration(fixtures, flightOffers, 30);
 
         return await AIService.generateObject({
             schema: PackageArraySchema,
