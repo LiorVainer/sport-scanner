@@ -13,15 +13,13 @@ export const AmadeusService = {
         const validatedParams = FlightSearchParamsSchema.parse(params);
         const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
 
-        console.dir({ postReqParams }, { depth: Infinity });
-
         try {
             const { data } = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
 
             const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
 
-            return validatedFlightsOffers.filter((o) => {
-                const price = parseFloat(o.price.total);
+            return validatedFlightsOffers.filter((offer) => {
+                const price = parseFloat(offer.price.total);
                 return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
             });
         } catch (err) {
