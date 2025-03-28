@@ -1,4 +1,4 @@
-import { CoreMessage, CoreSystemMessage } from 'ai';
+import { CoreMessage } from 'ai';
 import { message } from '../ai/utils/message.utils';
 import { ExtendedFixtureItem } from '../models/fixture.model';
 import { FlightOffer } from '../models/flight-offer.model';
@@ -12,33 +12,41 @@ export const generateSystemMessageForPackageGeneration = (
 
     messages.push(
         message.system(
-            `You are a travel assistant helping create exciting travel packages that combine soccer matches and matching flights.`
+            `You are a travel assistant helping create exciting travel packages that combine soccer matches and available flights. Each package should include: flight details (full segments), match info, and total cost breakdown.`
         )
     );
 
     fixtures.forEach((fixture) => {
         const { id, date, venue } = fixture.fixture;
+        const priceRange = fixture.price
+            ? `Estimated ticket price: €${fixture.price.min} - €${fixture.price.max}`
+            : `Ticket price is unknown`;
+
         messages.push(
             message.system(
-                `Fixture ${id}: ${fixture.teams.home.name} vs ${fixture.teams.away.name}, in ${venue.city} at ${venue.name}, on ${date}. League: ${fixture.league.name}, season: ${fixture.league.season}. Estimated ticket price: €${fixture.price?.min ?? '?'} - €${fixture.price?.max ?? '?'}.`
+                `Match ID ${id}: ${fixture.teams.home.name} vs ${fixture.teams.away.name}, league ${fixture.league.name} (${fixture.league.country}) season ${fixture.league.season}. Date: ${date}. Venue: ${venue.name}, ${venue.city}. ${priceRange}.`
             )
         );
     });
 
     flightOffers.forEach((flight) => {
-        const segment = flight.itineraries[0]?.segments[0];
-        if (!segment) return;
+        const segments = flight.itineraries
+            .flatMap((itinerary) => itinerary.segments)
+            .map((seg) => {
+                return `Segment ${seg.id}: ${seg.departure.iataCode} -> ${seg.arrival.iataCode} | Departure: ${seg.departure.at} | Arrival: ${seg.arrival.at} | Airline: ${seg.carrierCode}${seg.number} | Duration: ${seg.duration}`;
+            })
+            .join('\n');
 
         messages.push(
             message.system(
-                `Flight ${flight.id}: from ${segment.departure.iataCode} to ${segment.arrival.iataCode} on ${segment.departure.at}, airline ${segment.carrierCode} ${segment.number}, price: €${flight.price.total}.`
+                `Flight Offer ${flight.id}: Total Price: €${flight.price.total}, Currency: ${flight.price.currency}, One Way: ${flight.oneWay}, Bookable Seats: ${flight.numberOfBookableSeats}\n${segments}`
             )
         );
     });
 
     messages.push(
         message.user(
-            `Using the above flight offers and soccer fixtures, generate up to ${maxPackages} appealing travel packages including flights and matches. Ensure logical price and timing combinations.`
+            `Generate a maximum of ${maxPackages} tailored travel packages that combine the above flight options and matches. Make sure each package makes sense in terms of timing and total cost. Each package should contain: title, description, flights, matches, total flight price, total match price, and travel window.`
         )
     );
 
