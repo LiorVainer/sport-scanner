@@ -1,19 +1,28 @@
-import {z} from 'zod';
-import {LeagueSchema, TeamSchema, VenueSchema} from "./soccer.model";
-
+import { z } from 'zod';
+import { LeagueSchema, TeamSchema, VenueSchema } from './soccer.model';
+import { PriceRangeSchema } from './price-range.model';
 
 export const FixtureQueryParamsSchema = z.object({
     id: z.number().optional(),
     ids: z.string().optional(),
     live: z.enum(['all']).or(z.string()).optional(),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
     league: z.number().optional(),
     season: z.number().optional(),
     team: z.number().optional(),
     last: z.number().max(99).optional(),
     next: z.number().max(99).optional(),
-    from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    from: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+    to: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
     round: z.string().optional(),
     status: z.string().optional(),
     venue: z.number().optional(),
@@ -22,40 +31,36 @@ export const FixtureQueryParamsSchema = z.object({
 
 export type FixtureQueryParams = z.infer<typeof FixtureQueryParamsSchema>;
 
-export const StatusSchema = z.object({
-    long: z.string(),
-    short: z.string(),
-    elapsed: z.number(),
-    extra: z.number().nullable(),
-});
-
 export const FixtureInfoSchema = z.object({
     id: z.number(),
-    referee: z.string().nullable(),
     timezone: z.string(),
     date: z.string(),
     timestamp: z.number(),
     venue: VenueSchema,
-    status: StatusSchema,
 });
 
 export const ExtendedFixtureInfoSchema = FixtureInfoSchema.extend({
-    countryCode: z.string().optional(),
-})
+    venue: VenueSchema.extend({
+        countryCode: z.string().optional(),
+    }),
+});
 
 export const TeamsSchema = z.object({
     home: TeamSchema,
     away: TeamSchema,
 });
 
-export const FixtureItemSchema = z.object({
-    fixture: FixtureInfoSchema,
-    league: LeagueSchema,
-    teams: TeamsSchema,
-});
+export const FixtureItemSchema = z
+    .object({
+        fixture: FixtureInfoSchema,
+        league: LeagueSchema,
+        teams: TeamsSchema,
+    })
+    .strip();
 
 export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
     fixture: ExtendedFixtureInfoSchema,
+    price: PriceRangeSchema.optional(),
 });
 
 export type FixtureItem = z.infer<typeof FixtureItemSchema>;
@@ -77,3 +82,18 @@ export const FixtureResponseSchema = z.object({
 });
 
 export type FixtureResponse = z.infer<typeof FixtureResponseSchema>;
+
+export const FixturePriceRangeSchema = z
+    .object({
+        id: z.string().describe('The fixture ID as a string'),
+        min: z.number().describe('Minimum estimated ticket price in EUR'),
+        max: z.number().describe('Maximum estimated ticket price in EUR'),
+    })
+    .describe('Price range details for a specific fixture');
+
+export const FixturePriceRangeListSchema = z
+    .array(FixturePriceRangeSchema)
+    .describe('An array of price range objects, each with fixture ID, min and max price in EUR');
+
+export type FixturePriceRange = z.infer<typeof FixturePriceRangeSchema>;
+export type FixturePriceRangeList = z.infer<typeof FixturePriceRangeListSchema>;

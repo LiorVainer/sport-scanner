@@ -1,6 +1,6 @@
 import { google } from '@ai-sdk/google';
-import { AIGlobalConfig, AIMethodConfigKeys, AIServiceMethod, AIServiceMethodsConfig } from '../types/ai.types';
 import { ENV } from '../env/env.config';
+import { AIMethodConfigKeys, AIGlobalConfig, AIServiceMethodsConfig, AIServiceMethod } from './ai.types';
 
 const model = google(ENV.AI_MODEL ?? 'gemini-2.0-flash-exp');
 

@@ -1,5 +1,6 @@
-import { z } from 'zod';
+import {z} from 'zod';
 import {zodDate} from "../utils/zod.utils";
+import {PriceRangeSchema} from "./price-range.model";
 
 export const PackageGenerateParamsSchema = z.object({
     date: z
@@ -8,11 +9,7 @@ export const PackageGenerateParamsSchema = z.object({
             to: zodDate,
         })
         .optional(),
-    price: z
-        .object({
-            min: z.number().optional(),
-            max: z.number().optional(),
-        })
+    price: PriceRangeSchema
         .optional(),
     country: z.string().optional(),
     league: z.string().optional(),
