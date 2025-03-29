@@ -1,6 +1,4 @@
 import { Route, Routes } from 'react-router';
-import { MatchExperienceDetailsScreen } from '@pages/MatchExperienceDetailsScreen';
-import { MatchExperiencesCatalogScreen } from 'src/pages/MatchExperiencesCatalogScreen';
 import { Layout } from '@/layout/Layout';
 import { ROUTES } from '@/constants/routes.const';
 import { ProtectedRoutes } from '@/layout/Router/ProtectedRoutes.tsx';
@@ -17,9 +15,6 @@ export const Router = (_props: RouterProps) => {
             <Route path={ROUTES.AUTH} element={<AuthPage />} />
             <Route element={<ProtectedRoutes />}>
                 <Route element={<Layout />}>
-                    <Route path={ROUTES.MATCH_EXPERIENCES} element={<MatchExperiencesCatalogScreen mode="all" />} />
-                    <Route path={`${ROUTES.MATCH_EXPERIENCES}/:id`} element={<MatchExperienceDetailsScreen />} />
-                    <Route path={ROUTES.MY_EXPERIENCES} element={<MatchExperiencesCatalogScreen mode="my" />} />
                     <Route path={ROUTES.PACKAGES} element={<PackagesScreen/>} />
                     <Route path={`${ROUTES.PACKAGES}/:id`} element={<PackageDetailsScreen />} />
                 </Route>
