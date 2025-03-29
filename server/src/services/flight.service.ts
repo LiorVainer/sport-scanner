@@ -17,7 +17,7 @@ export const FlightsService = {
     getCityToIATACodeMap: async (cities: string[]): Promise<CityToIATACodeMap> => {
         try {
             const iataCodes = await AIService.generateObject({
-                schema: CityWithIATASchemaArray, // <- expects output like: [ "TLV", "BCN", "LHR" ]
+                schema: CityWithIATASchemaArray,
                 saveOutputToFile: true,
                 messages: generateMessagesForGettingCitiesIATACodes(cities),
             });
@@ -38,6 +38,15 @@ export const FlightsService = {
         } catch (err) {
             console.error(`AI failed to provide IATA code for ${city}`, err);
             return null;
+        }
+    },
+    getAirportsByCountry: async (country: string): Promise<string[]> => {
+        try {
+            const airports = await AmadeusService.getCities(country);
+            return airports.map((airport) => airport.iataCode);
+        } catch (err) {
+            console.error(`Failed to get airports for country ${country}:`, err);
+            throw new Error(`Failed to get airports for country ${country}`);
         }
     },
 };

@@ -2,6 +2,8 @@ import Amadeus, { CurrencyCode, FlightOffersSearchPostParams, FlightOffer as Raw
 import { ENV } from '../env/env.config';
 import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights-search-params.model';
 import { FlightOffer, FlightOffersArraySchema } from '../models/flight-offer.model';
+import { Country } from '../models/soccer.model';
+import { CitySearchParams } from '../models/geo.model';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -107,5 +109,19 @@ export const AmadeusService = {
             min: min === Number.POSITIVE_INFINITY ? null : min,
             max: max === Number.NEGATIVE_INFINITY ? null : max,
         };
+    },
+
+    getCities: async ({ countryCode, countryName }: CitySearchParams) => {
+        try {
+            const { data } = await AmadeusClient.referenceData.locations.cities.get({
+                keyword: countryName,
+                countryCode: countryCode,
+            });
+
+            return data;
+        } catch (err) {
+            console.error(`Failed to get airports for country: ${countryName}`, err);
+            return [];
+        }
     },
 };

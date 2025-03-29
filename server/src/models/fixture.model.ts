@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { LeagueSchema, TeamSchema, VenueSchema } from './soccer.model';
-import { PriceRangeSchema } from './price-range.model';
-import { ENV } from '../env/env.config';
+import {z} from 'zod';
+import {LeagueSchema, TeamSchema, VenueSchema} from './soccer.model';
+import {PriceRangeSchema} from './price-range.model';
+import {ENV} from '../env/env.config';
 
 export const FixtureQueryParamsSchema = z.object({
     id: z.number().optional(),

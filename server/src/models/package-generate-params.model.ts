@@ -1,12 +1,12 @@
-import { z } from 'zod';
-import { zodDate } from '../utils/zod.utils';
-import { PriceRangeSchema } from './price-range.model';
+import {z} from 'zod';
+import {zodDate} from '../utils/zod.utils';
+import {PriceRangeSchema} from './price-range.model';
 
 export const PackageGenerateParamsSchema = z
     .object({
         date: z
             .object({
-                from: zodDate, // ISO date string
+                from: zodDate,
                 to: zodDate,
             })
             .optional(),

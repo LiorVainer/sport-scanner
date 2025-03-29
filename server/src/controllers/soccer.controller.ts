@@ -3,15 +3,6 @@ import { soccerService } from '../services/soccer.service';
 import { PackageGenerateParamsSchema } from '../models/package-generate-params.model';
 
 export const soccerController = {
-    getCountries: async (_req: Request, res: Response) => {
-        try {
-            const countries = await soccerService.getCountries();
-            res.status(200).json(countries);
-        } catch (e) {
-            res.status(500).json({ message: 'Error fetching countries', error: e });
-        }
-    },
-
     getLeagues: async (req: Request, res: Response) => {
         try {
             const country = req.query.country as string;

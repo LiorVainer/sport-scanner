@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { calculateCurrentSeason } from '../utils/soccer.utils';
-import { ENV } from '../env/env.config';
-import { Country, League, Team, Venue } from '../models/soccer.model';
+import {calculateCurrentSeason} from '../utils/soccer.utils';
+import {ENV} from '../env/env.config';
+import {Country, League, Team, Venue} from '../models/soccer.model';
 import {
     FixtureQueryParams,
     FixtureQueryParamsSchema,
@@ -22,37 +22,37 @@ const soccerApiClient = axios.create({
 soccerApiClient.interceptors.request.use((config) => {
     const baseURL = config.baseURL || '';
     const url = config.url || '';
-    const query = config.params ? `?${qs.stringify(config.params, { arrayFormat: 'repeat' })}` : '';
+    const query = config.params ? `?${qs.stringify(config.params, {arrayFormat: 'repeat'})}` : '';
     console.log(`Making request to: ${baseURL}${url}${query}`);
     return config;
 });
 
 export const soccerService = {
     getCountries: async () => {
-        const { data } = await soccerApiClient.get<{ response: Country[]; errors: string[] }>('/countries');
+        const {data} = await soccerApiClient.get<{ response: Country[]; errors: string[] }>('/countries');
         if (data.errors.length) throw new Error('Error fetching countries');
         return data.response;
     },
 
     getLeaguesByCountry: async (country: string) => {
-        const { data } = await soccerApiClient.get<{
+        const {data} = await soccerApiClient.get<{
             response: { league: League; country: Country }[];
             errors: string[];
-        }>('/leagues', { params: { country } });
+        }>('/leagues', {params: {country}});
         if (data.errors.length) throw new Error('Error fetching leagues');
         return data.response;
     },
 
     getVenuesByCountry: async (country: string) => {
-        const { data } = await soccerApiClient.get<{ response: Venue[]; errors: string[] }>('/venues', {
-            params: { country },
+        const {data} = await soccerApiClient.get<{ response: Venue[]; errors: string[] }>('/venues', {
+            params: {country},
         });
         if (data.errors.length) throw new Error('Error fetching venues');
         return data.response;
     },
 
     getTeamsByLeague: async (league: string, season?: string) => {
-        const { data } = await soccerApiClient.get<{
+        const {data} = await soccerApiClient.get<{
             response: { team: Team; venue: Venue }[];
             errors: string[];
         }>('/teams', {
@@ -73,14 +73,14 @@ export const soccerService = {
             throw new Error('Invalid fixture query params');
         }
 
-        const { data } = await soccerApiClient.get<FixtureResponse>('/fixtures', {
+        const {data} = await soccerApiClient.get<FixtureResponse>('/fixtures', {
             params: validatedApiParams.data,
         });
 
         const validatedData = FixtureResponseSchema.parse(data);
 
         if (Object.keys(validatedData.errors).length > 0) {
-            console.error({ fixturesResponseErrors: data.errors });
+            console.error({fixturesResponseErrors: data.errors});
             throw new Error('Error fetching fixtures');
         }
 

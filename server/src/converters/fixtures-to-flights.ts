@@ -1,13 +1,12 @@
-import { ExtendedFixtureItem } from '../models/fixture.model';
-import { FlightSearchParams } from '../models/flights-search-params.model';
+import {ExtendedFixtureItem} from '../models/fixture.model';
+import {FlightSearchParams} from '../models/flights-search-params.model';
 import moment from 'moment';
-import { PackageGenerateParams } from '../models/package-generate-params.model';
-import { calculateAdjustedPrice } from '../utils/price.utils';
-import { FlightsService } from '../services/flight.service';
-import { CityToIATACodeMap } from '../models/iata.model';
-import { ENV } from '../env/env.config';
+import {PackageGenerateParams} from '../models/package-generate-params.model';
+import {calculateAdjustedPrice} from '../utils/price.utils';
+import {FlightsService} from '../services/flight.service';
+import {CityToIATACodeMap} from '../models/iata.model';
+import {ENV} from '../env/env.config';
 
-// Shared logic to build search params once we have IATA codes
 const buildFlightSearchParams = (
     fixture: ExtendedFixtureItem,
     generateParams: PackageGenerateParams,
@@ -70,5 +69,5 @@ export const generateFlightSearchParamsForFixtures = async (
         generateSyncFlightSearchParamsForOneFixture(fixture, generateParams, cityToIATACodeMap)
     );
 
-    return { flightSearchParamsArray, cityToIATACodeMap };
+    return {flightSearchParamsArray, cityToIATACodeMap};
 };

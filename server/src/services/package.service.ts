@@ -1,19 +1,18 @@
-import { PackageGenerateParams } from '../models/package-generate-params.model';
-import { soccerService } from './soccer.service';
-import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
-import { FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema } from '../models/fixture.model';
-import { AIService } from '../ai/ai.service';
-import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
-import { AmadeusService } from './amadeus.service';
-import { FlightSearchParams } from '../models/flights-search-params.model';
+import {PackageGenerateParams} from '../models/package-generate-params.model';
+import {soccerService} from './soccer.service';
+import {convertPackageGenerateParamsToFixtureQueryParams} from '../converters/package-to-fixtures';
+import {FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema} from '../models/fixture.model';
+import {AIService} from '../ai/ai.service';
+import {generateUserMessageForFixturePriceMap} from '../ai/utils/fixture-to-system-messages';
+import {AmadeusService} from './amadeus.service';
 import {
     generateContextMessagesForPackageGeneration,
     generateFilterInvalidPackagesMessages,
 } from '../ai/utils/packages-generate-context-messages';
-import { FlightOffer } from '../models/flight-offer.model';
-import { Package, PackageArraySchema } from '../models/package.model';
-import { ENV } from '../env/env.config';
-import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
+import {FlightOffer} from '../models/flight-offer.model';
+import {Package, PackageArraySchema} from '../models/package.model';
+import {ENV} from '../env/env.config';
+import {generateFlightSearchParamsForFixtures} from '../converters/fixtures-to-flights';
 import Bluebird from 'bluebird';
 
 class PackageService {
@@ -22,7 +21,7 @@ class PackageService {
         const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
         const soccerFixturesWithPriceRange = await this.getFixturesWithTicketPriceRange(soccerFixtures);
 
-        const { flightSearchParamsArray, cityToIATACodeMap } = await generateFlightSearchParamsForFixtures(
+        const {flightSearchParamsArray, cityToIATACodeMap} = await generateFlightSearchParamsForFixtures(
             soccerFixturesWithPriceRange,
             packageSearchFilters
         );
@@ -30,7 +29,7 @@ class PackageService {
         const allFlightOffersResults = await Bluebird.map(
             flightSearchParamsArray,
             (params) => AmadeusService.searchFlights(params),
-            { concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT }
+            {concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT}
         );
 
         const allFlightOffers = allFlightOffersResults.flat();
@@ -53,7 +52,7 @@ class PackageService {
             messages: generateUserMessageForFixturePriceMap(fixtures),
         });
 
-        const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
+        const priceMap = Object.fromEntries(priceRangeList.map(({id, ...rest}) => [id, rest]));
 
         return fixtures.map((fixture) => ({
             ...fixture,
@@ -77,6 +76,7 @@ class PackageService {
             schema: PackageArraySchema,
             saveOutputToFile: true,
             messages: contextMessages,
+            maxTokens: Infinity
         });
     };
 
@@ -87,6 +87,7 @@ class PackageService {
             schema: PackageArraySchema,
             saveOutputToFile: true,
             messages: contextMessages,
+            maxTokens: Infinity
         });
     };
 }

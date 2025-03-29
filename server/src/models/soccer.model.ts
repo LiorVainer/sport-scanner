@@ -1,14 +1,5 @@
 import { z } from 'zod';
 
-// -- Country
-export const CountrySchema = z.object({
-    name: z.string(),
-    code: z.string(),
-    flag: z.string().url(),
-});
-export type Country = z.infer<typeof CountrySchema>;
-
-// -- League (reused in fixture + standalone)
 export const LeagueSchema = z.object({
     id: z.number(),
     name: z.string(),
@@ -21,7 +12,6 @@ export const LeagueSchema = z.object({
 });
 export type League = z.infer<typeof LeagueSchema>;
 
-// -- Venue (reused in fixture + team)
 export const VenueSchema = z.object({
     id: z.number().nullable().optional(),
     name: z.string(),
@@ -34,7 +24,6 @@ export const VenueSchema = z.object({
 });
 export type Venue = z.infer<typeof VenueSchema>;
 
-// -- Team (reused in fixture + teams API)
 export const TeamSchema = z.object({
     id: z.number(),
     name: z.string(),
@@ -45,4 +34,5 @@ export const TeamSchema = z.object({
     logo: z.string().url(),
     winner: z.boolean().nullable().optional(),
 });
+
 export type Team = z.infer<typeof TeamSchema>;

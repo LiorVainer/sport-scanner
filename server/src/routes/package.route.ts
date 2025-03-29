@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { packageController } from '../controllers/package.controller';
 import { authMiddleware } from '../middlewares/auth.middlware';
+import { ENV } from '../env/env.config';
 
 const router = Router();
 
-// router.use(authMiddleware);
+ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 
 /**
  * @swagger
