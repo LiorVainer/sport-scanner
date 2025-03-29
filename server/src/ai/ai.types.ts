@@ -1,6 +1,6 @@
-import {CoreMessage, CoreSystemMessage, generateObject, generateText, streamObject, streamText} from 'ai';
-import {ZodSchema} from 'zod';
-import {AIConfigParams} from './ai.const';
+import { CoreMessage, CoreSystemMessage, generateObject, generateText, streamObject, streamText } from 'ai';
+import { ZodSchema } from 'zod';
+import { AIConfigParams } from './ai.const';
 
 export type SchemaConfig<T> = {
     schema: ZodSchema<T>;
@@ -14,6 +14,7 @@ export type ObjectMethodConfig<T> = Partial<AIGlobalConfig> & {
     messages?: CoreMessage[];
     schemaDescription?: string;
     saveOutputToFile?: boolean;
+    noTokensLimit?: boolean;
 };
 
 export type TextMethodConfig = {

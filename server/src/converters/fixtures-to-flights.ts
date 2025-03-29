@@ -1,11 +1,11 @@
-import {ExtendedFixtureItem} from '../models/fixture.model';
-import {FlightSearchParams} from '../models/flights-search-params.model';
+import { ExtendedFixtureItem } from '../models/fixture.model';
+import { FlightSearchParams } from '../models/flights-search-params.model';
 import moment from 'moment';
-import {PackageGenerateParams} from '../models/package-generate-params.model';
-import {calculateAdjustedPrice} from '../utils/price.utils';
-import {FlightsService} from '../services/flight.service';
-import {CityToIATACodeMap} from '../models/iata.model';
-import {ENV} from '../env/env.config';
+import { PackageGenerateParams } from '../models/package-generate-params.model';
+import { calculateAdjustedPrice } from '../utils/price.utils';
+import { FlightsService } from '../services/flight.service';
+import { CityToIATACodeMap } from '../models/iata.model';
+import { ENV } from '../env/env.config';
 
 const buildFlightSearchParams = (
     fixture: ExtendedFixtureItem,
@@ -30,38 +30,27 @@ const buildFlightSearchParams = (
 };
 
 export const generateSyncFlightSearchParamsForOneFixture = (
-    fixture: ExtendedFixtureItem,
+    fixtureItem: ExtendedFixtureItem,
     generateParams: PackageGenerateParams,
     iataCodesMap: CityToIATACodeMap
 ): FlightSearchParams => {
-    const originCity = generateParams.originCity;
-    const destinationCity = fixture.fixture.venue.city;
+    const destinationCity = fixtureItem.fixture.venue.city;
 
-    const origin = iataCodesMap[originCity];
+    const origin = generateParams.originIATA;
     const destination = iataCodesMap[destinationCity];
-
-    if (!origin && !destination) {
-        throw new Error(`Could not find IATA codes for cities: ${originCity}, ${destinationCity}`);
-    }
-
-    if (!origin) {
-        throw new Error(`Could not find IATA code for city: ${originCity}`);
-    }
 
     if (!destination) {
         throw new Error(`Could not find IATA code for city: ${destinationCity}`);
     }
 
-    return buildFlightSearchParams(fixture, generateParams, origin, destination);
+    return buildFlightSearchParams(fixtureItem, generateParams, origin, destination);
 };
 
 export const generateFlightSearchParamsForFixtures = async (
     fixtures: ExtendedFixtureItem[],
     generateParams: PackageGenerateParams
 ): Promise<{ flightSearchParamsArray: FlightSearchParams[]; cityToIATACodeMap: CityToIATACodeMap }> => {
-    const uniqueCities = [
-        ...new Set([...fixtures.map((fixture) => fixture.fixture.venue.city), generateParams.originCity]),
-    ];
+    const uniqueCities = [...new Set([...fixtures.map((fixture) => fixture.fixture.venue.city)])];
 
     const cityToIATACodeMap = await FlightsService.getCityToIATACodeMap(uniqueCities);
 
@@ -69,5 +58,5 @@ export const generateFlightSearchParamsForFixtures = async (
         generateSyncFlightSearchParamsForOneFixture(fixture, generateParams, cityToIATACodeMap)
     );
 
-    return {flightSearchParamsArray, cityToIATACodeMap};
+    return { flightSearchParamsArray, cityToIATACodeMap };
 };
