@@ -16,7 +16,7 @@
     flex-direction: column;
     gap: 1.5rem;
     transition: box-shadow 0.2s ease;
-    max-width: 75%;
+    max-width: 60%;
     min-width: 31.5%;
     margin:auto;
     overflow: hidden;
@@ -40,7 +40,7 @@
   flex-direction: row;
   align-items: center;
   overflow-x: auto;
-  padding-bottom: 3rem; 
+  padding-bottom: 1rem; 
   gap: 3rem;
   scroll-behavior: smooth;
   scrollbar-width: thin;
