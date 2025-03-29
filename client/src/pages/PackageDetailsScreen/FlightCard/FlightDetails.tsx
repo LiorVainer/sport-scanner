@@ -11,9 +11,10 @@ interface FlightDetailsProps {
     to: string;
     departureDate: string;
     price: number;
+    linkForTicket: string;
 }
 
-const FlightDetails = ({ from, to, departureDate, price }: FlightDetailsProps) => {
+const FlightDetails = ({ from, to, departureDate, price,linkForTicket }: FlightDetailsProps) => {
     return (
         <div className={styles['flight-details-container']}>
             <div className={styles['flight-route-info']}>
@@ -31,9 +32,11 @@ const FlightDetails = ({ from, to, departureDate, price }: FlightDetailsProps) =
                     <Text className={styles['price-text']}>from</Text>
                     <Text strong className={styles['price-amount']}>{price}$</Text> {/* add currency */}
                 </div>
-                <Button type="primary" className={styles['flight-ticket-button']}>
+                <a href={linkForTicket} target="_blank" rel="noopener noreferrer">
+                    <Button type="primary" className={styles['flight-ticket-button']}>
                     Flight Tickets
-                </Button>
+                    </Button>
+                </a>
             </div>
         </div>
     );

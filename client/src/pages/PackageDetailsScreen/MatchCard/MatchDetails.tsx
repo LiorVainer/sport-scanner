@@ -1,25 +1,28 @@
 import React from 'react';
 import { Typography, Button, Tag } from 'antd';
-import { CalendarOutlined, TrophyOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { TrophyOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import styles from './scss/match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 
 const { Text } = Typography;
 
 interface MatchDetailsProps {
-    image: string;
+    homeTeamImage: string;
+    awayTeamImage: string;
     homeTeam: string;
     awayTeam: string;
     stadium: string;
     league: string;
     matchDate: string;
     price: number;
+    linkForTicket: string;
 }
 
-const MatchDetails = ({ image, homeTeam, awayTeam, stadium, league, matchDate, price }: MatchDetailsProps) => {
+const MatchDetails = ({ homeTeamImage,awayTeamImage, homeTeam, awayTeam, stadium, league, matchDate, price,linkForTicket }: MatchDetailsProps) => {
     return (
         <div className={styles['match-details-container']}>
-            <img src={image} alt={`${homeTeam} vs ${awayTeam}`} className={styles['match-image']} />
+            <img src={homeTeamImage} alt={homeTeam} className={styles['match-image']} />
+            <img src={awayTeamImage} alt={awayTeam} className={styles['match-image']} />
             <div className={styles['match-info']}>
                 <Text strong className={styles['match-teams']}>
                     {`${homeTeam} VS ${awayTeam}`}
@@ -48,9 +51,11 @@ const MatchDetails = ({ image, homeTeam, awayTeam, stadium, league, matchDate, p
                         <Text className={styles['price-text']}>from</Text>
                         <Text strong className={styles['price-amount']}>{price}$</Text>
                     </div>
+                    <a href={linkForTicket} target="_blank" rel="noopener noreferrer">
                     <Button type="primary" className={styles['match-ticket-button']}>
                         Match Tickets
                     </Button>
+                </a>
                 </div>
             </div>
         </div>

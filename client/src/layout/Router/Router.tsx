@@ -5,7 +5,9 @@ import { Layout } from '@/layout/Layout';
 import { ROUTES } from '@/constants/routes.const';
 import { ProtectedRoutes } from '@/layout/Router/ProtectedRoutes.tsx';
 import { AuthPage } from '@pages/AuthPage';
-import PackageDetails from '@/components/PackageDetails/PackageDetails';
+import { PackageDetailsScreen } from '@/pages/PackageDetailsScreen';
+import { PackagesScreen } from '@/pages/PackagesScreen';
+
 
 export interface RouterProps {}
 
@@ -18,8 +20,8 @@ export const Router = (_props: RouterProps) => {
                     <Route path={ROUTES.MATCH_EXPERIENCES} element={<MatchExperiencesCatalogScreen mode="all" />} />
                     <Route path={`${ROUTES.MATCH_EXPERIENCES}/:id`} element={<MatchExperienceDetailsScreen />} />
                     <Route path={ROUTES.MY_EXPERIENCES} element={<MatchExperiencesCatalogScreen mode="my" />} />
-                    <Route path={ROUTES.PACKAGES} element={<div />} />
-                    <Route path={`${ROUTES.PACKAGES}/:id`} element={<PackageDetails />} />
+                    <Route path={ROUTES.PACKAGES} element={<PackagesScreen/>} />
+                    <Route path={`${ROUTES.PACKAGES}/:id`} element={<PackageDetailsScreen />} />
                 </Route>
             </Route>
         </Routes>

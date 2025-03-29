@@ -8,36 +8,44 @@ interface MatchCardProps {
     homeTeam: string;
     awayTeam: string;
     location: string;
-    departureDate: string;
+    from: string;
+    to: string;
     matchDate: string;
-    imagePath: string;
+    homeTeamImage: string;
+    awayTeamImage: string;
     stadium: string;
     league: string;
     price: number;
+    linkForTicket: string;
 }
 
 const MatchCard = ({
     label,
     location,
-    departureDate,
-    imagePath,
+    from,
+    to,
+    homeTeamImage,
+    awayTeamImage,
     homeTeam,
     awayTeam,
     stadium,
     league,
     matchDate,
     price,
+    linkForTicket
 }: MatchCardProps) => (
     <div className={styles['match-card-container']}>
-        <MatchLabel label={label} location={location} departureDate={departureDate} matchDate={matchDate} />
+        <MatchLabel label={label} location={location} from={from} to={to} />
         <MatchDetails
-            image={imagePath}
+            homeTeamImage={homeTeamImage}
+            awayTeamImage={awayTeamImage}
             homeTeam={homeTeam}
             awayTeam={awayTeam}
             stadium={stadium}
             league={league}
             matchDate={matchDate}
             price={price}
+            linkForTicket={linkForTicket}
         />
     </div>
 );

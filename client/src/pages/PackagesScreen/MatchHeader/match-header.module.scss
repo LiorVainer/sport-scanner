@@ -1,0 +1,27 @@
+.match-header-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.location-tag {
+    margin-right: 1.25rem;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0.4rem;
+    border: none;
+    color: #2F4F6F
+}
+
+.match-dates {
+    font-size: 16px;
+    color: #000;
+    font-weight: 700;
+}
+
+.arrow-icon {
+    color: #000;
+    margin-right: 0.2rem;
+    font-size: 12px;
+}
