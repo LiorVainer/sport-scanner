@@ -2,6 +2,7 @@ import { CoreMessage } from 'ai';
 import { ExtendedFixtureItem } from '../../models/fixture.model';
 import { message } from './message.utils';
 import { FlightOffer } from '../../models/flight-offer.model';
+import { Package } from '../../models/package.model';
 
 const introMessage = () =>
     message.system(
@@ -184,4 +185,33 @@ export const generateContextMessagesForPackageGeneration = (
         ...flightMessages(flightOffers, fixtures, originIataCode),
         rulesMessage(maxPackages),
     ];
+};
+
+export const generateFilterInvalidPackagesMessages = (packages: Package[]): CoreMessage[] => {
+    const messages: CoreMessage[] = [];
+
+    messages.push(
+        message.system(
+            `You are a travel assistant verifying the validity of generated travel packages that combine soccer matches and flights.`
+        )
+    );
+
+    messages.push(
+        message.system(`Here are the rules that MUST be enforced for a valid travel package:
+- A match must never occur after the final return flight.
+- There must be a flight before each match that gets the traveler to the match city.
+- If multiple matches exist in different cities, there must be a connecting flight between those cities.
+- The last flight must return the traveler to the origin city.
+- Flights and matches must follow chronological order.`)
+    );
+
+    messages.push(message.system(`Here are the generated packages (raw JSON):\n${JSON.stringify(packages, null, 2)}`));
+
+    messages.push(
+        message.user(
+            `From the above, return only the valid packages that fully satisfy the rules. Discard any invalid ones.`
+        )
+    );
+
+    return messages;
 };

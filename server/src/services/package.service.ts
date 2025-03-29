@@ -6,11 +6,15 @@ import { AIService } from '../ai/ai.service';
 import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { AmadeusService } from './amadeus.service';
 import { FlightSearchParams } from '../models/flights-search-params.model';
-import { generateContextMessagesForPackageGeneration } from '../ai/utils/packages-generate-context-messages';
+import {
+    generateContextMessagesForPackageGeneration,
+    generateFilterInvalidPackagesMessages,
+} from '../ai/utils/packages-generate-context-messages';
 import { FlightOffer } from '../models/flight-offer.model';
 import { Package, PackageArraySchema } from '../models/package.model';
 import { ENV } from '../env/env.config';
 import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
+import Bluebird from 'bluebird';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
@@ -23,17 +27,23 @@ class PackageService {
             packageSearchFilters
         );
 
-        const flightOffersSearchPromises = flightSearchParamsArray.map((params) =>
-            AmadeusService.searchFlights(params)
+        const allFlightOffersResults = await Bluebird.map(
+            flightSearchParamsArray,
+            (params) => AmadeusService.searchFlights(params),
+            { concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT }
         );
 
-        const flightOffersNested: FlightOffer[][] = await Promise.all(flightOffersSearchPromises);
-
-        const allFlightOffers = flightOffersNested.flat();
+        const allFlightOffers = allFlightOffersResults.flat();
 
         const originIataCode = cityToIATACodeMap[packageSearchFilters.originCity];
 
-        return this.generatePackageCombinations(soccerFixturesWithPriceRange, allFlightOffers, originIataCode);
+        const generatedPackages = await this.generatePackageCombinations(
+            soccerFixturesWithPriceRange,
+            allFlightOffers,
+            originIataCode
+        );
+
+        return await this.filterInvalidPackages(generatedPackages);
     };
 
     private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
@@ -62,6 +72,16 @@ class PackageService {
             ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
             originIATACode
         );
+
+        return await AIService.generateObject({
+            schema: PackageArraySchema,
+            saveOutputToFile: true,
+            messages: contextMessages,
+        });
+    };
+
+    private filterInvalidPackages = async (packages: Package[]) => {
+        const contextMessages = generateFilterInvalidPackagesMessages(packages);
 
         return await AIService.generateObject({
             schema: PackageArraySchema,

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PriceRangeSchema } from './price-range.model';
+import { ENV } from '../env/env.config';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
@@ -10,7 +11,7 @@ export const FlightSchema = z.object({
     id: z.number().describe('Unique identifier of the flight'),
     origin: CityInfoSchema.describe('Origin city information'),
     destination: CityInfoSchema.describe('Destination city information'),
-    price: z.number().describe('Total flight price in EUR'),
+    price: z.number().describe(`Total flight price in ${ENV.CURRENCY_CODE}`),
     departureDate: z.string().describe('Flight departure date'),
     searchFlightTicketsLink: z
         .string()

@@ -15,7 +15,7 @@ export const LeagueSchema = z.object({
     type: z.string().optional(), // optional for flexibility
     logo: z.string().url(),
     country: z.string().optional(),
-    flag: z.string().optional(),
+    flag: z.string().nullable().optional(),
     season: z.number().optional(),
     round: z.string().optional(),
 });
@@ -23,7 +23,7 @@ export type League = z.infer<typeof LeagueSchema>;
 
 // -- Venue (reused in fixture + team)
 export const VenueSchema = z.object({
-    id: z.number(),
+    id: z.number().nullable().optional(),
     name: z.string(),
     address: z.string().optional(),
     city: z.string(),

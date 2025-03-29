@@ -1,6 +1,7 @@
 import { CoreSystemMessage } from 'ai';
 import { message, system } from './message.utils';
 import { FixtureItem } from '../../models/fixture.model';
+import { ENV } from '../../env/env.config';
 
 export const generateSystemMessagesFromFixture = (fixture: FixtureItem): CoreSystemMessage[] => [
     message.system(`This is a soccer match between ${fixture.teams.home.name} and ${fixture.teams.away.name}.`),
@@ -23,5 +24,8 @@ export const generateUserMessageForFixturePriceMap = (fixtures: FixtureItem[]) =
         );
     });
 
-    return [message.user(`Estimate the ticket price range (in EUR) for the following soccer fixtures:\n`), ...lines];
+    return [
+        message.user(`Estimate the ticket price range (in ${ENV.CURRENCY_CODE}) for the following soccer fixtures:\n`),
+        ...lines,
+    ];
 };

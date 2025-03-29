@@ -13,7 +13,7 @@ import qs from 'qs';
 const currSeason = calculateCurrentSeason(new Date());
 
 const soccerApiClient = axios.create({
-    baseURL: 'https://v3.football.api-sports.io',
+    baseURL: ENV.SOCCER_API_BASE_URL,
     headers: {
         'x-apisports-key': ENV.SOCCER_API_KEY,
     },
