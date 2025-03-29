@@ -51,11 +51,11 @@ const MatchDetails = ({
                         <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>{league}</Tag>
                     </div>
                     <div className={styles.prices}>
-                        <Text className={styles['price-range']}>
+                        <Text className={styles.priceRange}>
                             <img src="../public/flight.png" alt="stadium" className={styles.icon} />
                             {flightPrice}
                         </Text>
-                        <Text className={styles['price-range']}>
+                        <Text className={styles.priceRange}>
                             <img src="../public/stadium.png" alt="stadium" className={styles.icon} />
                             {matchesPrice}
                         </Text>

@@ -1,8 +1,8 @@
-.package-page {
+.packagePage {
     background-color: #f0f2f5;
 }
 
-.package-header {
+.packageHeader {
     display: flex;
     align-items: stretch;
     width: 73%;
@@ -10,7 +10,7 @@
     margin-top: 2rem;
 }
 
-.back-icon {
+.backIcon {
     font-size: 20px;
     cursor: pointer;
     align-self: start;
@@ -18,7 +18,7 @@
     margin-right: 2rem;
 }
 
-.package-info {
+.packageInfo {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -27,7 +27,7 @@
     max-width: 81%;
 }
 
-.package-title {
+.packageTitle {
     font-weight: 900;
     font-style: italic;
     font-size: 42px;
@@ -37,27 +37,27 @@
     vertical-align: middle;    
 }
 
-.package-description {
+.packageDescription {
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;  
     color: #3a4d63;
 }
 
-.package-details {
+.packageDetails {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 2rem;
 }
 
-.package-details-container {
+.packageDetailsContainer {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.package-date {
+.packageDate {
     font-size: 20px;
     color: #2f4f6f;
     font-weight: bold;
@@ -66,18 +66,18 @@
     gap: 0.5rem;
 }
 
-.calendar-icon {
+.calendarIcon {
     width: 14px;
     height: 14px;
 }
 
-.package-price {
+.packagePrice {
     font-size: 18px;
     font-weight: bold;
     color: #1d3557;
 }
 
-.save-button {
+.saveButton {
     font-size: 1rem;
     font-weight: 500;
     padding: 1.3rem;

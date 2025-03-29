@@ -34,7 +34,7 @@ const MatchCard = ({
     price,
     linkForTicket
 }: MatchCardProps) => (
-    <div className={styles['match-card-container']}>
+    <div className={styles.matchCardContainer}>
         <MatchLabel label={label} location={location} from={from} to={to} />
         <MatchDetails
             homeTeamImage={homeTeamImage}

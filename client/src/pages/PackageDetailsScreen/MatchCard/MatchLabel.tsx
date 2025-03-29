@@ -14,12 +14,12 @@ interface MatchLabelProps {
 }
 
 const MatchLabel = ({ label, location, from, to }: MatchLabelProps) => (
-    <div className={styles['match-label-container']}>
-        <Tag className={styles['match-tag']}>
+    <div className={styles.matchLabelContainer}>
+        <Tag className={styles.matchTag}>
             {label}
         </Tag>
-        <Text strong className={styles['match-location']}>
-            {location} ({formattedDate(from)} <ArrowRightOutlined className={styles['arrow-icon']} />{' '}
+        <Text strong className={styles.matchLocation}>
+            {location} ({formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} />{' '}
             {formattedDate(to)})
         </Text>
     </div>

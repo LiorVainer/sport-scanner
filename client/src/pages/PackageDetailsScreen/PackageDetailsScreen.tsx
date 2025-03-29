@@ -1,4 +1,3 @@
-// PackageDetailsScreen.tsx
 import { Typography, Button } from 'antd';
 import {
   PushpinOutlined,
@@ -37,29 +36,29 @@ export const PackageDetailsScreen = () => {
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
 
   return (
-    <div className={styles['package-page']}>
-      <div className={styles['package-header']}>
+    <div className={styles.packagePage}>
+      <div className={styles.packageHeader}>
         <Link to={ROUTES.PACKAGES}>
-          <ArrowLeftOutlined className={styles['back-icon']} />
+          <ArrowLeftOutlined className={styles.backIcon} />
         </Link>
 
-        <div className={styles['package-info']}>
-          <Title className={styles['package-title']}>{pkg.title}</Title>
-          <Text className={styles['package-description']}>{pkg.description}</Text>
+        <div className={styles.packageInfo}>
+          <Title className={styles.packageTitle}>{pkg.title}</Title>
+          <Text className={styles.packageDescription}>{pkg.description}</Text>
         </div>
 
-        <div className={styles['package-details']}>
-          <div className={styles['package-details-container']}>
-            <Text className={styles['package-date']}>
-              <img src="/public/calendar.png" alt="calendar" className={styles['calendar-icon']} />
-              {formattedDate(pkg.fromDate)} <ArrowRightOutlined className={styles['arrow-icon']} />{' '}
+        <div className={styles.packageDetails}>
+          <div className={styles.packageDetailsContainer}>
+            <Text className={styles.packageDate}>
+              <img src="/public/calendar.png" alt="calendar" className={styles.calendarIcon} />
+              {formattedDate(pkg.fromDate)} <ArrowRightOutlined className={styles.arrowIcon} />{' '}
               {formattedDate(pkg.toDate)}
             </Text>
-            <Text className={styles['package-price']}>
+            <Text className={styles.packagePrice}>
               <em>from <strong>{pkg.totalPrice.min}$</strong></em>
             </Text>
           </div>
-          <Button type="primary" className={styles['save-button']}>
+          <Button type="primary" className={styles.saveButton}>
             <PushpinOutlined /> Add To Saved
           </Button>
         </div>

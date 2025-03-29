@@ -1,4 +1,4 @@
-.match-label-container {
+.matchLabelContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -6,7 +6,7 @@
     border-radius: 0.5rem;
 }
 
-.match-tag {
+.matchTag {
     margin-right: 1.25rem;
     font-size: 20px;
     font-weight: 600;
@@ -16,13 +16,13 @@
     color: white
 }
 
-.match-location {
+.matchLocation {
     font-size: 22px;
     color: #000;
     font-weight: 700;
 }
 
-.arrow-icon {
+.arrowIcon {
     color: #000;
     font-size: 20px;
 }

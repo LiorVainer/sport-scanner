@@ -14,11 +14,11 @@ interface MatchHeaderProps {
 
 const MatchHeader = ({ from, to, location }:MatchHeaderProps) => {
     return (
-        <div className={styles['match-header-container']}>
-            <Text strong className={styles['match-dates']}>
-                {formattedDate(from)} <ArrowRightOutlined className={styles['arrow-icon']} />{formattedDate(to)}
+        <div className={styles.matchHeaderContainer}>
+            <Text strong className={styles.matchDates}>
+                {formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} />{formattedDate(to)}
             </Text>
-            <Tag icon={<EnvironmentOutlined />} className={styles['location-tag']}>
+            <Tag icon={<EnvironmentOutlined />} className={styles.locationTag}>
                 {location}
             </Tag>
         </div>

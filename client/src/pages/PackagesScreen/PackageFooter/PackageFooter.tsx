@@ -22,17 +22,17 @@ const PackageFooter = ({ packageStartDate, packageEndDate,packageMinPrice,packag
 
     return (
         <div className={styles.footer}>
-            <div className={styles['footer-range-container']}>
+            <div className={styles.footerRangeContainer}>
                 <div>
                     <CalendarOutlined className={styles.icon}/>
                     <Text strong className={styles.range}>
-                        {formattedDate(packageStartDate)} <ArrowRightOutlined className={styles['arrow-icon']} />{formattedDate(packageEndDate)}
+                        {formattedDate(packageStartDate)} <ArrowRightOutlined className={styles.arrowIcon} />{formattedDate(packageEndDate)}
                     </Text>
                 </div>
                 <div>
                     <DollarOutlined className={styles.icon}/>
                     <Text strong className={styles.range}>
-                        {packageMinPrice}$ <ArrowRightOutlined className={styles['arrow-icon']} />{packageMaxPrice}$
+                        {packageMinPrice}$ <ArrowRightOutlined className={styles.arrowIcon} />{packageMaxPrice}$
                     </Text>
                 </div>
             </div>
