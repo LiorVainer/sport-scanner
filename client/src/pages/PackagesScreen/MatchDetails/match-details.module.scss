@@ -19,7 +19,6 @@
     border-radius: 1px;
   }
   
-  /* === Left Image === */
   .image {
     width: 90px;
     height: 100px;
@@ -27,7 +26,6 @@
     object-fit: cover;
   }
   
-  /* === Right Side (Text + Tags) === */
   .details {
     flex: 1;
     display: flex;
@@ -35,7 +33,6 @@
     gap: 0.3rem;
   }
   
-  /* Top row: Match + Date */
   .titleRow {
     display: flex;
     justify-content: space-between;
@@ -48,14 +45,12 @@
     color: #2f4f6f;
   }
   
-  /* Date on the right */
   .matchDate {
     font-size: 14px;
     color: #6b7280;
     font-weight: 500;
   }
   
-  /* Tags: stadium + league */
   .meta {
     display: flex;
     gap: 0.5rem;
@@ -80,7 +75,6 @@
     border: none;
   }
   
-  /* Prices below */
   .prices {
     display: flex;
     gap: 2rem;
