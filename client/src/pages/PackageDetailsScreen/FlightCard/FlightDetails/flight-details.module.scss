@@ -1,0 +1,73 @@
+.flightDetailsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flightRouteInfo {
+    display: flex;
+    align-items: center;
+}
+
+.arrowIcon {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.flightRoute {
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.flightDate {
+    font-size: 0.875rem;
+    color: #8c8c8c;
+    margin-left: 0.5rem;
+}
+
+.flightPriceInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.priceContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+}
+
+.priceText {
+    font-size: 15px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.priceAmount {
+    font-size: 18px;
+    color: #2f4f6f;
+    font-weight: bold;
+}
+
+.flightTicketButton {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 1.3rem 2.27rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    width: fit-content;
+}
+
+.airplaneIcon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    color: #000;
+}

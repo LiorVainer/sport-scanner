@@ -1,0 +1,28 @@
+.matchLabelContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f0f2f5;
+    border-radius: 0.5rem;
+}
+
+.matchTag {
+    margin-right: 1.25rem;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 0.4rem;
+    border-radius: 10px;
+    background-color: #2f4f6f;
+    color: white;
+}
+
+.matchLocation {
+    font-size: 22px;
+    color: #000;
+    font-weight: 700;
+}
+
+.arrowIcon {
+    color: #000;
+    font-size: 20px;
+}

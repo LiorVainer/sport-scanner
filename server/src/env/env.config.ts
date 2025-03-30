@@ -6,7 +6,6 @@ dotenv.config();
 export const EnvSchema = z.object({
     PORT: z.coerce.number().default(3000),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-    BASE_URL: z.string(),
 
     DB_CONNECT: z.string().url({ message: 'DB_CONNECT must be a valid MongoDB URL' }),
 

@@ -1,0 +1,42 @@
+.skeletonCard {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 75%;
+    min-width: 31.5%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.skeletonMatches {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 3rem;
+    gap: 3rem;
+}
+
+.skeletonMatchItem {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+}
+
+.skeletonFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+.skeletonArrowIcon {
+    font-size: 28px;
+    color: #2f4f6f;
+    flex-shrink: 0;
+}
