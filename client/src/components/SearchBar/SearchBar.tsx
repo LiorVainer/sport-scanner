@@ -22,7 +22,7 @@ const MIN_PRICE = 100;
 const MAX_PRICE = 1000;
 
 const SearchBar = () => {
-  const [location, setLocation] = useState<string>();
+  const [originCountry, setOriginCountry] = useState<string>();
   const [dateRange, setDateRange] = useState<RangeValue<dayjs.Dayjs>>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([MIN_PRICE, MAX_PRICE]);
   const [country, setCountry] = useState<string>();
@@ -52,7 +52,7 @@ const SearchBar = () => {
   );
 
   const handleSearch = () => {
-    console.log({ location, dateRange, priceRange, country, league, team });
+    console.log({ originCountry, dateRange, priceRange, country, league, team });
   };
 
   return (
@@ -109,10 +109,10 @@ const SearchBar = () => {
         }}
       >
         <Select
-          placeholder="Select Location"
+          placeholder="Select Origin Country"
           style={{ borderRadius: 32, width: 220 }}
-          value={location}
-          onChange={(val) => setLocation(val)}
+          value={originCountry}
+          onChange={(val) => setOriginCountry(val)}
           suffixIcon={<EnvironmentOutlined />}
         >
           {countries.map((c) => (
