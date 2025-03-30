@@ -16,7 +16,7 @@ export const Navbar = () => {
 
     return (
         <nav className={classes.navbar}>
-            <Link to={ROUTES.MATCH_EXPERIENCES} className={classes.brand}>
+            <Link to={ROUTES.HOME_SCREEN} className={classes.brand}>
                 <FontAwesomeIcon icon={faFutbol} />
                 <h1 className={classes.title}>Sport Scanner</h1>
             </Link>

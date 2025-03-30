@@ -88,7 +88,7 @@ export const MatchExperiencesCatalogScreen = ({ mode }: MatchExperiencesCatalogS
                             {matchExperiences.map((matchExperience) => (
                                 <div
                                     className={classes.matchCardContainer}
-                                    onClick={() => navigate(`${ROUTES.MATCH_EXPERIENCES}/${matchExperience._id}`)}
+                                    // onClick={() => navigate(`${ROUTES.MATCH_EXPERIENCES}/${matchExperience._id}`)}
                                 >
                                     {matchExperience.picture && (
                                         <img
