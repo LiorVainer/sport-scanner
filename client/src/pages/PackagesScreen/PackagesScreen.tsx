@@ -2,27 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './packages-screen.module.scss';
 import { Screen } from '@/components/Screen';
-import { Match, Package } from '@/models/package.model';
+import { Match, Package, PackageGenerateParams } from '@/models/package.model';
 import { PackageSkeleton } from './PackageSkeleton/PackageSkeleton';
 import { MatchDetails } from './MatchDetails/MatchDetails';
 import { PackageFooter } from './PackageFooter/PackageFooter';
+import { useQuery } from '@tanstack/react-query';
+import { useLocation, useSearchParams } from 'react-router';
+import { PackageService } from '@/api/services/package.service';
 
 export const PackagesScreen = () => {
-    const [loading, setLoading] = useState(true);
-    const [packages, setPackages] = useState<Package[]>([]);
+    const location = useLocation();
+    const formValues = location.state as PackageGenerateParams;
 
-    useEffect(() => {
-        setTimeout(() => {
-            import('./packageData.json').then((module) => {
-                setPackages(module.default);
-                setLoading(false);
-            });
-        }, 2000);
-    }, []);
+    const { country, ...rest } = formValues;
+    // Fetch packages using React Query
+    const {
+        data: packages = [],
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ['packages', formValues],
+        queryFn: () => PackageService.getPackages(rest),
+        enabled: !!formValues?.date, // Ensure valid data before fetching
+    });
+
+    if (error) {
+        return <div className={styles.error}>Error loading packages.</div>;
+    }
 
     return (
         <Screen className={styles.page}>
-            {loading ? (
+            {isLoading ? (
                 <PackageSkeleton />
             ) : (
                 packages.map((singlePackage) => (

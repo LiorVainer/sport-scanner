@@ -1,70 +1,61 @@
 import React, { useState } from 'react';
-import { DatePicker, Slider, Select, Button } from 'antd';
+import { DatePicker, Slider, Select, Button, AutoComplete } from 'antd';
 import dayjs from 'dayjs';
-import { EnvironmentOutlined, CalendarOutlined, DollarOutlined, TrophyOutlined, TeamOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, CalendarOutlined, TrophyOutlined, TeamOutlined, DollarOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
 import { calculateCurrentSeason } from '@/utils/date.utils';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
 import classes from './search-bar.module.scss';
 import { ROUTES } from '@/constants/routes.const';
 import { useNavigate } from 'react-router';
-import { AutoComplete } from 'antd';
 import { GeoService } from '@/api/services/geo.service';
+import { PackageGenerateParams, PackageGenerateParamsSchema } from '@/models/package.model';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const SearchFormSchema = z.object({
-    originAirport: z.string().optional(),
-    dateRange: z.any().optional(),
-    priceRange: z.tuple([z.number(), z.number()]).optional(),
-    country: z.string().optional(),
-    league: z.string().optional(),
-    team: z.string().optional(),
-});
-
-type SearchFormValues = z.infer<typeof SearchFormSchema>;
-
-const DEFAULT_VALUES: SearchFormValues = {
-    originAirport: undefined,
-    dateRange: null,
-    priceRange: [MIN_PRICE, MAX_PRICE],
-    country: undefined,
-    league: undefined,
-    team: undefined,
-};
-
 const SearchBar = () => {
     const [leagueId, setLeagueId] = useState<number>();
     const [originKeyword, setOriginKeyword] = useState('');
+    const navigate = useNavigate();
+
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
         queryFn: async () => {
-            if (originKeyword.length < 3 || originKeyword.length > 50) {
-                return [];
-            }
+            if (originKeyword.length < 3 || originKeyword.length > 50) return [];
             return GeoService.getCities(originKeyword);
         },
         enabled: originKeyword.length >= 3 && originKeyword.length <= 50,
     });
 
-    const navigate = useNavigate();
-
-    const { control, handleSubmit, watch, setValue } = useForm<SearchFormValues>({
-        defaultValues: DEFAULT_VALUES,
-        resolver: zodResolver(SearchFormSchema),
+    const {
+        control,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors },
+    } = useForm<PackageGenerateParams>({
+        resolver: zodResolver(PackageGenerateParamsSchema),
+        defaultValues: {
+            originIATA: '',
+            date: undefined,
+            price: { min: MIN_PRICE, max: MAX_PRICE },
+            league: undefined,
+            team: undefined,
+        },
     });
 
-    const watchDateRange = watch('dateRange');
+    console.log(errors);
+
+    const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
 
-    const selectedDate = watchDateRange?.[0]?.toDate();
+    const selectedDate = watchDate?.from;
 
     const { data: countries = [] } = useQuery({
         queryKey: ['countries'],
@@ -75,13 +66,14 @@ const SearchBar = () => {
 
     const { data: teams = [] } = useQueryOnDefinedParam(
         'teams',
-        leagueId && selectedDate ? { leagueId, season: calculateCurrentSeason(selectedDate) } : undefined,
+        leagueId && selectedDate ? { leagueId, season: calculateCurrentSeason(new Date(selectedDate)) } : undefined,
         ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
     );
 
-    const onSubmit = (values: SearchFormValues) => {
+    const onSubmit = (values: PackageGenerateParams) => {
         console.log('Submitted form data:', values);
-        navigate(`${ROUTES.PACKAGES}/results`);
+
+        navigate(`${ROUTES.PACKAGES}/results`, { state: values });
     };
 
     return (
@@ -95,7 +87,7 @@ const SearchBar = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className={classes.contentDiv}>
                     <Controller
-                        name="originAirport"
+                        name="originIATA"
                         control={control}
                         render={({ field }) => (
                             <AutoComplete
@@ -103,11 +95,16 @@ const SearchBar = () => {
                                 allowClear
                                 className={classes.originCountry}
                                 placeholder="Select Origin Airport"
-                                onSearch={(value) => {
-                                    setOriginKeyword(value);
+                                onSearch={(value) => setOriginKeyword(value)}
+                                onSelect={(value) => {
+                                    // This will only store the IATA code (value passed from the select handler)
+                                    const selectedCity = airportSuggestions.find(
+                                        (city) => `${city.name} (${city.iataCode})` === value
+                                    );
+                                    field.onChange(selectedCity?.iataCode || ''); // Store only the IATA code
                                 }}
                                 options={airportSuggestions.map((city) => ({
-                                    value: `${city.name}${city.iataCode ? ` (${city.iataCode})` : ''}`,
+                                    value: `${city.name} (${city.iataCode})`, // Show name and IATA code
                                 }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                             />
@@ -115,12 +112,19 @@ const SearchBar = () => {
                     />
 
                     <Controller
-                        name="dateRange"
+                        name="date"
                         control={control}
                         render={({ field }) => (
                             <RangePicker
                                 className={classes.dateRange}
-                                {...field}
+                                onChange={(dates) => {
+                                    field.onChange(
+                                        dates && dates[0] && dates[1]
+                                            ? { from: dates[0].toISOString(), to: dates[1].toISOString() }
+                                            : undefined
+                                    );
+                                }}
+                                value={field.value ? [dayjs(field.value.from), dayjs(field.value.to)] : undefined}
                                 placeholder={['Start Date', 'End Date']}
                                 suffixIcon={<CalendarOutlined />}
                             />
@@ -128,11 +132,11 @@ const SearchBar = () => {
                     />
 
                     <Controller
-                        name="priceRange"
+                        name="price"
                         control={control}
                         render={({ field }) => (
                             <Select
-                                value={`${field.value?.[0]} - ${field.value?.[1]}`}
+                                value={`${field.value?.min} - ${field.value?.max}`}
                                 className={classes.priceRange}
                                 suffixIcon={<DollarOutlined />}
                                 dropdownRender={() => (
@@ -141,14 +145,14 @@ const SearchBar = () => {
                                             range
                                             min={MIN_PRICE}
                                             max={MAX_PRICE}
-                                            value={field.value}
-                                            onChange={(val) => field.onChange(val as [number, number])}
+                                            value={[field.value?.min ?? MIN_PRICE, field.value?.max ?? MAX_PRICE]}
+                                            onChange={(val) => field.onChange({ min: val[0], max: val[1] })}
                                             tooltip={{ formatter: (val) => `$${val}` }}
                                         />
                                     </div>
                                 )}
                             >
-                                <Option value="budget">{`${field.value?.[0]} - ${field.value?.[1]}`}</Option>
+                                <Option value="budget">{`${field.value?.min} - ${field.value?.max}`}</Option>
                             </Select>
                         )}
                     />
@@ -163,8 +167,8 @@ const SearchBar = () => {
                                 {...field}
                                 onChange={(val) => {
                                     field.onChange(val);
-                                    setValue('league', '');
-                                    setValue('team', '');
+                                    setValue('league', undefined);
+                                    setValue('team', undefined);
                                     setLeagueId(undefined);
                                 }}
                                 suffixIcon={<EnvironmentOutlined />}
@@ -189,7 +193,7 @@ const SearchBar = () => {
                                 disabled={!watchCountry}
                                 onChange={(val, option: any) => {
                                     field.onChange(val);
-                                    setValue('team', '');
+                                    setValue('team', undefined);
                                     setLeagueId(option?.id);
                                 }}
                                 suffixIcon={<TrophyOutlined />}
