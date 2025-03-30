@@ -19,6 +19,8 @@ import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
 import classes from './search-bar.module.scss';
 import { ROUTES } from '@/constants/routes.const';
 import { useNavigate } from 'react-router';
+import { AutoComplete } from 'antd';
+import { GeoService } from '@/api/services/geo.service';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -56,6 +58,17 @@ const DEFAULT_VALUES: SearchFormValues = {
 
 const SearchBar = () => {
   const [leagueId, setLeagueId] = useState<number>();
+  const [originKeyword, setOriginKeyword] = useState('');
+  const {
+    data: airportSuggestions = [],
+    refetch: refetchAirports,
+    isLoading: isAirportLoading,
+  } = useQuery({
+    queryKey: ['originAirports', originKeyword],
+    queryFn: () => GeoService.getCities(originKeyword),
+    enabled: false,
+  });
+
   const navigate = useNavigate();
 
   const {
@@ -110,24 +123,26 @@ const SearchBar = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={classes.contentDiv}>
-          <Controller
-            name="originAirport"
-            control={control}
-            render={({ field }) => (
-              <Select
-                placeholder="Select Origin Airport"
-                className={classes.originCountry}
-                {...field}
-                allowClear
-              >
-                {originAirports.map((airport) => (
-                  <Option key={airport} value={airport}>
-                    {airport}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          />
+        <Controller
+          name="originAirport"
+          control={control}
+          render={({ field }) => (
+            <AutoComplete
+              {...field}
+              allowClear
+              className={classes.originCountry}
+              placeholder="Select Origin Airport"
+              onSearch={(value) => {
+                setOriginKeyword(value);
+                refetchAirports();
+              }}
+              options={airportSuggestions.map((city) => ({
+                value: `${city.name}${city.iataCode ? ` (${city.iataCode})` : ''}`,
+              }))}
+              notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+            />
+          )}
+        />
 
           <Controller
             name="dateRange"
