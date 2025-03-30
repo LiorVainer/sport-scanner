@@ -12,14 +12,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
 import { calculateCurrentSeason } from '@/utils/date.utils';
+import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 type RangeValue<T> = [T | null, T | null] | null;
-
-const MIN_PRICE = 100;
-const MAX_PRICE = 1000;
 
 const SearchBar = () => {
   const [originCountry, setOriginCountry] = useState<string>();
