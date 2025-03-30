@@ -25,17 +25,6 @@ import { GeoService } from '@/api/services/geo.service';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const originAirports = [
-  'Madrid (MAD)',
-  'Barcelona (BCN)',
-  'Seville (SVQ)',
-  'London Heathrow (LHR)',
-  'Manchester (MAN)',
-  'Frankfurt (FRA)',
-  'Berlin (BER)',
-  'Munich (MUC)',
-];
-
 const SearchFormSchema = z.object({
   originAirport: z.string().optional(),
   dateRange: z.any().optional(),
@@ -61,14 +50,18 @@ const SearchBar = () => {
   const [originKeyword, setOriginKeyword] = useState('');
   const {
     data: airportSuggestions = [],
-    refetch: refetchAirports,
     isLoading: isAirportLoading,
   } = useQuery({
     queryKey: ['originAirports', originKeyword],
-    queryFn: () => GeoService.getCities(originKeyword),
-    enabled: false,
+    queryFn: async () => {
+      if (originKeyword.length < 3 || originKeyword.length > 50) {
+        return [];
+      }
+      return GeoService.getCities(originKeyword);
+    },
+    enabled: originKeyword.length >= 3 && originKeyword.length <= 50,
   });
-
+  
   const navigate = useNavigate();
 
   const {
@@ -134,7 +127,6 @@ const SearchBar = () => {
               placeholder="Select Origin Airport"
               onSearch={(value) => {
                 setOriginKeyword(value);
-                refetchAirports();
               }}
               options={airportSuggestions.map((city) => ({
                 value: `${city.name}${city.iataCode ? ` (${city.iataCode})` : ''}`,
@@ -143,6 +135,7 @@ const SearchBar = () => {
             />
           )}
         />
+
 
           <Controller
             name="dateRange"
