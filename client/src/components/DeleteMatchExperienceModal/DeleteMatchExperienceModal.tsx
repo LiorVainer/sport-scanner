@@ -20,7 +20,7 @@ export const DeleteMatchExperienceModal = ({ matchExperienceId, onClose }: Delet
         mutationFn: () => MatchExperienceService.deleteMatchExperience(matchExperienceId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.MATCH_EXPERIENCE] });
-            navigate(ROUTES.MATCH_EXPERIENCES);
+            // navigate(ROUTES.MATCH_EXPERIENCES);
             message.success('Match Experience Deleted successfully');
             onClose();
         },

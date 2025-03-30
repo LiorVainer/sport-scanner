@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import classes from './navbar.module.scss';
-// import { Link } from 'react-router';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faFutbol } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFutbol } from '@fortawesome/free-solid-svg-icons';
 
 import { EditProfileModal } from '../EditProfileModal';
 import { NavbarUserDropdown } from '../NavbarUserDropdown';
-// import { ROUTES } from '@/constants/routes.const';
+import { ROUTES } from '@/constants/routes.const';
 
 export const Navbar = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -16,10 +16,10 @@ export const Navbar = () => {
 
     return (
         <nav className={classes.navbar}>
-            {/* <Link to={ROUTES.MATCH_EXPERIENCES} className={classes.brand}>
+            <Link to={ROUTES.HOME_SCREEN} className={classes.brand}>
                 <FontAwesomeIcon icon={faFutbol} />
                 <h1 className={classes.title}>Sport Scanner</h1>
-            </Link> */}
+            </Link>
 
             <div className={classes.right}>
                 {/* <div className={classes.navLinks}>
