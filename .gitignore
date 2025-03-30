@@ -35,3 +35,6 @@ server/output
 server/public/*
 server/client*
 server/front*
+
+
+.idea*

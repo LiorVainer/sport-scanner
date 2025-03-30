@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { soccerController } from '../controllers/soccer.controller';
 import { authMiddleware } from '../middlewares/auth.middlware';
+import { ENV } from '../env/env.config';
 
 const router = Router();
 
-router.use(authMiddleware);
+ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 
 /**
  * @swagger
@@ -23,34 +24,6 @@ router.use(authMiddleware);
  *       bearerFormat: JWT
  *       description: Use your Bearer token for authentication.
  */
-
-/**
- * @swagger
- * security:
- *   - BearerAuth: []  # This indicates that Bearer token is required for authorization
- */
-
-/**
- * @swagger
- * /soccer/countries:
- *   get:
- *     summary: Get all countries
- *     tags: [Soccer]
- *     security:
- *       - BearerAuth: []  # Require Bearer token for this endpoint
- *     responses:
- *       200:
- *         description: A list of countries
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: string
- *       500:
- *         description: Error fetching countries
- */
-router.get('/countries', soccerController.getCountries);
 
 /**
  * @swagger
@@ -144,6 +117,5 @@ router.get('/venues', soccerController.getVenues);
  *         description: Error fetching teams
  */
 router.get('/teams', soccerController.getTeams);
-
 
 export default router;
