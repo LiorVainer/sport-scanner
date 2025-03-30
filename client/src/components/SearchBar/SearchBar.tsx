@@ -138,7 +138,7 @@ const SearchBar = () => {
               <Slider
                 range
                 min={MIN_PRICE}
-                max={5000}
+                max={MAX_PRICE}
                 value={priceRange}
                 onChange={(val) => setPriceRange(val as [number, number])}
                 tooltip={{ formatter: (val) => `$${val}` }}
@@ -180,9 +180,9 @@ const SearchBar = () => {
           disabled={!country}
           suffixIcon={<TrophyOutlined />}
         >
-          {leagues.map((l) => (
-            <Option key={l.league.id} value={l.league.name} id={l.league.id}>
-              {l.league.name}
+          {leagues.map((option) => (
+            <Option key={option.league.id} value={option.league.name} id={option.league.id}>
+              {option.league.name}
             </Option>
           ))}
         </Select>
@@ -196,9 +196,9 @@ const SearchBar = () => {
           allowClear
           suffixIcon={<TeamOutlined />}
         >
-          {teams.map((t) => (
-            <Option key={t.team.id} value={t.team.name}>
-              {t.team.name}
+          {teams.map((option) => (
+            <Option key={option.team.id} value={option.team.name}>
+              {option.team.name}
             </Option>
           ))}
         </Select>
