@@ -116,7 +116,7 @@ export const AmadeusService = {
                 keyword,
                 countryCode,
             });
-
+            
             return data;
         } catch (err) {
             console.error(`Failed to get airports for keyword: ${keyword}`, err);
