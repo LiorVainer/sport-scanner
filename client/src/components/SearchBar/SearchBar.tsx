@@ -67,6 +67,7 @@ const SearchBar = () => {
         margin: '0 auto',
         overflow: 'hidden',
         textAlign: 'center',
+        maxWidth: '80vw'
       }}
     >
       <div
