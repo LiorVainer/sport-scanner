@@ -21,9 +21,21 @@ import classes from './search-bar.module.scss';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-// Form schema
+// ----------------------
+// Mock data for airports
+// ----------------------
+const originAirportsByCountry: Record<string, string[]> = {
+  Spain: ['Madrid (MAD)', 'Barcelona (BCN)', 'Seville (SVQ)'],
+  England: ['London Heathrow (LHR)', 'Manchester (MAN)', 'Birmingham (BHX)'],
+  Germany: ['Frankfurt (FRA)', 'Berlin (BER)', 'Munich (MUC)'],
+};
+
+// ----------------------
+// Zod form schema
+// ----------------------
 const SearchFormSchema = z.object({
   originCountry: z.string().optional(),
+  originAirport: z.string().optional(),
   dateRange: z.any().optional(),
   priceRange: z.tuple([z.number(), z.number()]).optional(),
   country: z.string().optional(),
@@ -35,6 +47,7 @@ type SearchFormValues = z.infer<typeof SearchFormSchema>;
 
 const DEFAULT_VALUES: SearchFormValues = {
   originCountry: undefined,
+  originAirport: undefined,
   dateRange: null,
   priceRange: [MIN_PRICE, MAX_PRICE],
   country: undefined,
@@ -44,12 +57,12 @@ const DEFAULT_VALUES: SearchFormValues = {
 
 const SearchBar = () => {
   const [leagueId, setLeagueId] = useState<number>();
+
   const {
     control,
     handleSubmit,
     watch,
     setValue,
-    getValues,
   } = useForm<SearchFormValues>({
     defaultValues: DEFAULT_VALUES,
     resolver: zodResolver(SearchFormSchema),
@@ -58,6 +71,7 @@ const SearchBar = () => {
   const watchDateRange = watch('dateRange');
   const watchCountry = watch('country');
   const watchLeague = watch('league');
+  const watchOriginCountry = watch('originCountry');
 
   const selectedDate = watchDateRange?.[0]?.toDate();
 
@@ -96,6 +110,7 @@ const SearchBar = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={classes.contentDiv}>
+          {/* Origin Country */}
           <Controller
             name="originCountry"
             control={control}
@@ -115,6 +130,28 @@ const SearchBar = () => {
             )}
           />
 
+          {/* Origin Airport */}
+          <Controller
+            name="originAirport"
+            control={control}
+            render={({ field }) => (
+              <Select
+                placeholder="Select Origin Airport"
+                className={classes.originCountry}
+                {...field}
+                allowClear
+                disabled={!watchOriginCountry}
+              >
+                {(originAirportsByCountry[watchOriginCountry as keyof typeof originAirportsByCountry] || []).map((airport) => (
+                  <Option key={airport} value={airport}>
+                    {airport}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          />
+
+          {/* Date Range */}
           <Controller
             name="dateRange"
             control={control}
@@ -128,6 +165,7 @@ const SearchBar = () => {
             )}
           />
 
+          {/* Price Range */}
           <Controller
             name="priceRange"
             control={control}
@@ -154,6 +192,7 @@ const SearchBar = () => {
             )}
           />
 
+          {/* Destination Country */}
           <Controller
             name="country"
             control={control}
@@ -179,6 +218,7 @@ const SearchBar = () => {
             )}
           />
 
+          {/* League */}
           <Controller
             name="league"
             control={control}
@@ -204,6 +244,7 @@ const SearchBar = () => {
             )}
           />
 
+          {/* Team */}
           <Controller
             name="team"
             control={control}
@@ -225,6 +266,7 @@ const SearchBar = () => {
             )}
           />
 
+          {/* Search Button */}
           <Button type="primary" shape="round" size="large" htmlType="submit">
             Search
           </Button>
