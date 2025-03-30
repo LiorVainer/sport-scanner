@@ -13,6 +13,7 @@ import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
 import { calculateCurrentSeason } from '@/utils/date.utils';
 import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
+import classes from './search-bar.module.scss';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -54,75 +55,34 @@ const SearchBar = () => {
   };
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        backgroundImage: 'url("/stadium.avif")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        borderRadius: 24,
-        padding: '64px 24px',
-        margin: '0 auto',
-        overflow: 'hidden',
-        textAlign: 'center',
-        maxWidth: '80vw'
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          borderRadius: 24,
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          color: '#fff',
-          marginBottom: 40,
-        }}
-      >
-        <h1 style={{ fontSize: 36, fontWeight: 'bold', margin: 0 }}>
+    <div className={classes.mainDiv}>
+      <div className={classes.shadowDiv} />
+      <div className={classes.titleDiv} >
+        <h1 className={classes.mainTitle} >
           Find your next soccer experience
         </h1>
-        <p style={{ fontSize: 16, marginTop: 8 }}>
+        <p className={classes.secondaryTitle} >
           View upcoming events, explore personalized packages, and more
         </p>
       </div>
 
-      <div
-        style={{
-          backgroundColor: 'rgb(187, 187, 187)',
-          borderRadius: 50,
-          padding: '12px 24px',
-          display: 'flex',
-          gap: 12,
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
+      <div className={classes.contentDiv} >
         <Select
           placeholder="Select Origin Country"
-          style={{ borderRadius: 32, width: 220 }}
+          className={classes.originCountry}
           value={originCountry}
           onChange={(val) => setOriginCountry(val)}
           suffixIcon={<EnvironmentOutlined />}
         >
-          {countries.map((c) => (
-            <Option key={c.code} value={c.name}>
-              {c.name}
+          {countries.map((option) => (
+            <Option key={option.code} value={option.name}>
+              {option.name}
             </Option>
           ))}
         </Select>
 
         <RangePicker
-          style={{ borderRadius: 5, width: 220 }}
+          className={classes.dateRange}
           onChange={setDateRange}
           placeholder={['Start Date', 'End Date']}
           suffixIcon={<CalendarOutlined />}
@@ -130,7 +90,7 @@ const SearchBar = () => {
 
         <Select
           value={`${priceRange[0]} - ${priceRange[1]}`}
-          style={{ borderRadius: 32, width: 180 }}
+          className={classes.priceRange}
           suffixIcon={<DollarOutlined />}
           dropdownRender={() => (
             <div style={{ padding: 12 }}>
@@ -150,7 +110,7 @@ const SearchBar = () => {
 
         <Select
           placeholder="Select Country"
-          style={{ borderRadius: 32, width: 200 }}
+          className={classes.selectCountry}
           value={country}
           onChange={(val) => {
             setCountry(val);
@@ -160,16 +120,16 @@ const SearchBar = () => {
           }}
           suffixIcon={<EnvironmentOutlined />}
         >
-          {countries.map((c) => (
-            <Option key={c.code} value={c.name}>
-              {c.name}
+          {countries.map((option) => (
+            <Option key={option.code} value={option.name}>
+              {option.name}
             </Option>
           ))}
         </Select>
 
         <Select
           placeholder="Select League"
-          style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
+          className={classes.selectLeague}
           value={league}
           onChange={(val, option: any) => {
             setLeague(val);
@@ -188,7 +148,7 @@ const SearchBar = () => {
 
         <Select
           placeholder="Select Team (Optional)"
-          style={{ borderRadius: 5, width: 200, backgroundColor: 'grey' }}
+          className={classes.selectTeam}
           value={team}
           onChange={setTeam}
           disabled={!league || !selectedDate}
