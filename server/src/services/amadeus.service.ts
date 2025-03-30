@@ -1,9 +1,8 @@
-import Amadeus, { CurrencyCode, FlightOffersSearchPostParams, FlightOffer as RawFlightOffer } from 'amadeus-ts';
-import { ENV } from '../env/env.config';
-import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights-search-params.model';
-import { FlightOffer, FlightOffersArraySchema } from '../models/flight-offer.model';
-import { Country } from '../models/soccer.model';
-import { CitySearchParams } from '../models/geo.model';
+import Amadeus, {CurrencyCode, FlightOffer as RawFlightOffer, FlightOffersSearchPostParams} from 'amadeus-ts';
+import {ENV} from '../env/env.config';
+import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights-search-params.model';
+import {FlightOffer, FlightOffersArraySchema} from '../models/flight-offer.model';
+import {CitySearchParams} from '../models/geo.model';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -16,7 +15,7 @@ export const AmadeusService = {
         const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
 
         try {
-            const { data } = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
+            const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
 
             const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
 
@@ -91,7 +90,7 @@ export const AmadeusService = {
 
     findPriceRange: (offers: FlightOffer[]) => {
         if (!offers.length) {
-            return { min: null, max: null };
+            return {min: null, max: null};
         }
 
         let min = Number.POSITIVE_INFINITY;
@@ -111,17 +110,17 @@ export const AmadeusService = {
         };
     },
 
-    getCities: async ({ countryCode, countryName }: CitySearchParams) => {
+    getCities: async ({countryCode, keyword}: CitySearchParams) => {
         try {
-            const { data } = await AmadeusClient.referenceData.locations.cities.get({
-                keyword: countryName,
-                countryCode: countryCode,
+            const {data} = await AmadeusClient.referenceData.locations.cities.get({
+                keyword,
+                countryCode,
             });
 
             return data;
         } catch (err) {
-            console.error(`Failed to get airports for country: ${countryName}`, err);
+            console.error(`Failed to get airports for keyword: ${keyword}`, err);
             return [];
         }
-    },
+    }
 };

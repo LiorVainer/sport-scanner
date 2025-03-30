@@ -1,7 +1,7 @@
-import { AIService } from '../ai/ai.service';
-import { generateMessagesForGettingCitiesIATACodes } from '../ai/utils/cities-to-iata-messages';
-import { CityToIATACodeMap, CityWithIATASchemaArray } from '../models/iata.model';
-import { AmadeusService } from './amadeus.service';
+import {AIService} from '../ai/ai.service';
+import {generateMessagesForGettingCitiesIATACodes} from '../ai/utils/cities-to-iata-messages';
+import {CityToIATACodeMap, CityWithIATASchemaArray} from '../models/iata.model';
+import {AmadeusService} from './amadeus.service';
 
 export const FlightsService = {
     getIATACodeByCity: async (city: string): Promise<string | null> => {
@@ -38,15 +38,6 @@ export const FlightsService = {
         } catch (err) {
             console.error(`AI failed to provide IATA code for ${city}`, err);
             return null;
-        }
-    },
-    getAirportsByCountry: async (country: string): Promise<string[]> => {
-        try {
-            const airports = await AmadeusService.getCities(country);
-            return airports.map((airport) => airport.iataCode);
-        } catch (err) {
-            console.error(`Failed to get airports for country ${country}:`, err);
-            throw new Error(`Failed to get airports for country ${country}`);
         }
     },
 };

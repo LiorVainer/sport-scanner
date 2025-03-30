@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { PriceRangeSchema } from './price-range.model';
-import { ENV } from '../env/env.config';
+import {z} from 'zod';
+import {PriceRangeSchema} from './price-range.model';
+import {ENV} from '../env/env.config';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
@@ -37,7 +37,7 @@ export const MatchSchema = z.object({
     searchMatchTicketsLink: z
         .string()
         .describe(
-            'Real link to search for match tickets on SeatGeek website. Use the match details to generate the link, inserting the home team, away team, and date as query parameters based on SeatGeek’s search format (e.g., https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Real%20Betis&datetime_utc=2025-04-05)'
+            'URL to search for match tickets on StubHub. This should include relevant query parameters such as the home team, away team, date, or venue when applicable. For example: https://www.stubhub.com/search?q=FC%20Barcelona%20vs%20Real%20Betis%202025-04-05'
         ),
 });
 

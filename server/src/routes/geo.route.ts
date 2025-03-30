@@ -1,9 +1,8 @@
-import { Router } from 'express';
+import {Router} from 'express';
 
-import { authMiddleware } from '../middlewares/auth.middlware';
-import { geoController } from '../controllers/geo.controller';
-import { ENV } from '../env/env.config';
-import { soccerController } from '../controllers/soccer.controller';
+import {authMiddleware} from '../middlewares/auth.middlware';
+import {geoController} from '../controllers/geo.controller';
+import {ENV} from '../env/env.config';
 
 const router = Router();
 
