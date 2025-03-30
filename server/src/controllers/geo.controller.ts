@@ -13,21 +13,31 @@ export const geoController = {
         }
     },
     getCities: async (req: Request<any, any, CitySearchParams>, res: Response) => {
-        const {data: parsedParams, error} = CitySearchParamsSchema.safeParse(req.query);
+        const { data: parsedParams, error } = CitySearchParamsSchema.safeParse(req.query);
         if (error) {
-            res.status(400).json(error.errors);
+          res.status(400).json(error.errors);
+          return;
+        }
+      
+        try {
+          const cities = await AmadeusService.getCities(parsedParams);
+      
+          if (!Array.isArray(cities)) {
+            res.status(200).json([]);
             return;
-        }
-
-        const cities = await AmadeusService.getCities(parsedParams);
-        const parsedCities = CityLocationSchema.array().parse(cities);
-        if (parsedParams.withIataCode) {
+          }
+      
+          const parsedCities = CityLocationSchema.array().parse(cities);
+      
+          if (parsedParams.withIataCode) {
             const citiesWithIATA = parsedCities.filter((city) => !!city.iataCode);
-
             res.status(200).send(citiesWithIATA);
-            return
+          } else {
+            res.status(200).send(parsedCities);
+          }
+        } catch (err) {
+          console.error('Failed to fetch or parse cities:', err);
+          res.status(500).json({ message: 'Failed to fetch cities', error: err });
         }
-
-        res.status(200).send(cities);
-    },
+      },
 };
