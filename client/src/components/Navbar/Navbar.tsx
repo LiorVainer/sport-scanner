@@ -22,9 +22,9 @@ export const Navbar = () => {
             </Link>
 
             <div className={classes.right}>
-                <div className={classes.navLinks}>
+                {/* <div className={classes.navLinks}>
                     <Link to={ROUTES.MY_EXPERIENCES}>My Experiences</Link>
-                </div>
+                </div> */}
                 <NavbarUserDropdown showModal={showModal} />
                 <EditProfileModal isOpen={isModalOpen} handleCancel={handleCancel} />
             </div>
