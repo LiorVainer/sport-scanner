@@ -24,7 +24,7 @@ export const MatchDetails = ({ match, singlePackage, matchIndex }: MatchDetailsP
 
     return (
         <div className={styles.matchDetailsWrapper}>
-            <MatchHeader from={departureDate} to={returnDate} location={splitLocation} />
+            <MatchHeader startDate={departureDate} endDate={returnDate} location={splitLocation} />
             <div className={styles.divider} />
             <div className={styles.matchDetailsCard}>
                 <img src={homeTeam.logo} alt={homeTeam.name} className={styles.image} />

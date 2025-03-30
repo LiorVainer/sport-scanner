@@ -6,17 +6,17 @@ import { formattedDate } from '@/utils/date.utils';
 const { Text } = Typography;
 
 interface MatchHeaderProps {
-    from: string;
-    to: string;
+    startDate: string;
+    endDate: string;
     location: string;
 }
 
-export const MatchHeader = ({ from, to, location }: MatchHeaderProps) => {
+export const MatchHeader = ({ startDate, endDate, location }: MatchHeaderProps) => {
     return (
         <div className={styles.matchHeaderContainer}>
             <Text strong className={styles.matchDates}>
-                {formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} />
-                {formattedDate(to)}
+                {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />
+                {formattedDate(endDate)}
             </Text>
             <Tag icon={<EnvironmentOutlined />} className={styles.locationTag}>
                 {location}

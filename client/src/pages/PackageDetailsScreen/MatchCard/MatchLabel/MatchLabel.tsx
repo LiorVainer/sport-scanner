@@ -8,15 +8,16 @@ const { Text } = Typography;
 interface MatchLabelProps {
     label: string;
     location: string;
-    from: string;
-    to: string;
+    startDate: string;
+    endDate: string;
 }
 
-export const MatchLabel = ({ label, location, from, to }: MatchLabelProps) => (
+export const MatchLabel = ({ label, location, startDate, endDate }: MatchLabelProps) => (
     <div className={styles.matchLabelContainer}>
         <Tag className={styles.matchTag}>{label}</Tag>
         <Text strong className={styles.matchLocation}>
-            {location} ({formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} /> {formattedDate(to)})
+            {location} ({formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />{' '}
+            {formattedDate(endDate)})
         </Text>
     </div>
 );

@@ -11,15 +11,6 @@ interface MatchCardProps {
 }
 
 export const MatchCard = ({ match, singlePackage, itemIndex }: MatchCardProps) => {
-    const {
-        homeTeam: { logo: homeTeamImage, name: homeTeam },
-        awayTeam: { logo: awayTeamImage, name: awayTeam },
-        stadium,
-        league,
-        date: matchDate,
-        price: { min: minPrice },
-        searchMatchTicketsLink,
-    } = match;
     const { fromDate, toDate, location } = singlePackage;
 
     const splitLocation = location.split('&')[itemIndex] || location;
@@ -29,20 +20,10 @@ export const MatchCard = ({ match, singlePackage, itemIndex }: MatchCardProps) =
             <MatchLabel
                 label={`Match ${romanize(itemIndex + 1)}`}
                 location={splitLocation}
-                from={fromDate}
-                to={toDate}
+                startDate={fromDate}
+                endDate={toDate}
             />
-            <MatchDetails
-                homeTeamImage={homeTeamImage}
-                awayTeamImage={awayTeamImage}
-                homeTeam={homeTeam}
-                awayTeam={awayTeam}
-                stadium={stadium}
-                league={league}
-                matchDate={matchDate}
-                price={minPrice}
-                linkForTicket={searchMatchTicketsLink}
-            />
+            <MatchDetails match={match} />
         </div>
     );
 };

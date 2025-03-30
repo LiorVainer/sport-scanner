@@ -11,7 +11,7 @@ import { MatchCard } from './MatchCard/MatchCard';
 
 const { Title, Text } = Typography;
 
-export enum blockTypes {
+export enum CardTypes {
     FLIGHT = 'flight',
     MATCH = 'match',
 }
@@ -24,13 +24,13 @@ export const PackageDetailsScreen = () => {
 
     const timelineItems = [
         ...singlePackage.flights.map((flight: Flight, index: number) => ({
-            type: blockTypes.FLIGHT,
+            type: CardTypes.FLIGHT,
             date: new Date(flight.departureDate),
             data: flight,
             index,
         })),
         ...singlePackage.matches.map((match: Match, index: number) => ({
-            type: blockTypes.MATCH,
+            type: CardTypes.MATCH,
             date: new Date(match.date),
             data: match,
             index,
@@ -70,7 +70,7 @@ export const PackageDetailsScreen = () => {
 
             {timelineItems.map((item, timelineIndex) => {
                 switch (item.type) {
-                    case blockTypes.FLIGHT: {
+                    case CardTypes.FLIGHT: {
                         const flight = item.data as Flight;
                         return (
                             <div key={`flight-${timelineIndex}`}>
@@ -83,7 +83,7 @@ export const PackageDetailsScreen = () => {
                         );
                     }
 
-                    case blockTypes.MATCH: {
+                    case CardTypes.MATCH: {
                         const match = item.data as Match;
                         return (
                             <div key={`match-${timelineIndex}`}>
