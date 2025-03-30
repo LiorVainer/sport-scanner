@@ -1,0 +1,358 @@
+[
+    {
+        "id": 1,
+        "title": "Barcelona vs Real Betis - La Liga",
+        "description": "Experience the excitement of La Liga! Travel to Barcelona to see Barcelona take on Real Betis.",
+        "fromDate": "2025-04-02",
+        "toDate": "2025-04-08",
+        "location": "Barcelona",
+        "flightsPrice": 509.22,
+        "matchesPrice": { "min": 100, "max": 450 },
+        "totalPrice": { "min": 609.22, "max": 959.22 },
+        "flights": [
+            {
+                "id": 1,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Barcelona", "iataCode": "BCN" },
+                "price": 254.61,
+                "departureDate": "2025-04-02T05:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/BCN/250402/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 1,
+                "origin": { "name": "Barcelona", "iataCode": "BCN" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 254.61,
+                "departureDate": "2025-04-08T06:20:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/BCN/TLV/250408/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208755,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 543,
+                    "name": "Real Betis",
+                    "logo": "https://media.api-sports.io/football/teams/543.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-05T19:00:00+00:00",
+                "price": { "min": 100, "max": 450 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Real%20Betis&datetime_utc=2025-04-05"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "Leganes vs Barcelona - La Liga Away Match",
+        "description": "Catch Barcelona playing away against Leganes in La Liga. Package includes flights to Madrid.",
+        "fromDate": "2025-04-09",
+        "toDate": "2025-04-15",
+        "location": "Leganés",
+        "flightsPrice": 511.06,
+        "matchesPrice": { "min": 60, "max": 300 },
+        "totalPrice": { "min": 571.06, "max": 811.06 },
+        "flights": [
+            {
+                "id": 2,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Madrid", "iataCode": "MAD" },
+                "price": 255.53,
+                "departureDate": "2025-04-09T09:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/MAD/250409/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 2,
+                "origin": { "name": "Madrid", "iataCode": "MAD" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 255.53,
+                "departureDate": "2025-04-15T05:50:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/MAD/TLV/250415/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208769,
+                "homeTeam": {
+                    "id": 537,
+                    "name": "Leganes",
+                    "logo": "https://media.api-sports.io/football/teams/537.png"
+                },
+                "awayTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadio Municipal de Butarque",
+                "date": "2025-04-12T19:00:00+00:00",
+                "price": { "min": 60, "max": 300 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=Leganes&performers[away_team]=FC%20Barcelona&datetime_utc=2025-04-12"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "Barcelona vs Celta Vigo - La Liga",
+        "description": "Enjoy a trip to Barcelona to see Barcelona vs Celta Vigo in La Liga.",
+        "fromDate": "2025-04-16",
+        "toDate": "2025-04-22",
+        "location": "Barcelona",
+        "flightsPrice": 509.22,
+        "matchesPrice": { "min": 90, "max": 400 },
+        "totalPrice": { "min": 599.22, "max": 909.22 },
+        "flights": [
+            {
+                "id": 3,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Barcelona", "iataCode": "BCN" },
+                "price": 254.61,
+                "departureDate": "2025-04-16T05:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/BCN/250416/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 3,
+                "origin": { "name": "Barcelona", "iataCode": "BCN" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 254.61,
+                "departureDate": "2025-04-22T06:20:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/BCN/TLV/250422/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208773,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 538,
+                    "name": "Celta Vigo",
+                    "logo": "https://media.api-sports.io/football/teams/538.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-19T14:15:00+00:00",
+                "price": { "min": 90, "max": 400 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Celta%20Vigo&datetime_utc=2025-04-19"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "title": "Barcelona & Leganes Double Match Package",
+        "description": "Travel to Barcelona for the Barcelona vs Real Betis match, then head to Madrid to see Leganes vs Barcelona. Includes flights.",
+        "fromDate": "2025-04-02",
+        "toDate": "2025-04-15",
+        "location": "Barcelona & Leganés",
+        "flightsPrice": 764.75,
+        "matchesPrice": { "min": 160, "max": 750 },
+        "totalPrice": { "min": 924.75, "max": 1514.75 },
+        "flights": [
+            {
+                "id": 5,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Barcelona", "iataCode": "BCN" },
+                "price": 254.61,
+                "departureDate": "2025-04-02T05:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/BCN/250402/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 5,
+                "origin": { "name": "Barcelona", "iataCode": "BCN" },
+                "destination": { "name": "Madrid", "iataCode": "MAD" },
+                "price": 254.61,
+                "departureDate": "2025-04-09T09:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/BCN/MAD/250409/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 5,
+                "origin": { "name": "Madrid", "iataCode": "MAD" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 255.53,
+                "departureDate": "2025-04-15T05:50:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/MAD/TLV/250415/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208755,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 543,
+                    "name": "Real Betis",
+                    "logo": "https://media.api-sports.io/football/teams/543.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-05T19:00:00+00:00",
+                "price": { "min": 100, "max": 450 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Real%20Betis&datetime_utc=2025-04-05"
+            },
+            {
+                "id": 1208769,
+                "homeTeam": {
+                    "id": 537,
+                    "name": "Leganes",
+                    "logo": "https://media.api-sports.io/football/teams/537.png"
+                },
+                "awayTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadio Municipal de Butarque",
+                "date": "2025-04-12T19:00:00+00:00",
+                "price": { "min": 60, "max": 300 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=Leganes&performers[away_team]=FC%20Barcelona&datetime_utc=2025-04-12"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "title": "Barcelona Home Game Double: Betis & Celta Vigo",
+        "description": "See Barcelona play Real Betis and Celta Vigo at home. Package includes flights to Barcelona.",
+        "fromDate": "2025-04-02",
+        "toDate": "2025-04-22",
+        "location": "Barcelona",
+        "flightsPrice": 509.22,
+        "matchesPrice": { "min": 190, "max": 850 },
+        "totalPrice": { "min": 699.22, "max": 1359.22 },
+        "flights": [
+            {
+                "id": 6,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Barcelona", "iataCode": "BCN" },
+                "price": 254.61,
+                "departureDate": "2025-04-02T05:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/BCN/250402/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 6,
+                "origin": { "name": "Barcelona", "iataCode": "BCN" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 254.61,
+                "departureDate": "2025-04-22T06:20:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/BCN/TLV/250422/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208755,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 543,
+                    "name": "Real Betis",
+                    "logo": "https://media.api-sports.io/football/teams/543.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-05T19:00:00+00:00",
+                "price": { "min": 100, "max": 450 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Real%20Betis&datetime_utc=2025-04-05"
+            },
+            {
+                "id": 1208773,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 538,
+                    "name": "Celta Vigo",
+                    "logo": "https://media.api-sports.io/football/teams/538.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-19T14:15:00+00:00",
+                "price": { "min": 90, "max": 400 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Celta%20Vigo&datetime_utc=2025-04-19"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "title": "Barcelona Double: Celta Vigo & Mallorca",
+        "description": "Experience two Barcelona home matches! See Barcelona play Celta Vigo and Mallorca, with flights included.",
+        "fromDate": "2025-04-16",
+        "toDate": "2025-04-24",
+        "location": "Barcelona",
+        "flightsPrice": 509.22,
+        "matchesPrice": { "min": 170, "max": 750 },
+        "totalPrice": { "min": 679.22, "max": 1259.22 },
+        "flights": [
+            {
+                "id": 7,
+                "origin": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "destination": { "name": "Barcelona", "iataCode": "BCN" },
+                "price": 254.61,
+                "departureDate": "2025-04-16T05:15:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/TLV/BCN/250416/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            },
+            {
+                "id": 7,
+                "origin": { "name": "Barcelona", "iataCode": "BCN" },
+                "destination": { "name": "Tel Aviv", "iataCode": "TLV" },
+                "price": 254.61,
+                "departureDate": "2025-04-24T16:50:00",
+                "searchFlightTicketsLink": "https://www.skyscanner.com/transport/flights/BCN/TLV/250424/?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&rtn=0&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&ref=home"
+            }
+        ],
+        "matches": [
+            {
+                "id": 1208773,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 538,
+                    "name": "Celta Vigo",
+                    "logo": "https://media.api-sports.io/football/teams/538.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-19T14:15:00+00:00",
+                "price": { "min": 90, "max": 400 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Celta%20Vigo&datetime_utc=2025-04-19"
+            },
+            {
+                "id": 1208784,
+                "homeTeam": {
+                    "id": 529,
+                    "name": "Barcelona",
+                    "logo": "https://media.api-sports.io/football/teams/529.png"
+                },
+                "awayTeam": {
+                    "id": 798,
+                    "name": "Mallorca",
+                    "logo": "https://media.api-sports.io/football/teams/798.png"
+                },
+                "league": "La Liga",
+                "stadium": "Estadi Olímpic Lluís Companys",
+                "date": "2025-04-23T00:00:00+00:00",
+                "price": { "min": 80, "max": 350 },
+                "searchMatchTicketsLink": "https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Mallorca&datetime_utc=2025-04-23"
+            }
+        ]
+    }
+]

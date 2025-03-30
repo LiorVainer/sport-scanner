@@ -12,8 +12,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getPictureSrcUrl } from '@/utils/picture.utils.ts';
 import moment from 'moment';
 import { Heart, MessageCircle } from 'lucide-react';
-import { ROUTES } from '@/constants/routes.const';
-import { useNavigate } from 'react-router-dom';
+// import { ROUTES } from '@/constants/routes.const';
+// import { useNavigate } from 'react-router-dom';
 import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { useAuth } from '@/context/AuthContext';
 
@@ -28,7 +28,7 @@ export const MatchExperiencesCatalogScreen = ({ mode }: MatchExperiencesCatalogS
     const [sortBy, setSortBy] = useState('date');
     const { loggedInUser } = useAuth();
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const {
         data: matchExperiencesData,
