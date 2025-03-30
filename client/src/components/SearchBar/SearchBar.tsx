@@ -17,6 +17,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
 import classes from './search-bar.module.scss';
+import { ROUTES } from '@/constants/routes.const';
+import { useNavigate } from 'react-router';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -67,6 +69,7 @@ const SearchBar = () => {
     defaultValues: DEFAULT_VALUES,
     resolver: zodResolver(SearchFormSchema),
   });
+  const navigate = useNavigate();
 
   const watchDateRange = watch('dateRange');
   const watchCountry = watch('country');
@@ -96,6 +99,9 @@ const SearchBar = () => {
 
   const onSubmit = (values: SearchFormValues) => {
     console.log('Submitted form data:', values);
+
+    navigate(`${ROUTES.PACKAGES}/results`);
+
   };
 
   return (
