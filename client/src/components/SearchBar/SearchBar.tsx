@@ -23,20 +23,18 @@ import { useNavigate } from 'react-router';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-// ----------------------
-// Mock data for airports
-// ----------------------
-const originAirportsByCountry: Record<string, string[]> = {
-  Spain: ['Madrid (MAD)', 'Barcelona (BCN)', 'Seville (SVQ)'],
-  England: ['London Heathrow (LHR)', 'Manchester (MAN)', 'Birmingham (BHX)'],
-  Germany: ['Frankfurt (FRA)', 'Berlin (BER)', 'Munich (MUC)'],
-};
+const originAirports = [
+  'Madrid (MAD)',
+  'Barcelona (BCN)',
+  'Seville (SVQ)',
+  'London Heathrow (LHR)',
+  'Manchester (MAN)',
+  'Frankfurt (FRA)',
+  'Berlin (BER)',
+  'Munich (MUC)',
+];
 
-// ----------------------
-// Zod form schema
-// ----------------------
 const SearchFormSchema = z.object({
-  originCountry: z.string().optional(),
   originAirport: z.string().optional(),
   dateRange: z.any().optional(),
   priceRange: z.tuple([z.number(), z.number()]).optional(),
@@ -48,7 +46,6 @@ const SearchFormSchema = z.object({
 type SearchFormValues = z.infer<typeof SearchFormSchema>;
 
 const DEFAULT_VALUES: SearchFormValues = {
-  originCountry: undefined,
   originAirport: undefined,
   dateRange: null,
   priceRange: [MIN_PRICE, MAX_PRICE],
@@ -59,6 +56,7 @@ const DEFAULT_VALUES: SearchFormValues = {
 
 const SearchBar = () => {
   const [leagueId, setLeagueId] = useState<number>();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -69,12 +67,10 @@ const SearchBar = () => {
     defaultValues: DEFAULT_VALUES,
     resolver: zodResolver(SearchFormSchema),
   });
-  const navigate = useNavigate();
 
   const watchDateRange = watch('dateRange');
   const watchCountry = watch('country');
   const watchLeague = watch('league');
-  const watchOriginCountry = watch('originCountry');
 
   const selectedDate = watchDateRange?.[0]?.toDate();
 
@@ -99,9 +95,7 @@ const SearchBar = () => {
 
   const onSubmit = (values: SearchFormValues) => {
     console.log('Submitted form data:', values);
-
     navigate(`${ROUTES.PACKAGES}/results`);
-
   };
 
   return (
@@ -116,27 +110,6 @@ const SearchBar = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={classes.contentDiv}>
-          {/* Origin Country */}
-          <Controller
-            name="originCountry"
-            control={control}
-            render={({ field }) => (
-              <Select
-                placeholder="Select Origin Country"
-                className={classes.originCountry}
-                {...field}
-                suffixIcon={<EnvironmentOutlined />}
-              >
-                {countries.map((option) => (
-                  <Option key={option.code} value={option.name}>
-                    {option.name}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          />
-
-          {/* Origin Airport */}
           <Controller
             name="originAirport"
             control={control}
@@ -146,9 +119,8 @@ const SearchBar = () => {
                 className={classes.originCountry}
                 {...field}
                 allowClear
-                disabled={!watchOriginCountry}
               >
-                {(originAirportsByCountry[watchOriginCountry as keyof typeof originAirportsByCountry] || []).map((airport) => (
+                {originAirports.map((airport) => (
                   <Option key={airport} value={airport}>
                     {airport}
                   </Option>
@@ -157,7 +129,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* Date Range */}
           <Controller
             name="dateRange"
             control={control}
@@ -171,7 +142,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* Price Range */}
           <Controller
             name="priceRange"
             control={control}
@@ -198,7 +168,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* Destination Country */}
           <Controller
             name="country"
             control={control}
@@ -224,7 +193,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* League */}
           <Controller
             name="league"
             control={control}
@@ -250,7 +218,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* Team */}
           <Controller
             name="team"
             control={control}
@@ -272,7 +239,6 @@ const SearchBar = () => {
             )}
           />
 
-          {/* Search Button */}
           <Button type="primary" shape="round" size="large" htmlType="submit">
             Search
           </Button>
