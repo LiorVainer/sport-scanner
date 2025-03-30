@@ -1,44 +1,43 @@
-import React from 'react';
 import { ArrowRightOutlined, CalendarOutlined, DollarOutlined, RightOutlined } from '@ant-design/icons';
 import styles from './package-footer.module.scss';
-import { Button,Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import { formattedDate } from '@/utils/date.utils';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
+import { Package } from '@/models/package.model';
 
-const {Text} = Typography
+const { Text } = Typography;
 
 interface PackageFooterProps {
-    packageStartDate: string;
-    packageEndDate: string;
-    packageMinPrice: number;
-    packageMaxPrice: number;
-    packageId: number;
-    packageData: any;
+    singlePackage: Package;
 }
 
-const PackageFooter = ({ packageStartDate, packageEndDate,packageMinPrice,packageMaxPrice,packageId,packageData }: PackageFooterProps) => {
+export const PackageFooter = ({ singlePackage }: PackageFooterProps) => {
     const navigate = useNavigate();
+    const { fromDate, toDate, totalPrice, id } = singlePackage;
 
     return (
         <div className={styles.footer}>
             <div className={styles.footerRangeContainer}>
                 <div>
-                    <CalendarOutlined className={styles.icon}/>
+                    <CalendarOutlined className={styles.icon} />
                     <Text strong className={styles.range}>
-                        {formattedDate(packageStartDate)} <ArrowRightOutlined className={styles.arrowIcon} />{formattedDate(packageEndDate)}
+                        {formattedDate(fromDate)} <ArrowRightOutlined className={styles.arrowIcon} />
+                        {formattedDate(toDate)}
                     </Text>
                 </div>
                 <div>
-                    <DollarOutlined className={styles.icon}/>
+                    <DollarOutlined className={styles.icon} />
                     <Text strong className={styles.range}>
-                        {packageMinPrice}$ <ArrowRightOutlined className={styles.arrowIcon} />{packageMaxPrice}$
+                        {totalPrice.min}$ <ArrowRightOutlined className={styles.arrowIcon} />
+                        {totalPrice.max}$
                     </Text>
                 </div>
             </div>
-            <Button type="primary" onClick={() => navigate(`${ROUTES.PACKAGES}/${packageId}`, { state: packageData })}>Continue<RightOutlined /></Button>
+            <Button type="primary" onClick={() => navigate(`${ROUTES.PACKAGES}/results/${id}`, { state: singlePackage })}>
+                Continue
+                <RightOutlined />
+            </Button>
         </div>
     );
 };
-
-export default PackageFooter;

@@ -1,28 +1,28 @@
-.flight-label-container {
+.matchLabelContainer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background-color: #f0f2f5;
-    padding: 1rem 1.25rem;
     border-radius: 0.5rem;
 }
 
-.flight-tag {
+.matchTag {
     margin-right: 1.25rem;
     font-size: 20px;
     font-weight: 600;
     padding: 0.4rem;
     border-radius: 10px;
-    background-color: #2F4F6F;
-    color: white
+    background-color: #2f4f6f;
+    color: white;
 }
 
-.flight-route {
+.matchLocation {
     font-size: 22px;
     color: #000;
     font-weight: 700;
 }
 
-.arrow-icon {
+.arrowIcon {
     color: #000;
     font-size: 20px;
 }

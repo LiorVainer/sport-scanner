@@ -6,7 +6,6 @@ import { AuthPage } from '@pages/AuthPage';
 import { PackageDetailsScreen } from '@/pages/PackageDetailsScreen';
 import { PackagesScreen } from '@/pages/PackagesScreen';
 
-
 export interface RouterProps {}
 
 export const Router = (_props: RouterProps) => {
@@ -15,8 +14,8 @@ export const Router = (_props: RouterProps) => {
             <Route path={ROUTES.AUTH} element={<AuthPage />} />
             <Route element={<ProtectedRoutes />}>
                 <Route element={<Layout />}>
-                    <Route path={ROUTES.PACKAGES} element={<PackagesScreen/>} />
-                    <Route path={`${ROUTES.PACKAGES}/:id`} element={<PackageDetailsScreen />} />
+                    <Route path={`${ROUTES.PACKAGES}/results`} element={<PackagesScreen />} />
+                    <Route path={`${ROUTES.PACKAGES}/results/:id`} element={<PackageDetailsScreen />} />
                 </Route>
             </Route>
         </Routes>

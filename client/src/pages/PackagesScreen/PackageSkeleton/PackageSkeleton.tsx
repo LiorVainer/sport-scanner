@@ -1,9 +1,8 @@
-import React from 'react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Skeleton } from 'antd';
 import styles from './package-skeleton.module.scss';
 
-const PackageSkeleton = () => {
+export const PackageSkeleton = () => {
     return (
         <>
             {Array.from({ length: 3 }).map((_, index) => (
@@ -16,9 +15,7 @@ const PackageSkeleton = () => {
                                     <Skeleton.Input style={{ width: 150 }} active />
                                     <Skeleton.Input style={{ width: 100, marginTop: 4 }} active />
                                 </div>
-                                {matchIndex !== 1 && (
-                                    <ArrowRightOutlined className={styles.skeletonArrowIcon} />
-                                )}
+                                {matchIndex !== 1 && <ArrowRightOutlined className={styles.skeletonArrowIcon} />}
                             </div>
                         ))}
                     </div>
@@ -31,5 +28,3 @@ const PackageSkeleton = () => {
         </>
     );
 };
-
-export default PackageSkeleton;

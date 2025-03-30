@@ -1,22 +1,22 @@
-import React from 'react';
 import { ArrowRightOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import styles from './match-header.module.scss';
 import { Tag, Typography } from 'antd';
 import { formattedDate } from '@/utils/date.utils';
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 interface MatchHeaderProps {
     from: string;
     to: string;
-    location: string
+    location: string;
 }
 
-const MatchHeader = ({ from, to, location }:MatchHeaderProps) => {
+export const MatchHeader = ({ from, to, location }: MatchHeaderProps) => {
     return (
         <div className={styles.matchHeaderContainer}>
             <Text strong className={styles.matchDates}>
-                {formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} />{formattedDate(to)}
+                {formattedDate(from)} <ArrowRightOutlined className={styles.arrowIcon} />
+                {formattedDate(to)}
             </Text>
             <Tag icon={<EnvironmentOutlined />} className={styles.locationTag}>
                 {location}
@@ -24,5 +24,3 @@ const MatchHeader = ({ from, to, location }:MatchHeaderProps) => {
         </div>
     );
 };
-
-export default MatchHeader;

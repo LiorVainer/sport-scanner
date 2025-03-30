@@ -5,7 +5,6 @@
     gap: 2rem;
     background-color: #f0f2f5;
 }
-  
 
 .packageCard {
     background-color: #ffffff;
@@ -18,54 +17,51 @@
     transition: box-shadow 0.2s ease;
     max-width: 60%;
     min-width: 31.5%;
-    margin:auto;
+    margin: auto;
     overflow: hidden;
-  }
-  
-  .divider {
+}
+
+.divider {
     height: 1px;
     background-color: #e0e0e0;
     margin: 0.25rem 0 0.75rem;
     width: 100%;
     border-radius: 1px;
-  }
+}
 
-  .packageCard:hover {
+.packageCard:hover {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  }
-  
+}
 
 .matches {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  overflow-x: auto;
-  padding-bottom: 1rem; 
-  gap: 3rem;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    gap: 3rem;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
 }
 
 .matches::-webkit-scrollbar {
-  height: 10px;
+    height: 10px;
 }
 
 .matches::-webkit-scrollbar-thumb {
-  background-color: #b0b0b0;
-  border-radius: 10px;
+    background-color: #b0b0b0;
+    border-radius: 10px;
 }
 
 .matchItem {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 3rem;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
 }
 
 .arrowIcon {
-  font-size: 28px;
-  color: #2f4f6f;
-  flex-shrink: 0;
+    font-size: 28px;
+    color: #2f4f6f;
+    flex-shrink: 0;
 }
-
-  

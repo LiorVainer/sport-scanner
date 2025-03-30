@@ -1,6 +1,7 @@
-.match-details-container {
+.matchDetailsContainer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background-color: white;
     padding: 1rem;
     border-radius: 0.75rem;
@@ -9,120 +10,133 @@
     gap: 1rem;
 }
 
-.match-image {
-    width: 168.5px;
-    height: 160px;
-    border-radius: 0.5rem;
-    object-fit: cover;
+.matchDetails {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
 }
 
-.match-info {
+.matchImage {
+    width: 140px;
+    height: 140px;
+    border-radius: 0.5rem;
+    object-fit: contain;
+}
+
+.matchInfo {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin-bottom: 5.9rem;
+    margin-bottom: 2rem;
+    max-width: fit-content;
+    margin-left: 1rem;
+    align-items: center;
+    text-align: center;
 }
 
-.stadium-tag {
+.stadiumTag {
     font-size: 20px;
     font-weight: 600;
     padding: 0.4rem;
     border-radius: 10px;
-    background-color: #2F4F6F;
-    color: white
+    background-color: #2f4f6f;
+    color: white;
 }
 
-.league-tag {
+.leagueTag {
     font-size: 20px;
     font-weight: 600;
     padding: 0.4rem;
     border: none;
-    color: #2F4F6F
+    color: #2f4f6f;
 }
 
-.match-teams {
-    color: #2F4F6F;
+.matchTeams {
+    color: #2f4f6f;
     font-weight: 900;
     font-style: italic;
     font-size: 36px;
     line-height: 36px;
     letter-spacing: -1.5px;
     vertical-align: middle;
-
 }
 
-.match-meta {
+.matchMeta {
     display: flex;
     margin-top: 0.5rem;
 }
 
-.match-date-price {
+.matchDatePrice {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 3.5rem;
+    align-self: flex-end;
 }
 
-.match-day-container {
+.matchDayContainer {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.match-date {
-    color: #6B7280;
+.matchDate {
+    color: #6b7280;
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    font-weight: 600;
     font-weight: 700;
     font-size: 22px;
     line-height: 22px;
 }
 
-.match-day {
+.matchDay {
     font-size: 20px;
-    color: #6B7280;
+    color: #6b7280;
     display: flex;
     align-items: center;
     gap: 0.3rem;
     font-weight: 600;
 }
 
-.stadium-icon {
+.stadiumIcon {
     width: 20px;
     height: 20px;
 }
 
-.match-price-info {
+.matchPriceInfo {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 
-.price-container {
+.priceContainer {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     line-height: 1;
 }
 
-.price-text {
+.priceText {
     font-size: 15px;
-    color: #6B7280;
+    color: #6b7280;
     font-weight: 400;
 }
 
-.price-amount {
+.priceAmount {
     font-size: 18px;
-    color: #2F4F6F;
+    color: #2f4f6f;
     font-weight: bold;
 }
 
-.match-ticket-button {
+.matchTicketButton {
     font-size: 1rem;
     font-weight: 500;
-    padding: 1.3rem;
+    padding: 1.3rem 2.27rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    width: fit-content;
 }
-
-

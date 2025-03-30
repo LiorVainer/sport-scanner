@@ -1,3 +1,1 @@
-import PackageDetailsScreen from './PackageDetailsScreen';
-
-export { PackageDetailsScreen };
+export * from './PackageDetailsScreen';

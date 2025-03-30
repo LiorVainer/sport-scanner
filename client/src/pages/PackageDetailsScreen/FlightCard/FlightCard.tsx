@@ -1,24 +1,44 @@
-import React from 'react';
-import FlightLabel from './FlightLabel';
-import FlightDetails from './FlightDetails';
-import styles from './scss/flight-card.module.scss';
+import styles from './flight-card.module.scss';
+import { Flight } from '@/models/package.model';
+import { FlightLabel } from './FlightLabel/FlightLabel';
+import { FlightDetails } from './FlightDetails/FlightDetails';
 
 interface FlightCardProps {
-    label: string;
-    originName: string;
-    originCode: string;
-    destinationName: string;
-    destinationCode: string;
-    departureDate: string;
-    price: number;
-    linkForTicket: string;
+    flight: Flight;
+    itemIndex: number;
+    totalFlights: number;
 }
 
-const FlightCard = ({ label, originName, originCode,destinationName,destinationCode, departureDate, price,linkForTicket }: FlightCardProps) => (
-    <div className={styles['flight-card-container']}>
-        <FlightLabel label={label} from={originName} to={destinationName} />
-        <FlightDetails from={originCode} to={destinationCode} departureDate={departureDate} price={price} linkForTicket={linkForTicket} />
-    </div>
-);
+export const FlightCard = ({ flight, itemIndex, totalFlights }: FlightCardProps) => {
+    const {
+        origin: { iataCode: originCode, name: originName },
+        destination: { iataCode: destinationCode, name: destinationName },
+        departureDate,
+        price,
+        searchFlightTicketsLink,
+    } = flight;
 
-export default FlightCard;
+    const getFlightLabel = (index: number, total: number): string => {
+        switch (index) {
+            case 0:
+                return 'Departure Flight';
+            case total - 1:
+                return 'Return Flight';
+            default:
+                return 'Connecting Flight';
+        }
+    };
+
+    return (
+        <div className={styles.flightCardContainer}>
+            <FlightLabel label={getFlightLabel(itemIndex, totalFlights)} from={originName} to={destinationName} />
+            <FlightDetails
+                from={originCode}
+                to={destinationCode}
+                departureDate={departureDate}
+                price={price}
+                linkForTicket={searchFlightTicketsLink}
+            />
+        </div>
+    );
+};

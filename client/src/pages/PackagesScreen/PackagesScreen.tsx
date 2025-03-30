@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './packages-screen.module.scss';
-import PackageFooter from './PackageFooter/PackageFooter';
 import { Screen } from '@/components/Screen';
-import PackageSkeleton from './PackageSkeleton/PackageSkeleton';
-import MatchDetails from './MatchDetails/MatchDetails';
+import { Match, Package } from '@/models/package.model';
+import { PackageSkeleton } from './PackageSkeleton/PackageSkeleton';
+import { MatchDetails } from './MatchDetails/MatchDetails';
+import { PackageFooter } from './PackageFooter/PackageFooter';
 
-const PackagesScreen = () => {
+export const PackagesScreen = () => {
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any[]>([]);
+    const [packages, setPackages] = useState<Package[]>([]);
 
     useEffect(() => {
         setTimeout(() => {
             import('./packageData.json').then((module) => {
-                setData(module.default);
+                setPackages(module.default);
                 setLoading(false);
             });
         }, 2000);
@@ -22,48 +23,27 @@ const PackagesScreen = () => {
     return (
         <Screen className={styles.page}>
             {loading ? (
-               <PackageSkeleton />
+                <PackageSkeleton />
             ) : (
-                data.map((pkg) => (
-                    <div className={styles.packageCard} key={pkg.id}>
-                         <div className={styles.matches}>
-                            {pkg.matches.map((match:any, index:number) => (
+                packages.map((singlePackage) => (
+                    <div className={styles.packageCard} key={singlePackage.id}>
+                        <div className={styles.matches}>
+                            {singlePackage.matches.map((match: Match, index: number) => (
                                 <React.Fragment key={match.id}>
-                                <div className={styles.matchItem}>
-                                    <MatchDetails
-                                    homeTeamImage={match.homeTeam.logo}
-                                    awayTeamImage={match.awayTeam.logo}
-                                    match={`${match.homeTeam.name} VS ${match.awayTeam.name}`}
-                                    stadium={match.stadium}
-                                    league={match.league}
-                                    date={match.date}
-                                    flightPrice={pkg.flightsPrice}
-                                    matchesPrice={`${match.price.min}$ - ${match.price.max}$`}
-                                    from={pkg.flights[index]?.departureDate || pkg.toDate}
-                                    to={pkg.flights[index + 1]?.departureDate || pkg.toDate}
-                                    location={pkg.location.split('&')[index] || pkg.location}
-                                    />
-                                    {index !== pkg.matches.length - 1 && (
-                                    <ArrowRightOutlined className={styles.arrowIcon} />
+                                    <div className={styles.matchItem}>
+                                        <MatchDetails match={match} singlePackage={singlePackage} matchIndex={index} />
+                                    </div>
+                                    {index !== singlePackage.matches.length - 1 && (
+                                        <ArrowRightOutlined className={styles.arrowIcon} />
                                     )}
-                                </div>
                                 </React.Fragment>
                             ))}
                         </div>
                         <div className={styles.divider} />
-                        <PackageFooter
-                            packageStartDate={pkg.fromDate}
-                            packageEndDate={pkg.toDate}
-                            packageMinPrice={pkg.totalPrice.min}
-                            packageMaxPrice={pkg.totalPrice.max}
-                            packageId={pkg.id}
-                            packageData={pkg}
-                        />
+                        <PackageFooter singlePackage={singlePackage} />
                     </div>
                 ))
             )}
         </Screen>
     );
 };
-
-export default PackagesScreen;

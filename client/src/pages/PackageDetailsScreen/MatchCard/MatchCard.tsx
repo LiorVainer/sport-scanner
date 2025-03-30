@@ -1,53 +1,48 @@
-import React from 'react';
-import MatchLabel from './MatchLabel';
-import MatchDetails from './MatchDetails';
-import styles from './scss/match-card.module.scss';
+import styles from './match-card.module.scss';
+import { Match, Package } from '@/models/package.model';
+import { romanize } from 'romans';
+import { MatchLabel } from './MatchLabel';
+import { MatchDetails } from './MatchDetails';
 
 interface MatchCardProps {
-    label: string;
-    homeTeam: string;
-    awayTeam: string;
-    location: string;
-    from: string;
-    to: string;
-    matchDate: string;
-    homeTeamImage: string;
-    awayTeamImage: string;
-    stadium: string;
-    league: string;
-    price: number;
-    linkForTicket: string;
+    match: Match;
+    singlePackage: Package;
+    itemIndex: number;
 }
 
-const MatchCard = ({
-    label,
-    location,
-    from,
-    to,
-    homeTeamImage,
-    awayTeamImage,
-    homeTeam,
-    awayTeam,
-    stadium,
-    league,
-    matchDate,
-    price,
-    linkForTicket
-}: MatchCardProps) => (
-    <div className={styles.matchCardContainer}>
-        <MatchLabel label={label} location={location} from={from} to={to} />
-        <MatchDetails
-            homeTeamImage={homeTeamImage}
-            awayTeamImage={awayTeamImage}
-            homeTeam={homeTeam}
-            awayTeam={awayTeam}
-            stadium={stadium}
-            league={league}
-            matchDate={matchDate}
-            price={price}
-            linkForTicket={linkForTicket}
-        />
-    </div>
-);
+export const MatchCard = ({ match, singlePackage, itemIndex }: MatchCardProps) => {
+    const {
+        homeTeam: { logo: homeTeamImage, name: homeTeam },
+        awayTeam: { logo: awayTeamImage, name: awayTeam },
+        stadium,
+        league,
+        date: matchDate,
+        price: { min: minPrice },
+        searchMatchTicketsLink,
+    } = match;
+    const { fromDate, toDate, location } = singlePackage;
 
-export default MatchCard;
+    const splitLocation = location.split('&')[itemIndex] || location;
+
+    return (
+        <div className={styles.matchCardContainer}>
+            <MatchLabel
+                label={`Match ${romanize(itemIndex + 1)}`}
+                location={splitLocation}
+                from={fromDate}
+                to={toDate}
+            />
+            <MatchDetails
+                homeTeamImage={homeTeamImage}
+                awayTeamImage={awayTeamImage}
+                homeTeam={homeTeam}
+                awayTeam={awayTeam}
+                stadium={stadium}
+                league={league}
+                matchDate={matchDate}
+                price={minPrice}
+                linkForTicket={searchMatchTicketsLink}
+            />
+        </div>
+    );
+};

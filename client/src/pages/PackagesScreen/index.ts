@@ -1,3 +1,2 @@
-import PackagesScreen from './PackagesScreen';
+export * from './PackagesScreen';
 
-export { PackagesScreen };

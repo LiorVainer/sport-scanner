@@ -1,63 +1,56 @@
-import React from 'react';
 import { Tag, Typography } from 'antd';
 import { EnvironmentOutlined, TrophyOutlined } from '@ant-design/icons';
-import MatchHeader from '../MatchHeader/MatchHeader';
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
+import { Match, Package } from '@/models/package.model';
+import { MatchHeader } from '../MatchHeader/MatchHeader';
 
 const { Text } = Typography;
 
 interface MatchDetailsProps {
-    from: string;
-    to: string;
-    location: string;
-    homeTeamImage: string;
-    awayTeamImage: string;
-    match: string;
-    stadium: string;
-    league: string;
-    date: string;
-    flightPrice: number;
-    matchesPrice: string;
+    match: Match;
+    singlePackage: Package;
+    matchIndex: number;
 }
 
-const MatchDetails = ({
-    from,
-    to,
-    location,
-    homeTeamImage,
-    awayTeamImage,
-    match,
-    stadium,
-    league,
-    date,
-    flightPrice,
-    matchesPrice
-}: MatchDetailsProps) => {
+export const MatchDetails = ({ match, singlePackage, matchIndex }: MatchDetailsProps) => {
+    const { homeTeam, awayTeam, stadium, league, date, price } = match;
+    const { flights, fromDate, toDate, location, flightsPrice } = singlePackage;
+
+    const departureDate = flights[matchIndex]?.departureDate || fromDate;
+    const returnDate = flights[matchIndex + 1]?.departureDate || toDate;
+    const splitLocation = location.split('&')[matchIndex] || location;
+
     return (
         <div className={styles.matchDetailsWrapper}>
-            <MatchHeader from={from} to={to} location={location} />
+            <MatchHeader from={departureDate} to={returnDate} location={splitLocation} />
             <div className={styles.divider} />
             <div className={styles.matchDetailsCard}>
-                <img src={homeTeamImage} alt={homeTeamImage} className={styles.image} />
-                <img src={awayTeamImage} alt={awayTeamImage} className={styles.image} />
+                <img src={homeTeam.logo} alt={homeTeam.name} className={styles.image} />
+                <img src={awayTeam.logo} alt={awayTeam.name} className={styles.image} />
                 <div className={styles.details}>
                     <div className={styles.titleRow}>
-                        <Text strong className={styles.matchTitle}>{match}</Text>
+                        <Text strong className={styles.matchTitle}>
+                            {`${homeTeam.name} VS ${awayTeam.name}`}
+                        </Text>
                         <Text className={styles.matchDate}>{formattedDate(date)}</Text>
                     </div>
                     <div className={styles.meta}>
-                        <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>{stadium}</Tag>
-                        <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>{league}</Tag>
+                        <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
+                            {stadium}
+                        </Tag>
+                        <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
+                            {league}
+                        </Tag>
                     </div>
                     <div className={styles.prices}>
                         <Text className={styles.priceRange}>
-                            <img src="../public/flight.png" alt="stadium" className={styles.icon} />
-                            {flightPrice}
+                            <img src="../public/flight.png" alt="Flight" className={styles.icon} />
+                            {flightsPrice}
                         </Text>
                         <Text className={styles.priceRange}>
-                            <img src="../public/stadium.png" alt="stadium" className={styles.icon} />
-                            {matchesPrice}
+                            <img src="../public/stadium.png" alt="Stadium" className={styles.icon} />
+                            {`${price.min}$ - ${price.max}$`}
                         </Text>
                     </div>
                 </div>
@@ -65,6 +58,3 @@ const MatchDetails = ({
         </div>
     );
 };
-
-
-export default MatchDetails;
