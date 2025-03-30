@@ -3,11 +3,11 @@ import {
     ExecutionTime,
     SaveObjectMethodOutputToFileParams,
     SaveTextMethodOutputToFileParams,
-} from '../types/ai.types';
+} from './ai.types';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import fs from 'fs';
 import { DATE_AND_TIME_JSON_FORMAT, formatDate } from '../utils/date.utils';
-import { AIServiceMethodToKebabCase } from '../constants/ai.const';
+import { AIServiceMethodToKebabCase } from './ai.const';
 import { CoreMessage } from 'ai';
 
 const BASE_OUTPUT_FOLDER_PATH = './output';
@@ -86,7 +86,9 @@ class AILoggerProvider {
     }
 
     generateLogMetadata = (messages: CoreMessage[], prompt?: string, execution?: ExecutionTime) => {
-        const userPrompt = prompt ?? messages.find((message) => message.role === 'user')?.content;
+        const userPrompt =
+            prompt ?? messages.filter((message) => message.role === 'user').map((message) => message.content);
+
         const systemMessages = messages
             .filter((message) => message.role === 'system')
             .map((message) => message.content);

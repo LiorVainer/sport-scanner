@@ -4,7 +4,7 @@ import { CommentRepository } from '../repositories/comment.repository';
 import mongoose from 'mongoose';
 import { CreateCommentDTO } from '../models/comment.model';
 import { matchExperienceService } from '../services/match-experience.service';
-import { AIService } from '../services/ai.service';
+import { AIService } from '../ai/ai.service';
 import { formatObject } from '../utils/formatObject.utils';
 import dotenv from 'dotenv';
 import { ENV } from '../env/env.config';
@@ -50,9 +50,9 @@ export const matchExperienceController = {
             if (userId) {
                 const result = await matchExperienceService.getAllMatchExperiencesByUserId(userId, page, limit, sortBy);
                 res.status(200).json(result);
-                return
+                return;
             }
-            res.status(500).json({ error: 'Error fetching match experiences for user'});
+            res.status(500).json({ error: 'Error fetching match experiences for user' });
         } catch (err) {
             res.status(500).json({ error: `Error fetching match experiences for user`, details: err });
         }
