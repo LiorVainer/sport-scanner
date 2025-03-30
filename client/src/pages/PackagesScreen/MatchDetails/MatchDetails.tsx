@@ -4,6 +4,7 @@ import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { Match, Package } from '@/models/package.model';
 import { MatchHeader } from '../MatchHeader/MatchHeader';
+import { TicketsPlane } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -45,11 +46,11 @@ export const MatchDetails = ({ match, singlePackage, matchIndex }: MatchDetailsP
                     </div>
                     <div className={styles.prices}>
                         <Text className={styles.priceRange}>
-                            <img src="../public/flight.png" alt="Flight" className={styles.icon} />
+                            <TicketsPlane className={styles.icon} />
                             {flightsPrice}
                         </Text>
                         <Text className={styles.priceRange}>
-                            <img src="../public/stadium.png" alt="Stadium" className={styles.icon} />
+                            <img src="/stadium.svg" alt="stadium" className={styles.icon} />
                             {`${price.min}$ - ${price.max}$`}
                         </Text>
                     </div>

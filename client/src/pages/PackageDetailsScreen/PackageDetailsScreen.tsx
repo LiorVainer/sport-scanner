@@ -1,6 +1,7 @@
 import { Typography, Button } from 'antd';
 import { PushpinOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router';
+import { Calendar } from 'lucide-react';
 import styles from './package-details-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { ROUTES } from '@/constants/routes.const';
@@ -51,7 +52,7 @@ export const PackageDetailsScreen = () => {
                 <div className={styles.packageDetails}>
                     <div className={styles.packageDetailsContainer}>
                         <Text className={styles.packageDate}>
-                            <img src="/public/calendar.png" alt="calendar" className={styles.calendarIcon} />
+                            <Calendar className={styles.calendarIcon} />
                             {formattedDate(singlePackage.fromDate)} <ArrowRightOutlined className={styles.arrowIcon} />{' '}
                             {formattedDate(singlePackage.toDate)}
                         </Text>

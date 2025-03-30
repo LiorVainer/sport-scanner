@@ -51,7 +51,7 @@ export const MatchDetails = ({
                 <div className={styles.matchDayContainer}>
                     <Text className={styles.matchDate}>{formattedDate(matchDate)}</Text>
                     <Text className={styles.matchDay}>
-                        <img src="../../public/stadium.png" alt="stadium" className={styles.stadiumIcon} />
+                        <img src="/stadium.svg" alt="stadium" className={styles.stadiumIcon} />
                         Match Day
                     </Text>
                 </div>

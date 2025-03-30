@@ -2,6 +2,7 @@ import { Typography, Button } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './flight-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
+import { TicketsPlane } from 'lucide-react';
 
 const { Text } = Typography;
 
@@ -17,9 +18,9 @@ export const FlightDetails = ({ from, to, departureDate, price, linkForTicket }:
     return (
         <div className={styles.flightDetailsContainer}>
             <div className={styles.flightRouteInfo}>
-                <img src="../../public/flight.png" alt="flight" className={styles.airplaneIcon} />
+                <TicketsPlane className={styles.airplaneIcon} />
                 <Text strong className={styles.flightRoute}>
-                    {from} <ArrowRightOutlined className={styles.arrowIcon} /> {to}
+                    {from}<ArrowRightOutlined className={styles.arrowIcon} />{to}
                 </Text>
                 <Text type="secondary" className={styles.flightDate}>
                     ({formattedDate(departureDate)})

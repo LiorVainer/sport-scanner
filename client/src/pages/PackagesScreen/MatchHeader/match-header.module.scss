@@ -1,6 +1,6 @@
 .matchHeaderContainer {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
 }
@@ -10,7 +10,7 @@
     font-weight: 600;
     padding: 0.4rem;
     border: none;
-    color: #2f4f6f;
+    color: #000;
 }
 
 .matchDates {
