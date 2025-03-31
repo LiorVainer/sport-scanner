@@ -4,20 +4,18 @@ import { PriceRangeSchema } from './price-range.model';
 
 export const PackageGenerateParamsSchema = z
     .object({
-        date: z
-            .object({
-                from: zodDate,
-                to: zodDate,
-            })
-            .optional(),
-        price: PriceRangeSchema.optional(),
+        date: z.object({
+            from: zodDate,
+            to: zodDate,
+        }),
+        price: PriceRangeSchema,
         originIATA: z.string(),
-        league: z.string().optional(),
-        team: z.string().optional(),
+        league: z.number(),
+        team: z.number(),
     })
     .refine(
         (data) => {
-            if (data.date?.from && data.date?.to) {
+            if (data.date.from && data.date.to) {
                 return new Date(data.date.from) <= new Date(data.date.to);
             }
             return true;
@@ -29,7 +27,7 @@ export const PackageGenerateParamsSchema = z
     )
     .refine(
         (data) => {
-            if (data.price?.min !== undefined && data.price?.max !== undefined) {
+            if (data.price.min !== undefined && data.price.max !== undefined) {
                 return data.price.min <= data.price.max;
             }
             return true;

@@ -1,3 +1,4 @@
+import { MAX_PRICE, MIN_PRICE } from '@/components/SearchBar/SearchBarLogic';
 import { zodDate } from '@/utils/zod.utils';
 import { z } from 'zod';
 
@@ -74,43 +75,19 @@ export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
 
-export const PackageGenerateParamsSchema = z
-    .object({
-        date: z
-            .object({
-                from: zodDate,
-                to: zodDate,
-            })
-            .optional(),
-        price: PriceRangeSchema.optional(),
-        originIATA: z.string(),
-        league: z.string().optional(),
-        team: z.string().optional(),
-        country: z.string().optional(),
-    })
-    .refine(
-        (data) => {
-            if (data.date?.from && data.date?.to) {
-                return new Date(data.date.from) <= new Date(data.date.to);
-            }
-            return true;
-        },
-        {
-            message: '`date.from` must be before or equal to `date.to`',
-            path: ['date', 'to'],
-        }
-    )
-    .refine(
-        (data) => {
-            if (data.price?.min !== undefined && data.price?.max !== undefined) {
-                return data.price.min <= data.price.max;
-            }
-            return true;
-        },
-        {
-            message: '`price.min` must be less than or equal to `price.max`',
-            path: ['price', 'max'],
-        }
-    );
+export const PackageGenerateParamsSchema = z.object({
+    originIATA: z.string().min(1, { message: 'Origin Airport is required' }),
+    date: z.object({
+        from: z.string().nonempty({ message: 'Start Date is required' }),
+        to: z.string().nonempty({ message: 'End Date is required' }),
+    }),
+    price: z.object({
+        min: z.number().min(MIN_PRICE, { message: 'Min Price is required' }),
+        max: z.number().max(MAX_PRICE, { message: 'Max Price is required' }),
+    }),
+    country: z.string().optional(),
+    league: z.number().min(1, { message: 'League is required' }),
+    team: z.number(),
+});
 
 export type PackageGenerateParams = z.infer<typeof PackageGenerateParamsSchema>;

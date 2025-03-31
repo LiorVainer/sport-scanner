@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DatePicker, Slider, Select, Button, AutoComplete } from 'antd';
+import { DatePicker, Slider, Select, Button, AutoComplete, message, Form } from 'antd';
 import dayjs from 'dayjs';
 import { EnvironmentOutlined, CalendarOutlined, TrophyOutlined, TeamOutlined, DollarOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
@@ -36,8 +36,8 @@ const SearchBar = () => {
         control,
         handleSubmit,
         watch,
-        setValue,
-        formState: { errors },
+        formState: { errors, isValid },
+        resetField,
     } = useForm<PackageGenerateParams>({
         resolver: zodResolver(PackageGenerateParamsSchema),
         defaultValues: {
@@ -46,6 +46,7 @@ const SearchBar = () => {
             price: { min: MIN_PRICE, max: MAX_PRICE },
             league: undefined,
             team: undefined,
+            country: undefined,
         },
     });
 
@@ -54,7 +55,6 @@ const SearchBar = () => {
     const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
-
     const selectedDate = watchDate?.from;
 
     const { data: countries = [] } = useQuery({
@@ -70,10 +70,11 @@ const SearchBar = () => {
         ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
     );
 
-    const onSubmit = (values: PackageGenerateParams) => {
-        console.log('Submitted form data:', values);
-
-        navigate(`${ROUTES.PACKAGES}/results`, { state: values });
+    const onSubmit = async (values: PackageGenerateParams) => {
+        const { country, ...formValues } = values;
+        console.log('Submitted form data:', formValues);
+        localStorage.setItem('formValues', JSON.stringify(formValues));
+        navigate(`${ROUTES.PACKAGES}/results`);
     };
 
     return (
@@ -84,8 +85,8 @@ const SearchBar = () => {
                 <p className={classes.secondaryTitle}>View upcoming events, explore personalized packages, and more</p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className={classes.contentDiv}>
+            <Form layout="vertical" className={classes.contentDiv} onFinish={handleSubmit(onSubmit)}>
+                <Form.Item>
                     <Controller
                         name="originIATA"
                         control={control}
@@ -93,24 +94,24 @@ const SearchBar = () => {
                             <AutoComplete
                                 {...field}
                                 allowClear
-                                className={classes.originCountry}
+                                className={classes.originAirport}
                                 placeholder="Select Origin Airport"
                                 onSearch={(value) => setOriginKeyword(value)}
                                 onSelect={(value) => {
-                                    // This will only store the IATA code (value passed from the select handler)
                                     const selectedCity = airportSuggestions.find(
                                         (city) => `${city.name} (${city.iataCode})` === value
                                     );
-                                    field.onChange(selectedCity?.iataCode || ''); // Store only the IATA code
+                                    field.onChange(selectedCity?.iataCode || '');
                                 }}
                                 options={airportSuggestions.map((city) => ({
-                                    value: `${city.name} (${city.iataCode})`, // Show name and IATA code
+                                    value: `${city.name} (${city.iataCode})`,
                                 }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                             />
                         )}
                     />
-
+                </Form.Item>
+                <Form.Item>
                     <Controller
                         name="date"
                         control={control}
@@ -127,10 +128,12 @@ const SearchBar = () => {
                                 value={field.value ? [dayjs(field.value.from), dayjs(field.value.to)] : undefined}
                                 placeholder={['Start Date', 'End Date']}
                                 suffixIcon={<CalendarOutlined />}
+                                disabledDate={(current) => current && current < dayjs().startOf('day')}
                             />
                         )}
                     />
-
+                </Form.Item>
+                <Form.Item>
                     <Controller
                         name="price"
                         control={control}
@@ -156,7 +159,8 @@ const SearchBar = () => {
                             </Select>
                         )}
                     />
-
+                </Form.Item>
+                <Form.Item>
                     <Controller
                         name="country"
                         control={control}
@@ -167,8 +171,8 @@ const SearchBar = () => {
                                 {...field}
                                 onChange={(val) => {
                                     field.onChange(val);
-                                    setValue('league', undefined);
-                                    setValue('team', undefined);
+                                    resetField('league');
+                                    resetField('team');
                                     setLeagueId(undefined);
                                 }}
                                 suffixIcon={<EnvironmentOutlined />}
@@ -181,7 +185,8 @@ const SearchBar = () => {
                             </Select>
                         )}
                     />
-
+                </Form.Item>
+                <Form.Item>
                     <Controller
                         name="league"
                         control={control}
@@ -191,22 +196,25 @@ const SearchBar = () => {
                                 className={classes.selectLeague}
                                 {...field}
                                 disabled={!watchCountry}
+                                value={field.value} // Store the league id
                                 onChange={(val, option: any) => {
-                                    field.onChange(val);
-                                    setValue('team', undefined);
-                                    setLeagueId(option?.id);
+                                    console.log({ val, option });
+                                    field.onChange(val); // Store league.id
+                                    resetField('team'); // Reset the team field
+                                    setLeagueId(val); // Set the leagueId for fetching teams
                                 }}
                                 suffixIcon={<TrophyOutlined />}
                             >
                                 {leagues.map((option) => (
-                                    <Option key={option.league.id} value={option.league.name} id={option.league.id}>
-                                        {option.league.name}
+                                    <Option key={option.league.id} value={option.league.id}>
+                                        {option.league.name} {/* Show the league name */}
                                     </Option>
                                 ))}
                             </Select>
                         )}
                     />
-
+                </Form.Item>
+                <Form.Item>
                     <Controller
                         name="team"
                         control={control}
@@ -217,22 +225,28 @@ const SearchBar = () => {
                                 {...field}
                                 allowClear
                                 disabled={!watchLeague || !selectedDate}
+                                value={field.value} // Store the team id
+                                onChange={(val, option: any) => {
+                                    field.onChange(val); // Store team.id
+                                }}
                                 suffixIcon={<TeamOutlined />}
                             >
                                 {teams.map((option) => (
-                                    <Option key={option.team.id} value={option.team.name}>
-                                        {option.team.name}
+                                    <Option key={option.team.id} value={option.team.id}>
+                                        {option.team.name} {/* Show the team name */}
                                     </Option>
                                 ))}
                             </Select>
                         )}
                     />
+                </Form.Item>
 
-                    <Button type="primary" shape="round" size="large" htmlType="submit">
+                <Form.Item>
+                    <Button type="primary" shape="round" size="large" htmlType="submit" disabled={!isValid}>
                         Search
                     </Button>
-                </div>
-            </form>
+                </Form.Item>
+            </Form>
         </div>
     );
 };

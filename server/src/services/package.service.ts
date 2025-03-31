@@ -17,32 +17,37 @@ import Bluebird from 'bluebird';
 
 class PackageService {
     generatePackage = async (packageSearchFilters: PackageGenerateParams) => {
-        const fixturesQueryParams = convertPackageGenerateParamsToFixtureQueryParams(packageSearchFilters);
-        const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
-        const soccerFixturesWithPriceRange = await this.getFixturesWithTicketPriceRange(soccerFixtures);
+        try {
+            const fixturesQueryParams = convertPackageGenerateParamsToFixtureQueryParams(packageSearchFilters);
+            const soccerFixtures = await soccerService.getFixtures(fixturesQueryParams);
+            const soccerFixturesWithPriceRange = await this.getFixturesWithTicketPriceRange(soccerFixtures);
 
-        const { flightSearchParamsArray, cityToIATACodeMap } = await generateFlightSearchParamsForFixtures(
-            soccerFixturesWithPriceRange,
-            packageSearchFilters
-        );
+            const { flightSearchParamsArray, cityToIATACodeMap } = await generateFlightSearchParamsForFixtures(
+                soccerFixturesWithPriceRange,
+                packageSearchFilters
+            );
 
-        const allFlightOffersResults = await Bluebird.map(
-            flightSearchParamsArray,
-            (params) => AmadeusService.searchFlights(params),
-            { concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT }
-        );
+            const allFlightOffersResults = await Bluebird.map(
+                flightSearchParamsArray,
+                (params) => AmadeusService.searchFlights(params),
+                { concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT }
+            );
 
-        const allFlightOffers = allFlightOffersResults.flat();
+            const allFlightOffers = allFlightOffersResults.flat();
 
-        const originIataCode = cityToIATACodeMap[packageSearchFilters.originIATA];
+            const originIataCode = cityToIATACodeMap[packageSearchFilters.originIATA];
 
-        const generatedPackages = await this.generatePackageCombinations(
-            soccerFixturesWithPriceRange,
-            allFlightOffers,
-            originIataCode
-        );
+            const generatedPackages = await this.generatePackageCombinations(
+                soccerFixturesWithPriceRange,
+                allFlightOffers,
+                originIataCode
+            );
 
-        return await this.filterInvalidPackages(generatedPackages);
+            return await this.filterInvalidPackages(generatedPackages);
+        } catch (error) {
+            console.error('Error in generatePackage:', error);
+            return [];
+        }
     };
 
     private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
