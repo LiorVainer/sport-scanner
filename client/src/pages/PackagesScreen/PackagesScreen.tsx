@@ -7,16 +7,22 @@ import { PackageSkeleton } from './PackageSkeleton/PackageSkeleton';
 import { MatchDetails } from './MatchDetails/MatchDetails';
 import { PackageFooter } from './PackageFooter/PackageFooter';
 import { ROUTES } from '@/constants/routes.const';
-import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
 import { usePackages } from '@/context/PackagesContext';
+import { Button } from 'antd';
 
 export const PackagesScreen = () => {
     const { isLoading, packages } = usePackages();
+    const navigate = useNavigate();
 
     if (!isLoading && !packages.length) {
         return (
-            <div className={styles.error}>
-                Please search again :) , press this: <Link to={ROUTES.HOME_SCREEN}>nice link</Link>
+            <div className={styles.noResults}>
+                <h2>No Packages Found 😞</h2>
+                <p>Try adjusting your search params and try again!</p>
+                <Button onClick={() => navigate(ROUTES.HOME_SCREEN)} className={styles.retryLink}>
+                    🔍 Search Again
+                </Button>
             </div>
         );
     }

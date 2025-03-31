@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     background-color: #f0f2f5;
+    gap: 2rem
 }
 
 .packageCard {
@@ -62,4 +63,36 @@
     font-size: 28px;
     color: #2f4f6f;
     flex-shrink: 0;
+}
+
+.noResults {
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 2rem auto;
+
+    h2 {
+        font-size: 1.8rem;
+        color: #ff4d4f;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 1.5rem;
+    }
+
+    .retryLink {
+        padding: 1.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        background: #1890ff;
+        border-radius: 5px;
+        text-decoration: none;
+    }
 }
