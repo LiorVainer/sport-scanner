@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { DatePicker, Slider, Select, Button, AutoComplete, message, Form } from 'antd';
+import { DatePicker, Slider, Select, Button, AutoComplete, Form } from 'antd';
 import dayjs from 'dayjs';
 import { EnvironmentOutlined, CalendarOutlined, TrophyOutlined, TeamOutlined, DollarOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
 import { calculateCurrentSeason } from '@/utils/date.utils';
@@ -14,30 +14,27 @@ import { ROUTES } from '@/constants/routes.const';
 import { useNavigate } from 'react-router';
 import { GeoService } from '@/api/services/geo.service';
 import { PackageGenerateParams, PackageGenerateParamsSchema } from '@/models/package.model';
+import { usePackages } from '@/context/PackagesContext';
+import { PackageService } from '@/api/services/package.service';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+
+const MIN_KEYWORD_LEN = 3;
+const MAX_KEYWORD_LEN = 50;
 
 const SearchBar = () => {
     const [leagueId, setLeagueId] = useState<number>();
     const [originKeyword, setOriginKeyword] = useState('');
     const [countryNameSearch, setCountryNameSearch] = useState<string | undefined>(undefined);
     const navigate = useNavigate();
-
-    const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
-        queryKey: ['originAirports', originKeyword],
-        queryFn: async () => {
-            if (originKeyword.length < 3 || originKeyword.length > 50) return [];
-            return GeoService.getCities(originKeyword);
-        },
-        enabled: originKeyword.length >= 3 && originKeyword.length <= 50,
-    });
+    const { setPackages, setIsLoading } = usePackages();
 
     const {
         control,
         handleSubmit,
         watch,
-        formState: { errors, isValid },
+        formState: { isValid },
         resetField,
     } = useForm<PackageGenerateParams>({
         resolver: zodResolver(PackageGenerateParamsSchema),
@@ -51,12 +48,19 @@ const SearchBar = () => {
         },
     });
 
-    console.log(errors);
-
     const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const selectedDate = watchDate?.from;
+
+    const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
+        queryKey: ['originAirports', originKeyword],
+        queryFn: async () => {
+            if (originKeyword.length < MIN_KEYWORD_LEN || originKeyword.length > MAX_KEYWORD_LEN) return [];
+            return GeoService.getCities(originKeyword);
+        },
+        enabled: originKeyword.length >= MIN_KEYWORD_LEN && originKeyword.length <= MAX_KEYWORD_LEN,
+    });
 
     const { data: countries = [] } = useQuery({
         queryKey: ['countries', countryNameSearch],
@@ -76,11 +80,17 @@ const SearchBar = () => {
         ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
     );
 
-    const onSubmit = async (values: PackageGenerateParams) => {
+    const { mutate: fetchPackages } = useMutation({
+        mutationFn: (params: PackageGenerateParams) => PackageService.getPackages(params),
+        onSuccess: (data) => setPackages(data),
+        onSettled: () => setIsLoading(false),
+    });
+
+    const onSubmit = (values: PackageGenerateParams) => {
         const { country, ...formValues } = values;
-        console.log('Submitted form data:', formValues);
-        localStorage.setItem('formValues', JSON.stringify(formValues));
+        setIsLoading(true);
         navigate(`${ROUTES.PACKAGES}/results`);
+        fetchPackages(formValues);
     };
 
     return (
@@ -203,18 +213,17 @@ const SearchBar = () => {
                                 className={classes.selectLeague}
                                 {...field}
                                 disabled={!Boolean(watchCountry && !countryNameSearch)}
-                                value={field.value} // Store the league id
-                                onChange={(val, option: any) => {
-                                    console.log({ val, option });
-                                    field.onChange(val); // Store league.id
-                                    resetField('team'); // Reset the team field
-                                    setLeagueId(val); // Set the leagueId for fetching teams
+                                value={field.value} 
+                                onChange={(val, _option: any) => {
+                                    field.onChange(val);
+                                    resetField('team'); 
+                                    setLeagueId(val);
                                 }}
                                 suffixIcon={<TrophyOutlined />}
                             >
                                 {leagues.map((option) => (
                                     <Option key={option.league.id} value={option.league.id}>
-                                        {option.league.name} {/* Show the league name */}
+                                        {option.league.name}
                                     </Option>
                                 ))}
                             </Select>
@@ -232,15 +241,15 @@ const SearchBar = () => {
                                 {...field}
                                 allowClear
                                 disabled={!watchLeague || !selectedDate}
-                                value={field.value} // Store the team id
-                                onChange={(val, option: any) => {
-                                    field.onChange(val); // Store team.id
+                                value={field.value} 
+                                onChange={(val, _option: any) => {
+                                    field.onChange(val);
                                 }}
                                 suffixIcon={<TeamOutlined />}
                             >
                                 {teams.map((option) => (
                                     <Option key={option.team.id} value={option.team.id}>
-                                        {option.team.name} {/* Show the team name */}
+                                        {option.team.name}
                                     </Option>
                                 ))}
                             </Select>
