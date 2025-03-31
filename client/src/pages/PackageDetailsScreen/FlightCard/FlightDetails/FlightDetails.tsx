@@ -20,7 +20,9 @@ export const FlightDetails = ({ from, to, departureDate, price, linkForTicket }:
             <div className={styles.flightRouteInfo}>
                 <TicketsPlane className={styles.airplaneIcon} />
                 <Text strong className={styles.flightRoute}>
-                    {from}<ArrowRightOutlined className={styles.arrowIcon} />{to}
+                    {from}
+                    <ArrowRightOutlined className={styles.arrowIcon} />
+                    {to}
                 </Text>
                 <Text type="secondary" className={styles.flightDate}>
                     ({formattedDate(departureDate)})
@@ -28,7 +30,7 @@ export const FlightDetails = ({ from, to, departureDate, price, linkForTicket }:
             </div>
             <div className={styles.flightPriceInfo}>
                 <div className={styles.priceContainer}>
-                    <Text className={styles.priceText}>from:</Text>
+                    <Text className={styles.priceText}>from</Text>
                     <Text strong className={styles.priceAmount}>
                         {price}$
                     </Text>

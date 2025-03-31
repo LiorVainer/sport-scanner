@@ -39,8 +39,11 @@
 .priceContainer {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    line-height: 1;
+    align-items: flex-end;
+
+    & > span {
+        line-height: 1.2;
+    }
 }
 
 .priceText {
@@ -62,7 +65,7 @@
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
     width: fit-content;
 }
 

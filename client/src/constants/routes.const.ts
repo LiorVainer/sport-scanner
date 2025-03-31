@@ -1,5 +1,5 @@
 export const ROUTES = {
-    HOME_SCREEN: '/homeScreen',
+    HOME: '/home',
     PACKAGES: '/packages',
     AUTH: '/',
 };

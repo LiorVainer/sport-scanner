@@ -1,20 +1,38 @@
+@use '../../theme/theme' as *;
+
 .packagePage {
-    background-color: #f0f2f5;
-    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-inline: 15%;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    flex: 1;
+    gap: 2rem;
 }
 
 .packageHeader {
     display: flex;
     align-items: stretch;
-    width: 69.75%;
-    margin: auto;
+    width: 100%;
+    position: relative;
     margin-top: 2rem;
+}
+
+.backArrow {
+    position: absolute;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    left: -4rem;
+    top: 0;
 }
 
 .backIcon {
     font-size: 25px;
     cursor: pointer;
     align-self: start;
+    color: $accent;
     margin-top: 1rem;
     margin-right: 2rem;
 }
@@ -25,7 +43,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
-    max-width: 81%;
 }
 
 .packageTitle {
@@ -33,9 +50,17 @@
     font-style: italic;
     font-size: 42px;
     line-height: 48px;
-    color: #2f4f6f;
+    color: $accent !important;
     letter-spacing: -2px;
     vertical-align: middle;
+}
+
+.cardsSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 2rem;
 }
 
 .packageDescription {
@@ -74,7 +99,7 @@
 
 .packagePrice {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 400;
     color: #1d3557;
 }
 

@@ -1,266 +1,262 @@
-import React, { useState } from 'react';
-import { DatePicker, Slider, Select, Button } from 'antd';
+import React, {useState} from 'react';
+import {AutoComplete, Button, DatePicker, Form, Select, Slider} from 'antd';
 import dayjs from 'dayjs';
-import {
-  EnvironmentOutlined,
-  CalendarOutlined,
-  DollarOutlined,
-  TrophyOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
-import { SoccerService } from '@/api/services/soccer.service';
-import { calculateCurrentSeason } from '@/utils/date.utils';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
+import {CalendarOutlined, DollarOutlined, EnvironmentOutlined, TeamOutlined, TrophyOutlined} from '@ant-design/icons';
+import {useQuery} from '@tanstack/react-query';
+import {useQueryOnDefinedParam} from '@api/hooks/service.query.ts';
+import {SoccerService} from '@/api/services/soccer.service';
+import {calculateCurrentSeason} from '@/utils/date.utils';
+import {Controller, useForm} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {MAX_PRICE, MIN_PRICE} from './SearchBarLogic';
 import classes from './search-bar.module.scss';
-import { ROUTES } from '@/constants/routes.const';
-import { useNavigate } from 'react-router';
-import { AutoComplete } from 'antd';
-import { GeoService } from '@/api/services/geo.service';
+import {ROUTES} from '@/constants/routes.const';
+import {useNavigate} from 'react-router';
+import {GeoService} from '@/api/services/geo.service';
+import {PackageGenerateParams, PackageGenerateParamsSchema} from '@/models/package.model';
+import {usePackages} from '@/context/PackagesContext';
 
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+const {RangePicker} = DatePicker;
+const {Option} = Select;
 
-const originAirports = [
-  'Madrid (MAD)',
-  'Barcelona (BCN)',
-  'Seville (SVQ)',
-  'London Heathrow (LHR)',
-  'Manchester (MAN)',
-  'Frankfurt (FRA)',
-  'Berlin (BER)',
-  'Munich (MUC)',
-];
-
-const SearchFormSchema = z.object({
-  originAirport: z.string().optional(),
-  dateRange: z.any().optional(),
-  priceRange: z.tuple([z.number(), z.number()]).optional(),
-  country: z.string().optional(),
-  league: z.string().optional(),
-  team: z.string().optional(),
-});
-
-type SearchFormValues = z.infer<typeof SearchFormSchema>;
-
-const DEFAULT_VALUES: SearchFormValues = {
-  originAirport: undefined,
-  dateRange: null,
-  priceRange: [MIN_PRICE, MAX_PRICE],
-  country: undefined,
-  league: undefined,
-  team: undefined,
-};
+const MIN_KEYWORD_LEN = 3;
+const MAX_KEYWORD_LEN = 50;
 
 const SearchBar = () => {
-  const [leagueId, setLeagueId] = useState<number>();
-  const [originKeyword, setOriginKeyword] = useState('');
-  const {
-    data: airportSuggestions = [],
-    refetch: refetchAirports,
-    isLoading: isAirportLoading,
-  } = useQuery({
-    queryKey: ['originAirports', originKeyword],
-    queryFn: () => GeoService.getCities(originKeyword),
-    enabled: false,
-  });
+    const [leagueId, setLeagueId] = useState<number>();
+    const [originKeyword, setOriginKeyword] = useState('');
+    const [countryNameSearch, setCountryNameSearch] = useState<string | undefined>(undefined);
+    const navigate = useNavigate();
+    const {fetchPackages} = usePackages();
 
-  const navigate = useNavigate();
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: {isValid},
+        resetField,
+    } = useForm<PackageGenerateParams>({
+        resolver: zodResolver(PackageGenerateParamsSchema),
+        defaultValues: {
+            originIATA: '',
+            date: undefined,
+            price: {min: MIN_PRICE, max: MAX_PRICE},
+            league: undefined,
+            team: undefined,
+            country: undefined,
+        },
+    });
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-  } = useForm<SearchFormValues>({
-    defaultValues: DEFAULT_VALUES,
-    resolver: zodResolver(SearchFormSchema),
-  });
+    const watchDate = watch('date');
+    const watchCountry = watch('country');
+    const watchLeague = watch('league');
+    const selectedDate = watchDate?.from;
 
-  const watchDateRange = watch('dateRange');
-  const watchCountry = watch('country');
-  const watchLeague = watch('league');
+    const {data: airportSuggestions = [], isLoading: isAirportLoading} = useQuery({
+        queryKey: ['originAirports', originKeyword],
+        queryFn: async () => {
+            if (originKeyword.length < MIN_KEYWORD_LEN || originKeyword.length > MAX_KEYWORD_LEN) return [];
+            return GeoService.getCities(originKeyword);
+        },
+        enabled: originKeyword.length >= MIN_KEYWORD_LEN && originKeyword.length <= MAX_KEYWORD_LEN,
+    });
 
-  const selectedDate = watchDateRange?.[0]?.toDate();
+    const {data: countries = []} = useQuery({
+        queryKey: ['countries', countryNameSearch],
+        queryFn: () => GeoService.getCountries(countryNameSearch),
+        enabled: !!countryNameSearch,
+    });
 
-  const { data: countries = [] } = useQuery({
-    queryKey: ['countries'],
-    queryFn: SoccerService.getCountries,
-  });
+    const {data: leagues = []} = useQueryOnDefinedParam(
+        'leagues',
+        watchCountry && !countryNameSearch ? watchCountry : undefined,
+        SoccerService.getLeagues
+    );
 
-  const { data: leagues = [] } = useQueryOnDefinedParam(
-    'leagues',
-    watchCountry,
-    SoccerService.getLeagues
-  );
+    const {data: teams = []} = useQueryOnDefinedParam(
+        'teams',
+        leagueId && selectedDate ? {leagueId, season: calculateCurrentSeason(new Date(selectedDate))} : undefined,
+        ({leagueId, season}) => SoccerService.getTeams({leagueId, season})
+    );
 
-  const { data: teams = [] } = useQueryOnDefinedParam(
-    'teams',
-    leagueId && selectedDate
-      ? { leagueId, season: calculateCurrentSeason(selectedDate) }
-      : undefined,
-    ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
-  );
+    const onSubmit = (values: PackageGenerateParams) => {
+        const {country, ...formValues} = values;
+        navigate(`${ROUTES.PACKAGES}/results`);
+        fetchPackages(formValues);
+    };
 
-  const onSubmit = (values: SearchFormValues) => {
-    console.log('Submitted form data:', values);
-    navigate(`${ROUTES.PACKAGES}/results`);
-  };
+    return (
+        <div className={classes.main}>
+            <div className={classes.overlay}/>
+            <div className={classes.title}>
+                <h1 className={classes.mainTitle}>Find your next soccer experience</h1>
+                <p className={classes.secondaryTitle}>View upcoming events, explore personalized packages, and more</p>
+            </div>
 
-  return (
-    <div className={classes.mainDiv}>
-      <div className={classes.shadowDiv} />
-      <div className={classes.titleDiv}>
-        <h1 className={classes.mainTitle}>Find your next soccer experience</h1>
-        <p className={classes.secondaryTitle}>
-          View upcoming events, explore personalized packages, and more
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className={classes.contentDiv}>
-        <Controller
-          name="originAirport"
-          control={control}
-          render={({ field }) => (
-            <AutoComplete
-              {...field}
-              allowClear
-              className={classes.originCountry}
-              placeholder="Select Origin Airport"
-              onSearch={(value) => {
-                setOriginKeyword(value);
-                refetchAirports();
-              }}
-              options={airportSuggestions.map((city) => ({
-                value: `${city.name}${city.iataCode ? ` (${city.iataCode})` : ''}`,
-              }))}
-              notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
-            />
-          )}
-        />
-
-          <Controller
-            name="dateRange"
-            control={control}
-            render={({ field }) => (
-              <RangePicker
-                className={classes.dateRange}
-                {...field}
-                placeholder={['Start Date', 'End Date']}
-                suffixIcon={<CalendarOutlined />}
-              />
-            )}
-          />
-
-          <Controller
-            name="priceRange"
-            control={control}
-            render={({ field }) => (
-              <Select
-                value={`${field.value?.[0]} - ${field.value?.[1]}`}
-                className={classes.priceRange}
-                suffixIcon={<DollarOutlined />}
-                dropdownRender={() => (
-                  <div style={{ padding: 12 }}>
-                    <Slider
-                      range
-                      min={MIN_PRICE}
-                      max={MAX_PRICE}
-                      value={field.value}
-                      onChange={(val) => field.onChange(val as [number, number])}
-                      tooltip={{ formatter: (val) => `$${val}` }}
+            <Form layout="vertical" className={classes.content} onFinish={handleSubmit(onSubmit)}>
+                <Form.Item>
+                    <Controller
+                        name="originIATA"
+                        control={control}
+                        render={({field}) => (
+                            <AutoComplete
+                                {...field}
+                                allowClear
+                                className={classes.originAirport}
+                                placeholder="Select Origin Airport"
+                                onSearch={(value) => setOriginKeyword(value)}
+                                onSelect={(value) => {
+                                    const selectedCity = airportSuggestions.find(
+                                        (city) => `${city.name} (${city.iataCode})` === value
+                                    );
+                                    field.onChange(selectedCity?.iataCode || '');
+                                }}
+                                options={airportSuggestions.map((city) => ({
+                                    value: `${city.name} (${city.iataCode})`,
+                                }))}
+                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                            />
+                        )}
                     />
-                  </div>
-                )}
-              >
-                <Option value="budget">{`${field.value?.[0]} - ${field.value?.[1]}`}</Option>
-              </Select>
-            )}
-          />
+                </Form.Item>
+                <Form.Item>
+                    <Controller
+                        name="date"
+                        control={control}
+                        render={({field}) => (
+                            <RangePicker
+                                className={classes.dateRange}
+                                onChange={(dates) => {
+                                    field.onChange(
+                                        dates && dates[0] && dates[1]
+                                            ? {from: dates[0].format('YYYY-MM-DD'), to: dates[1].format('YYYY-MM-DD')}
+                                            : undefined
+                                    );
+                                }}
+                                value={field.value ? [dayjs(field.value.from), dayjs(field.value.to)] : undefined}
+                                placeholder={['Start Date', 'End Date']}
+                                suffixIcon={<CalendarOutlined/>}
+                                disabledDate={(current) => current && current < dayjs().startOf('day')}
+                            />
+                        )}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Controller
+                        name="price"
+                        control={control}
+                        render={({field}) => (
+                            <Select
+                                value={`${field.value?.min} - ${field.value?.max}`}
+                                className={classes.priceRange}
+                                suffixIcon={<DollarOutlined/>}
+                                dropdownRender={() => (
+                                    <div style={{padding: 12}}>
+                                        <Slider
+                                            range
+                                            min={MIN_PRICE}
+                                            max={MAX_PRICE}
+                                            value={[field.value?.min ?? MIN_PRICE, field.value?.max ?? MAX_PRICE]}
+                                            onChange={(val) => field.onChange({min: val[0], max: val[1]})}
+                                            tooltip={{formatter: (val) => `$${val}`}}
+                                        />
+                                    </div>
+                                )}
+                            >
+                                <Option value="budget">{`${field.value?.min} - ${field.value?.max}`}</Option>
+                            </Select>
+                        )}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Controller
+                        name="country"
+                        control={control}
+                        render={({field}) => (
+                            <AutoComplete
+                                {...field}
+                                allowClear
+                                className={classes.selectCountry}
+                                placeholder="Select Country"
+                                onSearch={(value) => setCountryNameSearch(value)}
+                                onSelect={(value) => {
+                                    setCountryNameSearch(undefined);
+                                    resetField('league');
+                                    resetField('team');
+                                    field.onChange(value);
+                                }}
+                                options={countries.map((country) => ({
+                                    value: country.name,
+                                }))}
+                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                suffixIcon={<EnvironmentOutlined/>}
+                            />
+                        )}
+                    />
+                </Form.Item>
 
-          <Controller
-            name="country"
-            control={control}
-            render={({ field }) => (
-              <Select
-                placeholder="Select Country"
-                className={classes.selectCountry}
-                {...field}
-                onChange={(val) => {
-                  field.onChange(val);
-                  setValue('league', '');
-                  setValue('team', '');
-                  setLeagueId(undefined);
-                }}
-                suffixIcon={<EnvironmentOutlined />}
-              >
-                {countries.map((option) => (
-                  <Option key={option.code} value={option.name}>
-                    {option.name}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          />
+                <Form.Item>
+                    <Controller
+                        name="league"
+                        control={control}
+                        render={({field}) => (
+                            <Select
+                                placeholder="Select League"
+                                className={classes.selectLeague}
+                                {...field}
+                                disabled={!Boolean(watchCountry && !countryNameSearch)}
+                                value={field.value}
+                                onChange={(val, _option: any) => {
+                                    field.onChange(val);
+                                    resetField('team');
+                                    setLeagueId(val);
+                                }}
+                                suffixIcon={<TrophyOutlined/>}
+                            >
+                                {leagues.map((option) => (
+                                    <Option key={option.league.id} value={option.league.id}>
+                                        {option.league.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        )}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Controller
+                        name="team"
+                        control={control}
+                        render={({field}) => (
+                            <Select
+                                placeholder="Select Team (Optional)"
+                                className={classes.selectTeam}
+                                {...field}
+                                allowClear
+                                disabled={!watchLeague || !selectedDate}
+                                value={field.value}
+                                onChange={(val, _option: any) => {
+                                    field.onChange(val);
+                                }}
+                                suffixIcon={<TeamOutlined/>}
+                            >
+                                {teams.map((option) => (
+                                    <Option key={option.team.id} value={option.team.id}>
+                                        {option.team.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        )}
+                    />
+                </Form.Item>
 
-          <Controller
-            name="league"
-            control={control}
-            render={({ field }) => (
-              <Select
-                placeholder="Select League"
-                className={classes.selectLeague}
-                {...field}
-                disabled={!watchCountry}
-                onChange={(val, option: any) => {
-                  field.onChange(val);
-                  setValue('team', '');
-                  setLeagueId(option?.id);
-                }}
-                suffixIcon={<TrophyOutlined />}
-              >
-                {leagues.map((option) => (
-                  <Option key={option.league.id} value={option.league.name} id={option.league.id}>
-                    {option.league.name}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          />
-
-          <Controller
-            name="team"
-            control={control}
-            render={({ field }) => (
-              <Select
-                placeholder="Select Team (Optional)"
-                className={classes.selectTeam}
-                {...field}
-                allowClear
-                disabled={!watchLeague || !selectedDate}
-                suffixIcon={<TeamOutlined />}
-              >
-                {teams.map((option) => (
-                  <Option key={option.team.id} value={option.team.name}>
-                    {option.team.name}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          />
-
-          <Button type="primary" shape="round" size="large" htmlType="submit">
-            Search
-          </Button>
+                <Form.Item>
+                    <Button type="primary" shape="round" size="large" htmlType="submit" disabled={!isValid}>
+                        Search
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default SearchBar;
