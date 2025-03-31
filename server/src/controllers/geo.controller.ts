@@ -1,15 +1,21 @@
 import { Request, Response } from 'express';
 import { AmadeusService } from '../services/amadeus.service';
-import { CityLocationSchema, CitySearchParams, CitySearchParamsSchema } from '../models/geo.model';
+import { CityLocationSchema, CitySearchParams, CitySearchParamsSchema, Country } from '../models/geo.model';
 import { soccerService } from '../services/soccer.service';
 
 export const geoController = {
-    getCountries: async (_req: Request, res: Response) => {
+    getCountries: async (req: Request, res: Response): Promise<any> => {
         try {
-            const countries = await soccerService.getCountries();
-            res.status(200).json(countries);
+            const name = req.query.name as string;
+            const countries = (await soccerService.getCountries()) ?? [];
+            if (name) {
+                const regex = new RegExp(name, 'i');
+                const filteredCountries = countries.filter((country: Country) => regex.test(country.name));
+                return res.status(200).json(filteredCountries);
+            }
+            return res.status(200).json(countries);
         } catch (e) {
-            res.status(500).json({ message: 'Error fetching countries', error: e });
+            return res.status(500).json({ message: 'Error fetching countries', error: e });
         }
     },
     getCities: async (req: Request<any, any, CitySearchParams>, res: Response) => {

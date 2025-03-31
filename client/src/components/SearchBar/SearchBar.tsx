@@ -21,6 +21,7 @@ const { Option } = Select;
 const SearchBar = () => {
     const [leagueId, setLeagueId] = useState<number>();
     const [originKeyword, setOriginKeyword] = useState('');
+    const [countryNameSearch, setCountryNameSearch] = useState<string | undefined>(undefined);
     const navigate = useNavigate();
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
@@ -58,11 +59,16 @@ const SearchBar = () => {
     const selectedDate = watchDate?.from;
 
     const { data: countries = [] } = useQuery({
-        queryKey: ['countries'],
-        queryFn: GeoService.getCountries,
+        queryKey: ['countries', countryNameSearch],
+        queryFn: () => GeoService.getCountries(countryNameSearch),
+        enabled: !!countryNameSearch,
     });
 
-    const { data: leagues = [] } = useQueryOnDefinedParam('leagues', watchCountry, SoccerService.getLeagues);
+    const { data: leagues = [] } = useQueryOnDefinedParam(
+        'leagues',
+        watchCountry && !countryNameSearch ? watchCountry : undefined,
+        SoccerService.getLeagues
+    );
 
     const { data: teams = [] } = useQueryOnDefinedParam(
         'teams',
@@ -121,7 +127,7 @@ const SearchBar = () => {
                                 onChange={(dates) => {
                                     field.onChange(
                                         dates && dates[0] && dates[1]
-                                            ? { from: dates[0].toISOString(), to: dates[1].toISOString() }
+                                            ? { from: dates[0].format('YYYY-MM-DD'), to: dates[1].format('YYYY-MM-DD') }
                                             : undefined
                                     );
                                 }}
@@ -165,27 +171,28 @@ const SearchBar = () => {
                         name="country"
                         control={control}
                         render={({ field }) => (
-                            <Select
-                                placeholder="Select Country"
-                                className={classes.selectCountry}
+                            <AutoComplete
                                 {...field}
-                                onChange={(val) => {
-                                    field.onChange(val);
+                                allowClear
+                                className={classes.selectCountry}
+                                placeholder="Select Country"
+                                onSearch={(value) => setCountryNameSearch(value)}
+                                onSelect={(value) => {
+                                    setCountryNameSearch(undefined);
                                     resetField('league');
                                     resetField('team');
-                                    setLeagueId(undefined);
+                                    field.onChange(value);
                                 }}
+                                options={countries.map((country) => ({
+                                    value: country.name,
+                                }))}
+                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<EnvironmentOutlined />}
-                            >
-                                {countries.map((option) => (
-                                    <Option key={option.code} value={option.name}>
-                                        {option.name}
-                                    </Option>
-                                ))}
-                            </Select>
+                            />
                         )}
                     />
                 </Form.Item>
+
                 <Form.Item>
                     <Controller
                         name="league"
@@ -195,7 +202,7 @@ const SearchBar = () => {
                                 placeholder="Select League"
                                 className={classes.selectLeague}
                                 {...field}
-                                disabled={!watchCountry}
+                                disabled={!Boolean(watchCountry && !countryNameSearch)}
                                 value={field.value} // Store the league id
                                 onChange={(val, option: any) => {
                                     console.log({ val, option });

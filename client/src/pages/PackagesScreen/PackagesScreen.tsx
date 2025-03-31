@@ -24,7 +24,6 @@ export const PackagesScreen = () => {
         queryFn: () => PackageService.getPackages(savedFormValues),
         enabled: Object.keys(savedFormValues).length > 0,
         staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
-        // cacheTime: 1000 * 60 * 10, // Cache lasts for 10 minutes
     });
 
     useEffect(() => {
@@ -38,7 +37,7 @@ export const PackagesScreen = () => {
         return <div className={styles.error}>Error loading packages.</div>;
     }
 
-    if (packages.length === 0) {
+    if (!isLoading && packages.length === 0) {
         return (
             <div className={styles.error}>
                 Please search again :) ,press this: <Link to={ROUTES.HOME_SCREEN}>nice link</Link>

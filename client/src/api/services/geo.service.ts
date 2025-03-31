@@ -34,9 +34,9 @@ export const GeoService = {
         }
     },
 
-    async getCountries() {
+    async getCountries(name?: string) {
         try {
-            const { data } = await axiosInstance.get<Country[]>(`/geo/countries`);
+            const { data } = await axiosInstance.get<Country[]>(`/geo/countries`, { params: { name } });
             return data;
         } catch (error) {
             console.error('Error fetching countries:', (error as any).message);
