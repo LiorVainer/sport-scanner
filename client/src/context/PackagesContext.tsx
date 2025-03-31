@@ -1,21 +1,24 @@
-import { createContext, useContext, useState } from 'react';
-import { Package } from '@/models/package.model';
+import {createContext, useContext} from 'react';
+import {Package, PackageGenerateParams} from '@/models/package.model';
+import {UseMutateFunction, useMutation} from "@tanstack/react-query";
+import {PackageService} from "@api/services/package.service.ts";
 
 interface PackagesContextType {
-    packages: Package[];
-    setPackages: (packages: Package[]) => void;
+    packages: Package[] | undefined;
     isLoading: boolean;
-    setIsLoading: (loading: boolean) => void;
+    fetchPackages: UseMutateFunction<Package[], Error, PackageGenerateParams>
 }
 
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
 
-export const PackagesProvider = ({ children }: { children: React.ReactNode }) => {
-    const [packages, setPackages] = useState<Package[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+export const PackagesProvider = ({children}: { children: React.ReactNode }) => {
+
+    const {mutate: fetchPackages, isPending, data: packages} = useMutation({
+        mutationFn: (params: PackageGenerateParams) => PackageService.getPackages(params),
+    });
 
     return (
-        <PackagesContext.Provider value={{ packages, setPackages, isLoading, setIsLoading }}>
+        <PackagesContext.Provider value={{packages, isLoading: isPending, fetchPackages}}>
             {children}
         </PackagesContext.Provider>
     );

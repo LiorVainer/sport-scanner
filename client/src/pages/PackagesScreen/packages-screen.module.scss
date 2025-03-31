@@ -1,98 +1,99 @@
 .page {
-    display: flex;
-    flex-direction: column;
-    background-color: #f0f2f5;
-    gap: 2rem
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+  padding: 5rem;
+  gap: 3rem;
 }
 
 .packageCard {
-    background-color: #ffffff;
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    transition: box-shadow 0.2s ease;
-    max-width: 60%;
-    min-width: 31.5%;
-    margin: auto;
-    overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: box-shadow 0.2s ease;
+  max-width: 60%;
+  min-width: 31.5%;
+  margin-inline: auto;
+  overflow: hidden;
 }
 
 .divider {
-    height: 1px;
-    background-color: #e0e0e0;
-    margin: 0.25rem 0 0.75rem;
-    width: 100%;
-    border-radius: 1px;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.25rem 0 0.75rem;
+  width: 100%;
+  border-radius: 1px;
 }
 
 .packageCard:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .matches {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    gap: 3rem;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  gap: 3rem;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 .matches::-webkit-scrollbar {
-    height: 10px;
+  height: 10px;
 }
 
 .matches::-webkit-scrollbar-thumb {
-    background-color: #b0b0b0;
-    border-radius: 10px;
+  background-color: #b0b0b0;
+  border-radius: 10px;
 }
 
 .matchItem {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 3rem;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
 }
 
 .arrowIcon {
-    font-size: 28px;
-    color: #2f4f6f;
-    flex-shrink: 0;
+  font-size: 28px;
+  color: #2f4f6f;
+  flex-shrink: 0;
 }
 
 .noResults {
-    text-align: center;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: 2rem auto;
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 2rem auto;
 
-    h2 {
-        font-size: 1.8rem;
-        color: #ff4d4f;
-        margin-bottom: 0.5rem;
-    }
+  h2 {
+    font-size: 1.8rem;
+    color: #ff4d4f;
+    margin-bottom: 0.5rem;
+  }
 
-    p {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 1.5rem;
-    }
+  p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
 
-    .retryLink {
-        padding: 1.75rem 1.5rem;
-        font-size: 1rem;
-        font-weight: bold;
-        color: #fff;
-        background: #1890ff;
-        border-radius: 5px;
-        text-decoration: none;
-    }
+  .retryLink {
+    padding: 1.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background: #1890ff;
+    border-radius: 5px;
+    text-decoration: none;
+  }
 }

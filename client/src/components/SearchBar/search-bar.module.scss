@@ -1,99 +1,114 @@
 @use '../../theme/theme' as theme;
 
 .container {
-    padding-inline: 10rem;
-    gap: 2rem;
-    height: 100%;
-    padding-block: 5rem;
-    overflow: hidden;
+  padding-inline: 10rem;
+  gap: 2rem;
+  height: 100%;
+  padding-block: 5rem;
+  overflow: hidden;
 }
 
-.mainDiv { 
-    position: relative;
-    background-image: url("/stadium.avif");
-    background-size: cover;
-    background-position: center;
-    border-radius: 24px;
-    padding: 64px 24px;
-    margin: 0 auto;
-    overflow: hidden;
-    text-align: center;
-    max-width: 80vw;
+.main {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: url("/stadium.avif");
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  padding: 4rem;
+  overflow: hidden;
+  max-width: 80vw;
 }
 
-.shadowDiv {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 24px;
-    z-index: 0;
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  z-index: 0;
 }
 
-.titleDiv {
-    position: relative;
-    z-index: 1;
-    color: #fff;
-    margin-bottom: 40px;
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  margin-bottom: 40px;
 }
 
 .mainTitle {
-    font-size: 36;
-    font-weight: bold;
-    margin: 0;
+  font-size: 36;
+  font-weight: bold;
+  margin: 0;
 }
 
 .secondaryTitle {
-    font-size: 16px;
-    margin-top: 8px;
+  font-size: 16px;
+  margin-top: 8px;
 }
 
-.contentDiv { 
-    background-color: rgb(187, 187, 187);
-    border-radius: 50px;
-    padding: 20px 24px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: baseline;
-    position: relative;
-    z-index: 1;
+:global {
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+
+  .ant-select-disabled {
+    background: #eae9e9 !important;
+  }
+}
+
+.content {
+  background-color: rgb(187, 187, 187);
+  border-radius: 50px;
+  padding: 20px 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  position: relative;
+  z-index: 1;
 }
 
 .originCountry {
-    border-radius: 32px;
-    width: 220px;
+  border-radius: 32px;
+  width: 220px;
 }
 
 .originAirport {
-    border-radius: 5px;
-    min-width: 200px;
-    background-color: grey;
+  border-radius: 5px;
+  min-width: 200px;
+  background-color: grey;
 }
 
 .dateRange {
-    border-radius: 5px;
-    width: 220px;
+  border-radius: 5px;
+  width: 220px;
 }
 
 .priceRange {
-    border-radius: 32px;
-    width: 180px;
+  border-radius: 32px;
+  width: 180px;
 }
 
 .selectCountry {
-    border-radius: 32px;
-    min-width: 200px;
+  border-radius: 32px;
+  min-width: 200px;
 }
 
 .selectLeague {
-    border-radius: 5px;
-    width: 200px;
-    background-color: grey;
+  border-radius: 5px;
+  width: 200px;
+  background-color: grey;
 }
 
 .selectTeam {
-    border-radius: 5px;
-    width: 200px;
-    background-color: grey;
+  border-radius: 5px;
+  width: 200px;
+  background-color: grey;
 }

@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import { motion } from 'framer-motion';
-import { Avatar, Button, Form, Input, Typography, Upload } from 'antd';
-import { UploadOutlined, UserOutlined } from '@ant-design/icons';
+import {useState} from 'react';
+import {CredentialResponse, GoogleLogin} from '@react-oauth/google';
+import {motion} from 'framer-motion';
+import {Avatar, Button, Form, Input, Typography, Upload} from 'antd';
+import {UploadOutlined, UserOutlined} from '@ant-design/icons';
 
-import { AuthService } from '@/api/services/auth.service';
+import {AuthService} from '@/api/services/auth.service';
 import styles from './auth-page.module.scss';
-import { FileService } from '@api/services/file.service.ts';
-import { AuthResponse, LoginPayload, RegisterPayload } from '@/models/user.model.ts';
-import { useAuth } from '@/context/AuthContext.tsx';
-import { AxiosError } from 'axios';
-import { useNavigate } from 'react-router';
-import { Screen } from '@components/Screen';
-import { AuthFormValidationRules } from '@pages/AuthPage/auth.validation.ts';
+import {FileService} from '@api/services/file.service.ts';
+import {AuthResponse, LoginPayload, RegisterPayload} from '@/models/user.model.ts';
+import {useAuth} from '@/context/AuthContext.tsx';
+import {AxiosError} from 'axios';
+import {useNavigate} from 'react-router';
+import {Screen} from '@components/Screen';
+import {AuthFormValidationRules} from '@pages/AuthPage/auth.validation.ts';
 import clsx from 'clsx';
-import { AuthFormAnimationVariants } from '@pages/AuthPage/auth.animations.ts';
-import { ROUTES } from '@/constants/routes.const';
+import {AuthFormAnimationVariants} from '@pages/AuthPage/auth.animations.ts';
+import {ROUTES} from '@/constants/routes.const';
 
-const { Text } = Typography;
+const {Text} = Typography;
 
 export interface RegistrationFormValues {
     username: string;
@@ -34,11 +34,11 @@ export const AuthPage = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string>('');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const { handleAuthResponse } = useAuth();
+    const {handleAuthResponse} = useAuth();
 
     const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
         try {
-            const { credential } = response;
+            const {credential} = response;
             if (!credential) {
                 throw new Error('No credential received');
             }
@@ -50,7 +50,7 @@ export const AuthPage = () => {
             }
 
             handleAuthResponse(loginResponse);
-            navigate(ROUTES.HOME_SCREEN);
+            navigate(ROUTES.HOME);
             // navigate(`${ROUTES.PACKAGES}/results`);
         } catch (error) {
             console.error('Google login error', error);
@@ -67,7 +67,7 @@ export const AuthPage = () => {
                 if (selectedFile) {
                     const formData = new FormData();
                     formData.append('file', selectedFile);
-                    const { data } = await FileService.handleUpload(formData);
+                    const {data} = await FileService.handleUpload(formData);
                     uploadedImageUrl = data.url.split('public/')[1];
                 }
                 const user: RegisterPayload = {
@@ -94,7 +94,7 @@ export const AuthPage = () => {
 
         if (response) {
             handleAuthResponse(response);
-            navigate(ROUTES.HOME_SCREEN);
+            navigate(ROUTES.HOME);
             // navigate(`${ROUTES.PACKAGES}/results`);
         }
     };
@@ -104,7 +104,7 @@ export const AuthPage = () => {
             <motion.div
                 className={styles.authBox}
                 layout
-                transition={{ type: 'spring', stiffness: 120, damping: 20, duration: 0.3 }}
+                transition={{type: 'spring', stiffness: 120, damping: 20, duration: 0.3}}
             >
                 <div className={styles.header}>
                     <h3>{isSignUp ? 'Sign Up' : 'Sign In'}</h3>
@@ -123,7 +123,7 @@ export const AuthPage = () => {
                                 <Form.Item name="picture">
                                     <Avatar
                                         src={imageUrl || undefined}
-                                        icon={!imageUrl ? <UserOutlined /> : undefined}
+                                        icon={!imageUrl ? <UserOutlined/> : undefined}
                                         size={100}
                                     />
                                 </Form.Item>
@@ -151,7 +151,7 @@ export const AuthPage = () => {
                                         }}
                                         showUploadList={false}
                                     >
-                                        <Button className={styles.uploadButton} icon={<UploadOutlined />} block>
+                                        <Button className={styles.uploadButton} icon={<UploadOutlined/>} block>
                                             Upload Your Picture
                                         </Button>
                                     </Upload>
@@ -162,7 +162,7 @@ export const AuthPage = () => {
                                     className={styles.inputField}
                                     rules={AuthFormValidationRules.username}
                                 >
-                                    <Input placeholder="Enter your username" />
+                                    <Input placeholder="Enter your username"/>
                                 </Form.Item>
                             </>
                         )}
@@ -173,7 +173,7 @@ export const AuthPage = () => {
                             className={styles.inputField}
                             rules={AuthFormValidationRules.email}
                         >
-                            <Input placeholder="Enter your email" />
+                            <Input placeholder="Enter your email"/>
                         </Form.Item>
 
                         <Form.Item
@@ -182,7 +182,7 @@ export const AuthPage = () => {
                             className={clsx(styles.password, styles.inputField)}
                             rules={AuthFormValidationRules.password}
                         >
-                            <Input.Password placeholder="Enter your password" />
+                            <Input.Password placeholder="Enter your password"/>
                         </Form.Item>
 
                         {errorMessage && (
