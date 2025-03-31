@@ -1,103 +1,110 @@
+@use '../../theme/theme' as *;
+
 .packagePage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-inline: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-inline: 15%;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    flex: 1;
+    gap: 2rem;
 }
 
 .packageHeader {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  position: relative;
-  margin-top: 2rem;
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    position: relative;
+    margin-top: 2rem;
 }
 
 .backArrow {
-  position: absolute;
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-start;
-  left: -4rem;
-  top: 0;
+    position: absolute;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    left: -4rem;
+    top: 0;
 }
 
 .backIcon {
-  font-size: 25px;
-  cursor: pointer;
-  align-self: start;
-  margin-top: 1rem;
-  margin-right: 2rem;
+    font-size: 25px;
+    cursor: pointer;
+    align-self: start;
+    color: $accent;
+    margin-top: 1rem;
+    margin-right: 2rem;
 }
 
 .packageInfo {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.5rem;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
 }
 
 .packageTitle {
-  font-weight: 900;
-  font-style: italic;
-  font-size: 42px;
-  line-height: 48px;
-  color: #2f4f6f;
-  letter-spacing: -2px;
-  vertical-align: middle;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 42px;
+    line-height: 48px;
+    color: $accent !important;
+    letter-spacing: -2px;
+    vertical-align: middle;
 }
 
 .cardsSection {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 2rem;
 }
 
 .packageDescription {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #3a4d63;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: #3a4d63;
 }
 
 .packageDetails {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2rem;
 }
 
 .packageDetailsContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .packageDate {
-  font-size: 20px;
-  color: #2f4f6f;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
+    font-size: 20px;
+    color: #2f4f6f;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
 }
 
 .calendarIcon {
-  width: 17px;
-  height: 17px;
+    width: 17px;
+    height: 17px;
 }
 
 .packagePrice {
-  font-size: 18px;
-  font-weight: bold;
-  color: #1d3557;
+    font-size: 18px;
+    font-weight: 400;
+    color: #1d3557;
 }
 
 .saveButton {
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 1.3rem;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 1.3rem;
 }

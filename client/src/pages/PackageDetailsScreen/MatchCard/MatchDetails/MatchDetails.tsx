@@ -50,7 +50,7 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                 </div>
                 <div className={styles.matchPriceInfo}>
                     <div className={styles.priceContainer}>
-                        <Text className={styles.priceText}>from:</Text>
+                        <Text className={styles.priceText}>from</Text>
                         <Text strong className={styles.priceAmount}>
                             {minPrice}$
                         </Text>
