@@ -5,7 +5,7 @@ import {packageService} from "../services/package.service";
 
 export const packageController = {
     generatePackage: async (req: Request<any, any, PackageGenerateParams>, res: Response) => {
-        const generatedPackage = await packageService.generatePackage(req.body);
+        const generatedPackage = await packageService.generatePackage(req.body, req.userId);
 
         res.status(200).send(generatedPackage);
     }

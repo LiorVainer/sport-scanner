@@ -14,19 +14,14 @@ export const AmadeusService = {
         const validatedParams = FlightSearchParamsSchema.parse(params);
         const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
 
-        try {
-            const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
+        const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
 
-            const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
+        const validatedFlightsOffers = FlightOffersArraySchema.optional().parse(data);
 
-            return validatedFlightsOffers.filter((offer) => {
-                const price = parseFloat(offer.price.total);
-                return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
-            });
-        } catch (err) {
-            console.error(`Flight search failed for ${validatedParams.dateFrom}:`, err);
-            return [];
-        }
+        return validatedFlightsOffers?.filter((offer) => {
+            const price = parseFloat(offer.price.total);
+            return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
+        });
     },
 
     priceFlight: async (offer: RawFlightOffer) => {
@@ -116,7 +111,7 @@ export const AmadeusService = {
                 keyword,
                 countryCode,
             });
-            
+
             return data;
         } catch (err) {
             console.error(`Failed to get airports for keyword: ${keyword}`, err);

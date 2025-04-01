@@ -104,7 +104,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
 
             const {maxTokens: globalConfigMaxTokens, ...globalConfig} = AIConfig.generateObject;
 
-            const {object, finishReason} = await generateObject({
+            const {object, finishReason, usage} = await generateObject({
                 maxTokens: noTokensLimit ? undefined : globalConfigMaxTokens,
                 ...globalConfig,
                 ...restConfig,
@@ -126,7 +126,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
                 });
             }
 
-            return object;
+            return {data: object, usage};
         } catch (error) {
             console.log('Error Trying To Generate Text From AI Model', error);
             throw error;
