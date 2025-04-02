@@ -16,12 +16,7 @@ export const AmadeusService = {
 
         const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
 
-        const validatedFlightsOffers = FlightOffersArraySchema.optional().parse(data);
-
-        return validatedFlightsOffers?.filter((offer) => {
-            const price = parseFloat(offer.price.total);
-            return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
-        });
+        return FlightOffersArraySchema.optional().parse(data);
     },
 
     priceFlight: async (offer: RawFlightOffer) => {

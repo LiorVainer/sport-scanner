@@ -31,4 +31,9 @@ export class Timer<Step extends string> {
         }
         return result;
     }
+
+    stepDuration(step: Step): number | undefined {
+        const stepData = this.steps[step];
+        return stepData?.end !== undefined ? stepData.end - stepData.start : undefined;
+    }
 }

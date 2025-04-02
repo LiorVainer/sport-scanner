@@ -1,8 +1,8 @@
-import { z } from 'zod';
-import { zodDate } from '../utils/zod.utils';
-import { PriceRangeSchema } from './price-range.model';
+import {z} from 'zod';
+import {zodDate} from '../utils/zod.utils';
+import {PriceRangeSchema} from './price-range.model';
 
-export const PackageGenerateParamsSchema = z
+export const PackagesGenerationParamsSchema = z
     .object({
         date: z.object({
             from: zodDate,
@@ -38,4 +38,4 @@ export const PackageGenerateParamsSchema = z
         }
     );
 
-export type PackageGenerateParams = z.infer<typeof PackageGenerateParamsSchema>;
+export type PackagesGenerationParams = z.infer<typeof PackagesGenerationParamsSchema>;

@@ -1,9 +1,9 @@
-import {PackageGenerateParams} from '../models/package-generate-params.model';
+import {PackagesGenerationParams} from '../models/package-generate-params.model';
+import {ResponseError as AmadeusResponseError} from 'amadeus-ts';
 import {soccerService} from './soccer.service';
 import {convertPackageGenerateParamsToFixtureQueryParams} from '../converters/package-to-fixtures';
 import {FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema} from '../models/fixture.model';
 import {AIService} from '../ai/ai.service';
-import {generateUserMessageForFixturePriceMap} from '../ai/utils/fixture-to-system-messages';
 import {AmadeusService} from './amadeus.service';
 import {
     generateContextMessagesForPackageGeneration,
@@ -12,7 +12,6 @@ import {
 import {FlightOffer} from '../models/flight-offer.model';
 import {Package, PackageArraySchema} from '../models/package.model';
 import {ENV} from '../env/env.config';
-import {generateFlightSearchParamsForFixtures} from '../converters/fixtures-to-flights';
 import Bluebird from 'bluebird';
 import {Timer} from "../logs/timer";
 import {LogLevels} from "../models/log.model";
@@ -24,11 +23,13 @@ import {
 import {Logger} from "../logs/logger";
 import {tryCatch} from "../utils/try-catch.utils";
 import {FlightSearchParams} from "../models/flights-search-params.model";
-import {LanguageModelUsage} from "ai";
 import {logService} from "./log.service";
+import {filterInvalidPackagesByRulesEnforcement} from "../utils/package.utils";
+import {generateUserMessageForFixturePriceMap} from "../ai/utils/fixture-to-system-messages";
+import {generateFlightSearchParamsForFixtures} from "../converters/fixtures-to-flights";
 
 class PackageService {
-    generatePackage = async (params: PackageGenerateParams, userId?: string) => {
+    generatePackage = async (params: PackagesGenerationParams, userId?: string) => {
         const timer = new Timer<GeneratePackagesTimingStep>();
         const flightSearchErrors: { params: FlightSearchParams; error: string }[] = [];
 
@@ -40,21 +41,23 @@ class PackageService {
         const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer, userId);
         if (!searchMeta) return [];
 
-        const allFlightOffers = await this.fetchFlights(searchMeta.flightSearchParamsArray, timer, flightSearchErrors);
+        const {flightSearchParamsArray} = searchMeta;
+
+        const allFlightOffers = await this.fetchFlights(flightSearchParamsArray, timer, flightSearchErrors);
         if (!allFlightOffers.length) return [];
 
         const generatedPackagesResult = await this.callAiToGeneratePackages(fixtures, allFlightOffers, params, timer, userId);
         if (!generatedPackagesResult) return [];
 
 
-        const validPackagesResult = await this.filterAiGeneratedPackages(generatedPackagesResult.data, timer, userId, {
-            packageGeneration: generatedPackagesResult.usage
-        });
+        const validPackagesResult = await this.filterAiGeneratedPackagesByRules(generatedPackagesResult.data, params, timer);
         if (!validPackagesResult) return [];
 
         if (flightSearchErrors.length) {
             Logger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed. Logged in DB.`);
         }
+
+        Logger.success(`🎉 Generated ${validPackagesResult.length} valid packages in ${timer.total()}ms`);
 
         await logService.saveGeneratePackagesLog({
             message: 'Generated packages successfully',
@@ -64,71 +67,88 @@ class PackageService {
             fixturesCount: fixtures.length,
             flightsCount: allFlightOffers.length,
             packagesGenerated: generatedPackagesResult.data.length,
-            packagesValid: validPackagesResult.data.length,
+            packagesValid: validPackagesResult.length,
             requestParams: params,
             errors: flightSearchErrors.length ? {flightSearchErrors} : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
-                packagesFilter: validPackagesResult.usage,
             },
             userId,
         });
 
-        return validPackagesResult.data;
+        return validPackagesResult;
     };
 
     private async fetchFixturesWithPrice(
-        params: PackageGenerateParams,
+        params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
         userId?: string
     ) {
+        Logger.info(`🔍 Starting fixture search with filters: ${JSON.stringify(params)};`);
+
         timer.start(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
-        const {
-            data: queryParams,
-            error: queryError
-        } = await tryCatch(Promise.resolve(convertPackageGenerateParamsToFixtureQueryParams(params)));
+        const {data: queryParams, error: queryError} = await tryCatch(
+            Promise.resolve(convertPackageGenerateParamsToFixtureQueryParams(params))
+        );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
 
+        Logger.info(`⏱️ Query conversion took ${timer.stepDuration(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS)}ms`);
+
         if (!queryParams || queryError) {
-            await logService.saveGeneratePackagesStepError(GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS, queryError, {
-                requestParams: params,
-                timings: timer.timings(),
-                userId
-            });
+            await logService.saveGeneratePackagesStepError(
+                GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS,
+                queryError,
+                {requestParams: params, timings: timer.timings(), userId}
+            );
             return null;
         }
+
+        Logger.info(`📡 Fetching fixtures with query: ${JSON.stringify(queryParams)}`);
 
         timer.start(GeneratePackagesTimingSteps.FETCH_FIXTURES);
-        const {data: fixtures, error: fixturesError} = await tryCatch(soccerService.getFixtures(queryParams));
+        const {data: fixtures, error: fixturesError} = await tryCatch(
+            soccerService.getFixtures(queryParams)
+        );
         timer.stop(GeneratePackagesTimingSteps.FETCH_FIXTURES);
 
+        Logger.info(`⏱️ Fetch fixtures took ${timer.stepDuration(GeneratePackagesTimingSteps.FETCH_FIXTURES)}ms`);
+
         if (!fixtures || fixturesError) {
-            await logService.saveGeneratePackagesStepError(GeneratePackagesSteps.FETCH_FIXTURES, fixturesError, {
-                timings: timer.timings(),
-                userId
-            });
+            await logService.saveGeneratePackagesStepError(
+                GeneratePackagesSteps.FETCH_FIXTURES,
+                fixturesError,
+                {timings: timer.timings(), userId}
+            );
             return null;
         }
+
+        Logger.info(`📅 Found ${fixtures.length} fixtures`);
 
         timer.start(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
-        const {data: enriched, error: priceError} = await tryCatch(this.getFixturesWithTicketPriceRange(fixtures));
+        const {data: enriched, error: priceError} = await tryCatch(
+            this.getFixturesWithTicketPriceRange(fixtures)
+        );
         timer.stop(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
 
+        Logger.info(`⏱️ Price enrichment took ${timer.stepDuration(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES)}ms`);
+
         if (!enriched || priceError) {
-            await logService.saveGeneratePackagesStepError(GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES, priceError, {
-                fixturesCount: fixtures.length,
-                timings: timer.timings(),
-                userId
-            });
+            await logService.saveGeneratePackagesStepError(
+                GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES,
+                priceError,
+                {fixturesCount: fixtures.length, timings: timer.timings(), userId}
+            );
             return null;
         }
+
+        Logger.info(`💰 Fixtures enriched with price ranges`);
 
         return enriched;
     }
 
     private async generateFlightSearchMeta(
         fixtures: FixtureItemWithPrice[],
-        params: PackageGenerateParams,
+        params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
         userId?: string
     ) {
@@ -150,16 +170,24 @@ class PackageService {
     private async fetchFlights(
         flightSearchParamsArray: FlightSearchParams[],
         timer: Timer<GeneratePackagesTimingStep>,
-        flightSearchErrors: { params: FlightSearchParams; error: string }[],
-        userId?: string
+        flightSearchErrors: { params: FlightSearchParams; error: any }[],
     ) {
+        Logger.info(`🛫 Starting flight search for ${flightSearchParamsArray.length} requests`);
+        flightSearchParamsArray.forEach((params) => {
+            Logger.info(`🔍 Searching flights for ${params.origin} -> ${params.destination} for ${params.dateFrom}`);
+        });
+
         timer.start(GeneratePackagesTimingSteps.SEARCH_FLIGHTS);
         const results = await Bluebird.map(
             flightSearchParamsArray,
             async (params) => {
-                const {data, error} = await tryCatch(AmadeusService.searchFlights(params));
+                const {
+                    data,
+                    error
+                } = await tryCatch<FlightOffer[] | undefined, AmadeusResponseError>(AmadeusService.searchFlights(params));
                 if (error || !data) {
-                    flightSearchErrors.push({params, error: error?.message ?? 'Unknown error'});
+                    flightSearchErrors.push({params, error});
+                    Logger.warn(`❌ Error fetching flights for ${params.origin} -> ${params.destination} on ${params.dateFrom} due to ${error?.description.at(0)?.detail}`);
                     return [];
                 }
                 return data;
@@ -168,55 +196,61 @@ class PackageService {
         );
         timer.stop(GeneratePackagesTimingSteps.SEARCH_FLIGHTS);
 
-        return results.flat();
+        const flat = results.flat();
+        Logger.info(`✈️ Flight search complete. Fetched ${flat.length} offers`);
+        Logger.info(`⏱️ Flight search took ${timer.stepDuration(GeneratePackagesTimingSteps.SEARCH_FLIGHTS)}ms`);
+
+        return flat;
     }
 
     private async callAiToGeneratePackages(
         fixtures: FixtureItemWithPrice[],
         flightOffers: FlightOffer[],
-        params: PackageGenerateParams,
+        params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
         userId?: string
     ) {
+        Logger.info(`🧠 Generating packages from ${fixtures.length} fixtures & ${flightOffers.length} flights`);
+
         timer.start(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
-        const {result, error} = await this.generatePackageCombinations(fixtures, flightOffers, params.originIATA);
-
-        if (error) {
-            await logService.saveGeneratePackagesStepError(GeneratePackagesSteps.GENERATE_PACKAGES, error, {
-                flightsCount: flightOffers.length,
-                timings: timer.timings(),
-                userId,
-            });
-            return null;
-        }
-
+        const {result, error} = await this.generatePackageCombinations(
+            fixtures,
+            flightOffers,
+            params.originIATA,
+        );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
+        const duration = timer.stepDuration(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
-        return result
-    }
-
-    private async filterAiGeneratedPackages(
-        packages: Package[],
-        timer: Timer<GeneratePackagesTimingStep>,
-        userId?: string,
-        aiTokensUsage: Record<string, LanguageModelUsage> = {}
-    ) {
-        timer.start(GeneratePackagesTimingSteps.FILTER_PACKAGES);
-        const {result, error} = await this.filterInvalidPackages(packages);
-        timer.stop(GeneratePackagesTimingSteps.FILTER_PACKAGES);
+        Logger.info(`⏱️ Packages generation took ${duration}ms`);
 
         if (error) {
-            await logService.saveGeneratePackagesStepError(GeneratePackagesSteps.FILTER_PACKAGES, error, {
-                packagesGenerated: packages.length,
-                timings: timer.timings(),
-                aiTokensUsage,
-                userId,
-            });
+            Logger.error(`❌ Error generating packages: ${error?.message}`);
+            await logService.saveGeneratePackagesStepError(
+                GeneratePackagesSteps.GENERATE_PACKAGES,
+                error,
+                {flightsCount: flightOffers.length, timings: timer.timings(), userId}
+            );
             return null;
         }
 
-        return result
+        Logger.info(`📊 Tokens used: ${JSON.stringify(result.usage)}`);
+        Logger.info(`📦 AI returned ${result.data.length} packages`);
+        return result;
+    }
+
+    private async filterAiGeneratedPackagesByRules(
+        packages: Package[],
+        params: PackagesGenerationParams,
+        timer: Timer<GeneratePackagesTimingStep>,
+    ) {
+        Logger.info(`🧪 Validating ${packages.length} packages by hardcoded rules`);
+        timer.start(GeneratePackagesTimingSteps.FILTER_PACKAGES);
+        const validPackages = filterInvalidPackagesByRulesEnforcement(packages, params.originIATA);
+        timer.stop(GeneratePackagesTimingSteps.FILTER_PACKAGES);
+        Logger.info(`✅ ${validPackages.length} packages passed rule-based validation`);
+        Logger.info(`⏱️ Filter step took ${timer.stepDuration(GeneratePackagesTimingSteps.FILTER_PACKAGES)}ms`);
+        return validPackages;
     }
 
 
@@ -238,8 +272,10 @@ class PackageService {
     private generatePackageCombinations = async (
         fixtures: FixtureItemWithPrice[],
         flightOffers: FlightOffer[],
-        originIATACode: string
+        originIATACode: string,
     ) => {
+
+
         const contextMessages = generateContextMessagesForPackageGeneration(
             fixtures,
             flightOffers,
@@ -247,24 +283,27 @@ class PackageService {
             originIATACode
         );
 
-        const {data: result, error} = await tryCatch(AIService.generateObject({
-            schema: PackageArraySchema,
-            saveOutputToFile: true,
-            messages: contextMessages,
-            noTokensLimit: true,
-        }));
+        Logger.info(`💬 Prepared ${contextMessages.length} context messages for AI`);
+
+        const {data: result, error} = await tryCatch(
+            AIService.generateObject({
+                schema: PackageArraySchema,
+                saveOutputToFile: true,
+                messages: contextMessages,
+                noTokensLimit: true,
+            })
+        );
 
         if (!result || error) {
-            Logger.error(`❌ Error generating packages: ${error.message}`);
-            return {error}
-        } else {
-            Logger.info(`🧠 AI generated ${result.usage.totalTokens} tokens for ${result.data.length} packages`);
-
-            return {result}
+            return {error};
         }
+
+
+        return {result};
     };
 
-    private filterInvalidPackages = async (packages: Package[]) => {
+
+    private filterInvalidPackagesWithAI = async (packages: Package[]) => {
         const contextMessages = generateFilterInvalidPackagesMessages(packages);
 
         const {data: result, error} = await tryCatch(AIService.generateObject({
@@ -284,6 +323,7 @@ class PackageService {
             return {result}
         }
     };
+
 }
 
 export const packageService = new PackageService();

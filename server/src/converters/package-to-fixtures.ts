@@ -1,9 +1,9 @@
-import {PackageGenerateParams} from '../models/package-generate-params.model';
+import {PackagesGenerationParams} from '../models/package-generate-params.model';
 import {FixtureQueryParams} from '../models/fixture.model';
 import {calculateCurrentSeason} from '../utils/soccer.utils';
 
 export const convertPackageGenerateParamsToFixtureQueryParams = (
-    params: PackageGenerateParams
+    params: PackagesGenerationParams
 ): FixtureQueryParams => ({
     from: params.date?.from ? new Date(params.date.from).toISOString().slice(0, 10) : undefined,
     to: params.date?.to ? new Date(params.date.to).toISOString().slice(0, 10) : undefined,
