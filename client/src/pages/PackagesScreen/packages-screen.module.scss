@@ -1,8 +1,9 @@
+
 .page {
   display: flex;
   flex-direction: column;
   background-color: #f0f2f5;
-  padding: 5rem 30%;
+  padding: 5rem 28%;
   gap: 3rem;
 }
 
@@ -36,7 +37,7 @@
   align-items: center;
   overflow-x: auto;
   padding-bottom: 1rem;
-  gap: 3rem;
+  gap: 2rem;
   scroll-behavior: smooth;
   scrollbar-width: thin;
 }

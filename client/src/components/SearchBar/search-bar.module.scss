@@ -1,5 +1,11 @@
 @use '../../theme/theme' as *;
 
+:global {
+  .ant-tag {
+    margin-inline-end: 0;
+  }
+}
+
 .container {
   padding-inline: 10rem;
   gap: 2rem;
@@ -18,7 +24,7 @@
   border-radius: $system-border-radius;
   padding: 6rem;
   overflow: hidden;
-  
+
 }
 
 .overlay {
@@ -115,10 +121,14 @@
   min-width: 120px;
 }
 
+.selectCountryContainer {
+  width: 150px;
+}
+
 .selectLeague {
-  width: 120px;
+  width: 180px;
 }
 
 .selectTeam {
-  min-width: 120px;
+  width: 150px;
 }

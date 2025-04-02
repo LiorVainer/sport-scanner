@@ -172,7 +172,7 @@ const SearchBar = () => {
                             )}
                         />
                     </Form.Item>
-                    <Form.Item>
+                    <Form.Item className={classes.selectCountryContainer}>
                         <Controller
                             name="country"
                             control={control}

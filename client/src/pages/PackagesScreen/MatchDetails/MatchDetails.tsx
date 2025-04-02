@@ -11,10 +11,12 @@ const {Text} = Typography;
 interface MatchDetailsProps {
     match: Match;
     singlePackage: Package;
+    showHeader?: boolean;
     matchIndex: number;
 }
 
-export const MatchDetails = ({match, singlePackage, matchIndex}: MatchDetailsProps) => {
+export const MatchDetails = ({match, singlePackage, matchIndex, showHeader = true}: MatchDetailsProps) => {
+    console.log({showHeader})
     const {homeTeam, awayTeam, stadium, league, date, price} = match;
     const {flights, fromDate, toDate, location, flightsPrice} = singlePackage;
 
@@ -24,7 +26,7 @@ export const MatchDetails = ({match, singlePackage, matchIndex}: MatchDetailsPro
 
     return (
         <div className={styles.matchDetailsWrapper}>
-            <MatchHeader startDate={departureDate} endDate={returnDate} location={splitLocation}/>
+            {showHeader && <MatchHeader startDate={departureDate} endDate={returnDate} location={splitLocation}/>}
             <div className={styles.divider}/>
             <div className={styles.matchDetailsCard}>
                 <div className={styles.matchTeamsLogos}>
