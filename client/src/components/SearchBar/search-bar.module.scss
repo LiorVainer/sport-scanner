@@ -16,9 +16,9 @@
   background-size: cover;
   background-position: center;
   border-radius: $system-border-radius;
-  padding: 4rem;
+  padding: 6rem;
   overflow: hidden;
-  max-width: 80vw;
+  
 }
 
 .overlay {
@@ -42,7 +42,7 @@
 }
 
 .mainTitle {
-  font-size: 36px;
+  font-size: 46px;
   font-weight: bold;
   margin: 0;
 }
@@ -52,6 +52,14 @@
   margin-top: 8px;
 }
 
+.formInputs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
 
 .content {
   background-color: rgb(187, 187, 187);
@@ -60,7 +68,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: baseline;
   position: relative;
   z-index: 1;
@@ -104,13 +112,13 @@
 }
 
 .selectCountry {
-  min-width: 200px;
+  min-width: 120px;
 }
 
 .selectLeague {
-  width: 200px;
+  width: 120px;
 }
 
 .selectTeam {
-  width: 200px;
+  min-width: 120px;
 }

@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import tsonfigpathes from 'vite-tsconfig-paths';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
     server: {
@@ -12,6 +13,10 @@ export default defineConfig({
             },
         },
     },
-    plugins: [react(), tsonfigpathes()],
+    plugins: [react(), tsonfigpathes(), svgr({
+        svgrOptions: {
+            icon: true,
+        },
+    }),],
     css: {},
 });

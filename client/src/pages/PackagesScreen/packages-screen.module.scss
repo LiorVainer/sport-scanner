@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   background-color: #f0f2f5;
-  padding: 5rem;
+  padding: 5rem 30%;
   gap: 3rem;
 }
 
@@ -15,7 +15,6 @@
   flex-direction: column;
   gap: 1.5rem;
   transition: box-shadow 0.2s ease;
-  margin-inline: auto;
   overflow: hidden;
 }
 
@@ -33,7 +32,7 @@
 
 .matches {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   overflow-x: auto;
   padding-bottom: 1rem;
@@ -56,12 +55,14 @@
   display: flex;
   align-items: center;
   gap: 3rem;
+  width: 100%;
 }
 
 .arrowIcon {
   font-size: 28px;
   color: #2f4f6f;
   flex-shrink: 0;
+  display: none;
 }
 
 .noResults {
