@@ -18,15 +18,15 @@ export const AmadeusService = {
 
         logger.remote.info(`Amadeus flight search request`, {
             processType: ProcessTypes.SEARCH_FLIGHTS,
-            params: flightOffersSearchParams,
+            searchParams: flightOffersSearchParams,
         });
 
         const {data} = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
 
-        logger.remote.info(`Amadeus flight search response`, {
+        logger.remote.success(`Amadeus flight search response`, {
             processType: ProcessTypes.SEARCH_FLIGHTS,
-            data,
-            params: flightOffersSearchParams,
+            response: data,
+            searchParams: flightOffersSearchParams,
         });
 
         return FlightOffersArraySchema.optional().parse(data);
