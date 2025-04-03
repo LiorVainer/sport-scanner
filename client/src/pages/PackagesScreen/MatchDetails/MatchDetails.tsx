@@ -1,12 +1,12 @@
-import {Tag, Typography} from 'antd';
-import {EnvironmentOutlined, TrophyOutlined} from '@ant-design/icons';
+import { Tag, Typography } from 'antd';
+import { EnvironmentOutlined, TrophyOutlined } from '@ant-design/icons';
 import styles from './match-details.module.scss';
-import {formattedDate} from '@/utils/date.utils';
-import {Match, Package} from '@/models/package.model';
-import {MatchHeader} from '../MatchHeader/MatchHeader';
-import {TicketsPlane} from 'lucide-react';
+import { formattedDate } from '@/utils/date.utils';
+import { Match, Package } from '@/models/package.model';
+import { MatchHeader } from '../MatchHeader/MatchHeader';
+// import { TicketsPlane } from 'lucide-react';
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 interface MatchDetailsProps {
     match: Match;
@@ -15,10 +15,10 @@ interface MatchDetailsProps {
     matchIndex: number;
 }
 
-export const MatchDetails = ({match, singlePackage, matchIndex, showHeader = true}: MatchDetailsProps) => {
-    console.log({showHeader})
-    const {homeTeam, awayTeam, stadium, league, date, price} = match;
-    const {flights, fromDate, toDate, location, flightsPrice} = singlePackage;
+export const MatchDetails = ({ match, singlePackage, matchIndex, showHeader = true }: MatchDetailsProps) => {
+    console.log({ showHeader });
+    const { homeTeam, awayTeam, stadium, league, date, price } = match;
+    const { flights, fromDate, toDate, location } = singlePackage;
 
     const departureDate = flights[matchIndex]?.departureDate || fromDate;
     const returnDate = flights[matchIndex + 1]?.departureDate || toDate;
@@ -26,13 +26,13 @@ export const MatchDetails = ({match, singlePackage, matchIndex, showHeader = tru
 
     return (
         <div className={styles.matchDetailsWrapper}>
-            {showHeader && <MatchHeader startDate={departureDate} endDate={returnDate} location={splitLocation}/>}
-            <div className={styles.divider}/>
+            {showHeader && <MatchHeader startDate={departureDate} endDate={returnDate} location={splitLocation} />}
+            <div className={styles.divider} />
             <div className={styles.matchDetailsCard}>
                 <div className={styles.matchTeamsLogos}>
-                    <img src={homeTeam.logo} alt={homeTeam.name} className={styles.image}/>
+                    <img src={homeTeam.logo} alt={homeTeam.name} className={styles.image} />
                     <span className={styles.vs}>VS</span>
-                    <img src={awayTeam.logo} alt={awayTeam.name} className={styles.image}/>
+                    <img src={awayTeam.logo} alt={awayTeam.name} className={styles.image} />
                 </div>
                 <div className={styles.details}>
                     <div className={styles.titleRow}>
@@ -42,20 +42,20 @@ export const MatchDetails = ({match, singlePackage, matchIndex, showHeader = tru
                         <Text className={styles.matchDate}>{formattedDate(date)}</Text>
                     </div>
                     <div className={styles.meta}>
-                        <Tag icon={<EnvironmentOutlined/>} className={styles.stadiumTag}>
+                        <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
                             {stadium}
                         </Tag>
-                        <Tag icon={<TrophyOutlined/>} className={styles.leagueTag}>
+                        <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
                             {league}
                         </Tag>
                     </div>
                     <div className={styles.prices}>
-                        <Text className={styles.priceRange}>
-                            <TicketsPlane className={styles.icon}/>
+                        {/* <Text className={styles.priceRange}>
+                            <TicketsPlane className={styles.icon} />
                             {flightsPrice}$
-                        </Text>
+                        </Text> */}
                         <Text className={styles.priceRange}>
-                            <img src="/stadium.svg" alt="stadium" className={styles.icon}/>
+                            <img src="/stadium.svg" alt="stadium" className={styles.icon} />
                             {`${price.min}$ - ${price.max}$`}
                         </Text>
                     </div>
