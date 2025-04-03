@@ -3,6 +3,8 @@ import {ENV} from '../env/env.config';
 import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights-search-params.model';
 import {FlightOffer, FlightOffersArraySchema} from '../models/flight-offer.model';
 import {CitySearchParams} from '../models/geo.model';
+import {logger} from "../logs/logger";
+import {ProcessTypes} from "../models/log.model";
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -12,9 +14,20 @@ const AmadeusClient = new Amadeus({
 export const AmadeusService = {
     searchFlights: async (params: FlightSearchParams) => {
         const validatedParams = FlightSearchParamsSchema.parse(params);
-        const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
+        const flightOffersSearchParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
 
-        const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
+        logger.remote.info(`Amadeus flight search request`, {
+            processType: ProcessTypes.SEARCH_FLIGHTS,
+            params: flightOffersSearchParams,
+        });
+
+        const {data} = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
+
+        logger.remote.info(`Amadeus flight search response`, {
+            processType: ProcessTypes.SEARCH_FLIGHTS,
+            data,
+            params: flightOffersSearchParams,
+        });
 
         return FlightOffersArraySchema.optional().parse(data);
     },
@@ -73,7 +86,7 @@ export const AmadeusService = {
             maxPrice: params.maxPrice,
             maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_FIXTURE,
             flightFilters: {
-                returnToDepartureAirport: true,
+                returnToDepartureAirport: params.isRoundTrip,
             },
         },
     }),

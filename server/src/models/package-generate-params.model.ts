@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {zodDate} from '../utils/zod.utils';
 import {PriceRangeSchema} from './price-range.model';
+import {ValueOf} from "../types/general.types";
 
 export const PackagesGenerationParamsSchema = z
     .object({
@@ -39,3 +40,32 @@ export const PackagesGenerationParamsSchema = z
     );
 
 export type PackagesGenerationParams = z.infer<typeof PackagesGenerationParamsSchema>;
+
+
+export const GeneratePackagesSteps = {
+    GENERATE_SEARCH_FIXTURE_PARAMS: 'generate_search_fixture_params',
+    FETCH_FIXTURES: 'fetch_fixtures',
+    ADD_PRICE_RANGE_TO_FIXTURES: 'add_price_range_to_fixtures',
+    GENERATE_SEARCH_PARAMS: 'generate_search_params',
+    SEARCH_FLIGHTS: 'search_flights',
+    GENERATE_PACKAGES: 'generate_packages',
+    FILTER_PACKAGES: 'filter_packages',
+    TOTAL: 'total',
+} as const;
+
+export type GeneratePackagesStep = ValueOf<typeof GeneratePackagesSteps>;
+
+export type GeneratePackagesStepKey = keyof typeof GeneratePackagesSteps;
+
+export const GeneratePackagesTimingSteps = {
+    GENERATE_SEARCH_FIXTURE_PARAMS: 'generateSearchFixtureParamsMs',
+    FETCH_FIXTURES: 'fetchFixturesMs',
+    ADD_PRICE_RANGE_TO_FIXTURES: 'addPriceRangeToFixturesMs',
+    GENERATE_SEARCH_PARAMS: 'generateSearchParamsMs',
+    SEARCH_FLIGHTS: 'searchFlightsMs',
+    GENERATE_PACKAGES: 'generatePackagesMs',
+    FILTER_PACKAGES: 'filterPackagesMs',
+    TOTAL: 'totalMs',
+} satisfies Record<GeneratePackagesStepKey, any>;
+
+export type GeneratePackagesTimingStep = typeof GeneratePackagesTimingSteps[keyof typeof GeneratePackagesTimingSteps];

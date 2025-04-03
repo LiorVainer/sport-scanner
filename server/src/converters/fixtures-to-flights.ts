@@ -11,18 +11,26 @@ const buildFlightSearchParams = (
     fixture: ExtendedFixtureItem,
     generateParams: PackagesGenerationParams,
     origin: string,
-    destination: string
+    destination: string,
+    isRoundTrip: boolean
 ): FlightSearchParams => {
     const baseDate = moment(fixture.fixture.date);
+    const now = moment();
+
+    const calculatedDateFrom = baseDate.clone().subtract(ENV.FLIGHT_DATE_OFFSET_DAYS, 'days');
+    const safeDateFrom = calculatedDateFrom.isBefore(now)
+        ? now.clone().add(2, 'hours')
+        : calculatedDateFrom;
 
     const maxPrice = calculateAdjustedPrice(generateParams.price?.max, fixture.price?.min);
 
     return {
         origin,
         destination,
-        dateFrom: baseDate.clone().subtract(ENV.FLIGHT_DATE_OFFSET_DAYS, 'days').format('YYYY-MM-DD'),
+        dateFrom: safeDateFrom.format('YYYY-MM-DD'),
         dateTo: baseDate.clone().add(ENV.FLIGHT_DATE_OFFSET_DAYS, 'days').format('YYYY-MM-DD'),
         maxPrice,
+        isRoundTrip,
         adults: 1,
     };
 };
@@ -30,7 +38,8 @@ const buildFlightSearchParams = (
 export const generateSyncFlightSearchParamsForOneFixture = (
     fixtureItem: ExtendedFixtureItem,
     generateParams: PackagesGenerationParams,
-    iataCodesMap: CityToIATACodeMap
+    iataCodesMap: CityToIATACodeMap,
+    isRoundTrip: boolean = true,
 ): FlightSearchParams => {
     const destinationCity = fixtureItem.fixture.venue.city;
 
@@ -41,7 +50,7 @@ export const generateSyncFlightSearchParamsForOneFixture = (
         throw new Error(`Could not find IATA code for city: ${destinationCity}`);
     }
 
-    return buildFlightSearchParams(fixtureItem, generateParams, origin, destination);
+    return buildFlightSearchParams(fixtureItem, generateParams, origin, destination, isRoundTrip);
 };
 
 export const generateFlightSearchParamsForFixtures = async (
@@ -51,11 +60,12 @@ export const generateFlightSearchParamsForFixtures = async (
     const uniqueCities = [...new Set([...fixtures.map((fixture) => fixture.fixture.venue.city)])];
 
     const cityToIATACodeMap = await FlightsService.getCityToIATACodeMap(uniqueCities);
-    
+
     const flightSearchParamsArray = [
         ...fixtures.map((fixture) =>
-            generateSyncFlightSearchParamsForOneFixture(fixture, generateParams, cityToIATACodeMap)
-        ),
+            [generateSyncFlightSearchParamsForOneFixture(fixture, generateParams, cityToIATACodeMap, true),
+                generateSyncFlightSearchParamsForOneFixture(fixture, generateParams, cityToIATACodeMap, false)],
+        ).flat(1),
         ...generateInterCityFlightParams(fixtures, generateParams, cityToIATACodeMap),
     ];
 
@@ -83,7 +93,7 @@ const generateInterCityFlightParams = (
 
         if (!fromIATA || !toIATA || fromIATA === toIATA) return [];
 
-        return [buildFlightSearchParams(toFixture, generateParams, fromIATA, toIATA)];
+        return [buildFlightSearchParams(toFixture, generateParams, fromIATA, toIATA, false)];
     });
 };
 

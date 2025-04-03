@@ -1,27 +1,34 @@
-import {Log, LogLevels} from '../models/log.model';
-import {LogRepository} from "../repositories/log.repository";
+import {LogLevels} from '../models/log.model';
 import {
     createGeneratePackagesLog,
     GeneratePackagesLogParams,
     GeneratePackagesStep
-} from "../logs/generate-packages.log";
-import {Logger} from "../logs/logger";
+} from '../logs/generate-packages.logger';
+import {logger} from "../logs/logger";
 
 class LogService {
-    saveGeneratePackagesLog = async (params: GeneratePackagesLogParams): Promise<Log> => {
+    async saveGeneratePackagesLog(params: GeneratePackagesLogParams): Promise<void> {
         const log = createGeneratePackagesLog(params);
-        return await LogRepository.create(log);
-    };
+        logger.remote.info(log)
+    }
 
-    async saveGeneratePackagesStepError(step: GeneratePackagesStep, error: unknown, meta?: Partial<GeneratePackagesLogParams>) {
+    async saveGeneratePackagesStepError(
+        step: GeneratePackagesStep,
+        error: unknown,
+        meta?: Partial<GeneratePackagesLogParams>
+    ): Promise<void> {
         const errMsg = error instanceof Error ? error.message : String(error);
-        Logger.error(`[${step}] Failed - ${errMsg}`);
-        await this.saveGeneratePackagesLog({
+
+        logger.local.error(`[${step}] Failed - ${errMsg}`);
+        const params = {
             message: `Step "${step}" failed: ${errMsg}`,
             level: LogLevels.ERROR,
             step,
             ...meta,
-        });
+        }
+
+        const log = createGeneratePackagesLog(params);
+        logger.local.error(log);
     }
 }
 
