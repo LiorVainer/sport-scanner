@@ -1,3 +1,4 @@
+// middlewares/jwt-parser.middleware.ts
 import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
 import {PublicUser} from '../models/user.model';
@@ -30,9 +31,9 @@ export const jwtParserMiddleware = (
 
     try {
         const payload = jwt.verify(token, ENV.TOKEN_SECRET) as JwtPayload;
-        const {iat, exp, __v, createdAt, updatedAt, ...user} = payload;
+        const {iat, exp, __v, ...user} = payload;
         req.userId = payload._id;
-        req.user = payload;
+        req.user = user;
     } catch {
     }
 

@@ -3,6 +3,7 @@ import {CoreMessage, LanguageModelUsage} from "ai";
 import {CustomLogLevel} from "./levels.logger";
 import {Package} from "../models/package.model";
 import {FlightSearchParams} from "../models/flights-search-params.model";
+import {FixtureItem} from "../models/fixture.model";
 
 export type GeneratePackagesLogTimings = Partial<Record<GeneratePackagesTimingStep, number>>;
 
@@ -12,6 +13,7 @@ export type GeneratePackagesLogParams = {
     executionTime?: number;
     aiContextMessagesCount?: number;
     aiContextMessages?: CoreMessage[];
+    fixtures?: FixtureItem[]
     fixturesCount?: number;
     flightsCount?: number;
     flightsSearchRequestsCount?: number;

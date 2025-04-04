@@ -23,7 +23,7 @@ import {LogLevels} from '../models/log.model';
 
 import {tryCatch} from '../utils/try-catch.utils';
 import {FlightSearchParams} from '../models/flights-search-params.model';
-import {filterInvalidPackagesByRulesEnforcement} from '../utils/package.utils';
+import {partitionPackagesByRules} from '../utils/package.utils';
 import {generateUserMessageForFixturePriceMap} from '../ai/utils/fixture-to-system-messages';
 import {generateFlightSearchParamsForFixtures} from '../converters/fixtures-to-flights';
 import {packagesLogger} from '../logs/packages.logger';
@@ -57,21 +57,26 @@ class PackageService {
 
         const {result: generatedPackagesResult, contextMessages: aiContextMessages} = generatedPackagesResponse;
 
-        const validPackagesResult = await this.filterAiGeneratedPackagesByRules(
+        const {valid: validPackages, invalid: invalidPackages} = await this.filterAiGeneratedPackagesByRules(
             generatedPackagesResult.data,
             params,
             timer
         );
-        if (!validPackagesResult) return [];
+        if (!validPackages) return [];
+
+        if (invalidPackages.length > 0) {
+            packagesLogger.warn(`⚠️ ${invalidPackages.length} invalid packages filtered out`, {
+                invalidPackages,
+                logId: 'invalid_packages',
+            });
+        }
 
         if (flightSearchErrors.length) {
             packagesLogger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed`);
         }
 
-        packagesLogger.success(`🎉 Generated ${validPackagesResult.length} valid packages in ${timer.total()}ms`);
-
         packagesLogger.structured({
-            message: 'Generated packages successfully',
+            message: `🎉 Generated ${validPackages.length} valid packages in ${timer.total()}ms`,
             level: LogLevels.SUCCESS,
             step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
             executionTime: timer.total(),
@@ -81,19 +86,20 @@ class PackageService {
             flightsSearchRequestsParams: flightSearchParamsArray,
             flightsSearchRequestsCount: flightSearchParamsArray.length,
             fixturesCount: fixtures.length,
+            fixtures,
             flightsCount: allFlightOffers.length,
             packagesGeneratedCount: generatedPackagesResult.data.length,
-            packagesValidCount: validPackagesResult.length,
+            packagesValidCount: validPackages.length,
             requestParams: params,
             errors: flightSearchErrors.length ? {flightSearchErrors} : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
             },
-            packagesGenerated: validPackagesResult,
+            packagesGenerated: validPackages,
             userId,
         });
 
-        return validPackagesResult;
+        return validPackages;
     };
 
     private async fetchFixturesWithPrice(
@@ -302,7 +308,8 @@ class PackageService {
             return null;
         }
 
-        packagesLogger.info(`📊 Tokens used: ${JSON.stringify(result.usage)}`);
+        packagesLogger.info(`📊 Tokens used in request (prompt): ${result.usage.promptTokens}`);
+        packagesLogger.info(`📊 Tokens used in response (completion): ${result.usage.completionTokens}`);
         packagesLogger.info(`📦 AI returned ${result.data.length} packages`);
 
         return {result, contextMessages};
@@ -316,15 +323,15 @@ class PackageService {
         packagesLogger.info(`🧪 Validating ${packages.length} packages by hardcoded rules`);
 
         timer.start(GeneratePackagesTimingSteps.FILTER_PACKAGES);
-        const validPackages = filterInvalidPackagesByRulesEnforcement(packages, params.originIATA);
+        const partitionPackages = partitionPackagesByRules(packages, params.originIATA);
         timer.stop(GeneratePackagesTimingSteps.FILTER_PACKAGES);
 
-        packagesLogger.info(`✅ ${validPackages.length} packages passed rule-based validation`);
+        packagesLogger.info(`✅ ${partitionPackages.valid.length} packages passed rule-based validation`);
         packagesLogger.info(
             `⏱️ Filter step took ${timer.stepDuration(GeneratePackagesTimingSteps.FILTER_PACKAGES)}ms`
         );
 
-        return validPackages;
+        return partitionPackages;
     }
 
     private getFixturesWithTicketPriceRange = async (

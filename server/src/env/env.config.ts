@@ -20,10 +20,10 @@ export const EnvSchema = z.object({
 
     CURRENCY_CODE: z.string().length(3, {message: 'CURRENCY_CODE must be a 3-letter currency code'}),
 
-    MAX_FLIGHT_OFFERS_PER_FIXTURE: z.coerce
+    MAX_FLIGHT_OFFERS_PER_REQUEST: z.coerce
         .number()
         .int()
-        .min(1, {message: 'MAX_FLIGHT_OFFERS_PER_FIXTURE must be a positive integer'}),
+        .min(1, {message: 'MAX_FLIGHT_OFFERS_PER_REQUEST must be a positive integer'}),
     MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH: z.coerce
         .number()
         .int()
@@ -34,7 +34,7 @@ export const EnvSchema = z.object({
     AI_MAX_TOKENS: z.coerce.number().int().min(1),
     AI_TEMPERATURE: z.coerce.number().min(0).max(1),
 
-    SEASON: z.coerce.number(),
+    SOCCER_SEASON: z.coerce.number(),
     FLIGHT_DATE_OFFSET_DAYS: z.coerce
         .number()
         .int()

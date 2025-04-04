@@ -22,38 +22,31 @@ Each package must include:
 - list of matches (with location, date, ticket price)
 - total price breakdown (flightsPrice + matchesPrice)
 
-⚠️ Important:
-- A package can include **at most 2 matches**
-- Do **not** generate packages with more than 2 matches
+⚠️ HARD RULES (DO NOT BREAK):
+- Packages must start with a flight from the user's origin (TLV)
+- Packages must end with a return flight to the user's origin (TLV)
+- No flights from or to unrelated cities (e.g. Rome unless there's a match there)
+- Every city visited must be part of a match
+- Each match must be reachable by a flight arriving **before** its kickoff
+- Flights must follow a chronological timeline (no time travel)
 
-✈️ Flight Rules:
-- 1 match → 2 flights: origin → match city, then back to origin
-- 2 matches in different cities → 3 flights:
-  1. from origin to first match city
-  2. between match cities
-  3. return to origin
-- 2 matches in the **same city** → only 2 flights needed (to and from), no inter-city flight required
-
-🧠 Example:
-✅ Match 1 in "Estadi Olímpic Lluís Companys", Match 2 in "Spotify Camp Nou"  
-Both are in **Barcelona** → no BCN→BCN flight needed
-
-⚠️ Flights must follow timeline (no going back in time)  
-⚠️ Each match must be reachable by a flight **before** its date  
-⚠️ Final flight must return to the origin city  
-❌ Avoid flights between unrelated cities
+✈️ Match Rules:
+- A package can include **1 or 2 matches maximum**
+- 1 match in any city → 2 flights: TLV → match city → TLV
+- 2 matches in **different cities** → 3 flights: TLV → match1 → match2 → TLV
+- 2 matches in the **same city** → still only 2 flights: TLV → city → TLV
 
 ❌ Bad Example:
-Match 1 in Barcelona, Match 2 in Leganés  
-Flights: TLV→BCN ✅, FCO→MAD ❌, MAD→TLV ✅  
-⛔ Rome (FCO) wasn’t part of the trip  
-⛔ Missing BCN→MAD flight for second match
+- TLV → Munich → Leipzig → Munich → Rome → TLV
+⛔ Rome is not a match city → INVALID
+⛔ Too many flight hops → INVALID
 
-✅ Fix: Add BCN→MAD flight, remove FCO
+✅ Good Example:
+- TLV → Munich → Leipzig → TLV → VALID (if there's one match in each city)
 
-Only return packages that follow all rules.`
+Return only fully valid packages.`
     );
-    
+
 
 const fixtureMessages = (fixtures: ExtendedFixtureItem[]): CoreMessage[] =>
     fixtures.map((fixture) => {
@@ -94,7 +87,7 @@ const flightMessages = (
         );
 
         return message.system(
-            `Flight ${flight.id}: €${flight.price.total} ${flight.price.currency}, oneWay: ${flight.oneWay}\n${segments.join('\n')}`
+            `Flight ${flight.id}: ${flight.price.total} ${flight.price.currency}, oneWay: ${flight.oneWay}\n${segments.join('\n')}`
         );
     });
 };

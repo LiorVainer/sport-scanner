@@ -65,6 +65,11 @@ export const packagesLogger = {
             packagesGeneratedCount,
         } = params;
 
+        logger.local.log({
+            level,
+            message
+        })
+
         logger.remote.log({
             level: level.toLowerCase() as CustomLogLevel,
             message,
@@ -74,6 +79,7 @@ export const packagesLogger = {
                 timestamp: new Date().toISOString(),
                 step,
                 fixturesCount: fixturesCount ?? 0,
+                fixtures: params.fixtures,
                 flightsSearchRequestsCount,
                 flightsCount: flightsCount ?? 0,
                 packagesGeneratedCount: packagesGeneratedCount ?? 0,
@@ -90,7 +96,7 @@ export const packagesLogger = {
                     FLIGHT_DATE_OFFSET_DAYS: ENV.FLIGHT_DATE_OFFSET_DAYS,
                     FLIGHT_SEARCH_CONCURRENCY_LIMIT: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT,
                     MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH: ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
-                    MAX_FLIGHT_OFFERS_PER_FIXTURE: ENV.MAX_FLIGHT_OFFERS_PER_FIXTURE,
+                    MAX_FLIGHT_OFFERS_PER_REQUEST: ENV.MAX_FLIGHT_OFFERS_PER_REQUEST,
                     AMADEUS_API_URL: ENV.AMADEUS_API_URL,
                     AI_MODEL: ENV.AI_MODEL,
                     AI_TEMPERATURE: ENV.AI_TEMPERATURE,
