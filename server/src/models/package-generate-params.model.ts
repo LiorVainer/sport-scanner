@@ -50,6 +50,7 @@ export const GeneratePackagesSteps = {
     SEARCH_FLIGHTS: 'search_flights',
     GENERATE_PACKAGES: 'generate_packages',
     FILTER_PACKAGES: 'filter_packages',
+    FINISHED_GENERATING_PACKAGES: 'finished_generating_packages',
     TOTAL: 'total',
 } as const;
 
@@ -64,6 +65,7 @@ export const GeneratePackagesTimingSteps = {
     GENERATE_SEARCH_PARAMS: 'generateSearchParamsMs',
     SEARCH_FLIGHTS: 'searchFlightsMs',
     GENERATE_PACKAGES: 'generatePackagesMs',
+    FINISHED_GENERATING_PACKAGES: 'finishedGeneratingPackagesMs',
     FILTER_PACKAGES: 'filterPackagesMs',
     TOTAL: 'totalMs',
 } satisfies Record<GeneratePackagesStepKey, any>;

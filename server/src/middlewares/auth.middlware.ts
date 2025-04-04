@@ -1,23 +1,41 @@
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
-import { PublicUser } from '../models/user.model';
-import { ENV } from '../env/env.config';
+import {PublicUser} from '../models/user.model';
+import {ENV} from '../env/env.config';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const authorization = req.header('authorization');
+    if (!req.userId) {
+        return res.status(401).json({message: 'Unauthorized'});
+    }
+    next();
+};
 
-    const token = authorization && authorization.split(' ')[1];
+type JwtPayload = PublicUser & {
+    iat: number;
+    exp: number;
+    __v: number;
+}
+
+export const jwtParserMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const authHeader = req.header('authorization');
+    const token = authHeader?.split(' ')[1];
 
     if (!token) {
-        res.status(401).send('Unauthorized');
-        return;
+        return next();
     }
 
     try {
-        const payload = jwt.verify(token, ENV.TOKEN_SECRET) as PublicUser;
+        const payload = jwt.verify(token, ENV.TOKEN_SECRET) as JwtPayload;
+        const {iat, exp, __v, createdAt, updatedAt, ...user} = payload;
         req.userId = payload._id;
-        next();
-    } catch (err) {
-        res.status(401).send('Unauthorized');
+        req.user = payload;
+    } catch {
     }
+
+    next();
 };
+

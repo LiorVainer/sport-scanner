@@ -46,14 +46,16 @@ class PackageService {
         const allFlightOffers = await this.fetchFlights(flightSearchParamsArray, timer, flightSearchErrors);
         if (!allFlightOffers.length) return [];
 
-        const generatedPackagesResult = await this.callAiToGeneratePackages(
+        const generatedPackagesResponse = await this.callAiToGeneratePackages(
             fixtures,
             allFlightOffers,
             params,
             timer,
             userId
         );
-        if (!generatedPackagesResult) return [];
+        if (!generatedPackagesResponse) return [];
+
+        const {result: generatedPackagesResult, contextMessages: aiContextMessages} = generatedPackagesResponse;
 
         const validPackagesResult = await this.filterAiGeneratedPackagesByRules(
             generatedPackagesResult.data,
@@ -71,8 +73,13 @@ class PackageService {
         packagesLogger.structured({
             message: 'Generated packages successfully',
             level: LogLevels.SUCCESS,
+            step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
             executionTime: timer.total(),
             timings: timer.timings(),
+            aiContextMessagesCount: aiContextMessages.length,
+            aiContextMessages,
+            flightsSearchRequestsParams: flightSearchParamsArray,
+            flightsSearchRequestsCount: flightSearchParamsArray.length,
             fixturesCount: fixtures.length,
             flightsCount: allFlightOffers.length,
             packagesGeneratedCount: generatedPackagesResult.data.length,
@@ -126,7 +133,7 @@ class PackageService {
         );
 
         if (!fixtures || fixturesError) {
-            await packagesLogger.stepError(GeneratePackagesSteps.FETCH_FIXTURES, fixturesError, {
+            packagesLogger.stepError(GeneratePackagesSteps.FETCH_FIXTURES, fixturesError, {
                 timings: timer.timings(),
                 userId,
             });
@@ -275,7 +282,11 @@ class PackageService {
 
         timer.start(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
-        const {result, error} = await this.generatePackageCombinations(fixtures, flightOffers, params.originIATA);
+        const {
+            result,
+            contextMessages,
+            error
+        } = await this.generatePackageCombinations(fixtures, flightOffers, params.originIATA);
         timer.stop(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
         packagesLogger.info(
@@ -294,7 +305,7 @@ class PackageService {
         packagesLogger.info(`📊 Tokens used: ${JSON.stringify(result.usage)}`);
         packagesLogger.info(`📦 AI returned ${result.data.length} packages`);
 
-        return result;
+        return {result, contextMessages};
     }
 
     private async filterAiGeneratedPackagesByRules(
@@ -358,7 +369,7 @@ class PackageService {
 
         if (!result || error) return {error};
 
-        return {result};
+        return {result, contextMessages};
     };
 
     private filterInvalidPackagesWithAI = async (packages: Package[]) => {
@@ -379,7 +390,7 @@ class PackageService {
         }
 
         packagesLogger.info(
-            `🧠 AI used ${result.usage.totalTokens} tokens for ${result.data.length} valid packages`
+            `🧠 AI used ${result.usage.completionTokens} tokens for ${result.data.length} valid packages`
         );
 
         return {result};

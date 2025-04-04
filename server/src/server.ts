@@ -16,6 +16,7 @@ import geoRoutes from './routes/geo.route';
 import {ENV} from './env/env.config';
 import packageRoutes from './routes/package.route';
 import {requestContextMiddleware} from "./middlewares/request-context.middleware";
+import {jwtParserMiddleware} from "./middlewares/auth.middlware";
 
 dotenv.config();
 export const app = express();
@@ -29,6 +30,8 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', '*');
     next();
 });
+
+app.use(jwtParserMiddleware)
 app.use(requestContextMiddleware)
 
 const port = ENV.PORT;

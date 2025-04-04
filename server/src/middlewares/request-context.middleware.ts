@@ -6,7 +6,8 @@ export const requestContextMiddleware = (req: Request, _res: Response, next: Nex
     const requestId = (req.headers['x-request-id'] as string) || uuid();
     const headers = req.headers;
     const body = req.body;
-    const store = {requestId, headers, body};
+    const user = req.user;
+    const store = {requestId, headers, body, user};
 
     context.run(store, () => {
         next();

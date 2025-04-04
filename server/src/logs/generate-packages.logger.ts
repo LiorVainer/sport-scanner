@@ -1,7 +1,8 @@
 import {GeneratePackagesTimingStep, PackagesGenerationParams} from '../models/package-generate-params.model';
-import {LanguageModelUsage} from "ai";
+import {CoreMessage, LanguageModelUsage} from "ai";
 import {CustomLogLevel} from "./levels.logger";
 import {Package} from "../models/package.model";
+import {FlightSearchParams} from "../models/flights-search-params.model";
 
 export type GeneratePackagesLogTimings = Partial<Record<GeneratePackagesTimingStep, number>>;
 
@@ -9,8 +10,12 @@ export type GeneratePackagesLogParams = {
     message: string;
     level: CustomLogLevel;
     executionTime?: number;
+    aiContextMessagesCount?: number;
+    aiContextMessages?: CoreMessage[];
     fixturesCount?: number;
     flightsCount?: number;
+    flightsSearchRequestsCount?: number;
+    flightsSearchRequestsParams?: FlightSearchParams[];
     packagesGeneratedCount?: number;
     packagesValidCount?: number;
     timings?: GeneratePackagesLogTimings;
