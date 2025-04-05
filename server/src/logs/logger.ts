@@ -24,7 +24,7 @@ const baseFormat = winston.format.combine(
     winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
     winston.format.errors({stack: true}), winston.format.printf(({timestamp, level, message, meta}) => {
         const emoji = emojiMap[level as CustomLogLevel] || '';
-        const typedMeta = meta as { requestId?: string }; // 👈 fix for TS2339
+        const typedMeta = meta as { requestId?: string };
 
         const requestId = typedMeta?.requestId;
         const extra = Object.keys(typedMeta || {}).length ? ` | ${JSON.stringify(typedMeta, null, 2)}` : '';

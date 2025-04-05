@@ -3,6 +3,7 @@ import {ExtendedFixtureItem} from '../../models/fixture.model';
 import {message} from './message.utils';
 import {FlightOffer} from '../../models/flight-offer.model';
 import {Package} from '../../models/package.model';
+import {ENV} from "../../env/env.config";
 
 const introMessage = () =>
     message.system(
@@ -52,7 +53,7 @@ const fixtureMessages = (fixtures: ExtendedFixtureItem[]): CoreMessage[] =>
     fixtures.map((fixture) => {
         const {id, date, venue} = fixture.fixture;
         const range = fixture.price
-            ? `€${fixture.price.min} - €${fixture.price.max}`
+            ? `${fixture.price.min} - ${fixture.price.max} (${ENV.CURRENCY_CODE})`
             : `unknown`;
         return message.system(
             `Match ${id}: ${fixture.teams.home.name} (logo url: ${fixture.teams.home.logo}) vs ${fixture.teams.away.name} (logo url: ${fixture.teams.away.logo}) on ${date} at ${venue.name}, ${venue.city}. Price: ${range}.`
@@ -80,7 +81,7 @@ const flightMessages = (
 
     return flights.map((flight) => {
         const segments = flight.itineraries.flatMap((itinerary, i) =>
-            itinerary.segments.map((seg, j) => {
+            itinerary.segments.map((seg) => {
                 const purpose = getFlightPurpose(seg.departure.iataCode, seg.arrival.iataCode, originIataCode, matchCities);
                 return `  - ${seg.departure.iataCode} → ${seg.arrival.iataCode} on ${seg.departure.at} ${purpose}`;
             })

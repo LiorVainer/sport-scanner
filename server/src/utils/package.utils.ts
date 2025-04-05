@@ -29,13 +29,14 @@ const isPackageValidByRules = (
     originIataCode: string
 ): boolean => {
     const sortedFlights = [...pkg.flights].sort(
-        (a, b) =>
-            new Date(a.departureDate).getTime() -
-            new Date(b.departureDate).getTime()
+        (flight, anotherFlight) =>
+            new Date(flight.departureDate).getTime() -
+            new Date(anotherFlight.departureDate).getTime()
     );
 
     const sortedMatches = [...pkg.matches].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (match, anotherMatch) =>
+            new Date(match.date).getTime() - new Date(anotherMatch.date).getTime()
     );
 
     const firstFlight = sortedFlights[0];

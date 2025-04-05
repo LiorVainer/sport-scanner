@@ -34,9 +34,7 @@ export const PackagesScreen = () => {
     const renderMatchList = (singlePackage: Package) =>
         singlePackage.matches.map((match: Match, index: number) => {
             const previousMatch = index > 0 ? singlePackage.matches[index - 1] : null;
-
-            console.log({previousMatch});
-
+            
             const showHeader =
                 match.homeTeam.id !== previousMatch?.homeTeam.id
 

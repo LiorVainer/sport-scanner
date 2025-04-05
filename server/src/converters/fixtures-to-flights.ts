@@ -78,7 +78,8 @@ const generateInterCityFlightParams = (
     cityToIATACodeMap: CityToIATACodeMap
 ): FlightSearchParams[] => {
     const sortedFixtures = [...fixtures].sort(
-        (a, b) => new Date(a.fixture.date).getTime() - new Date(b.fixture.date).getTime()
+        (fixture, anotherFixture) =>
+            new Date(fixture.fixture.date).getTime() - new Date(anotherFixture.fixture.date).getTime()
     );
 
     return sortedFixtures.flatMap((fromFixture, i) => {

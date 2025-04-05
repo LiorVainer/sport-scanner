@@ -11,17 +11,14 @@ interface MatchHeaderProps {
     location: string;
 }
 
-export const MatchHeader = ({startDate, endDate, location}: MatchHeaderProps) => {
-    console.log({startDate, endDate, location});
-    return (
-        <div className={styles.matchHeaderContainer}>
-            <Text strong className={styles.matchDates}>
-                {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon}/>
-                {formattedDate(endDate)}
-            </Text>
-            <Tag icon={<EnvironmentOutlined/>} className={styles.locationTag}>
-                {location}
-            </Tag>
-        </div>
-    );
-};
+export const MatchHeader = ({startDate, endDate, location}: MatchHeaderProps) => (
+    <div className={styles.matchHeaderContainer}>
+        <Text strong className={styles.matchDates}>
+            {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon}/>
+            {formattedDate(endDate)}
+        </Text>
+        <Tag icon={<EnvironmentOutlined/>} className={styles.locationTag}>
+            {location}
+        </Tag>
+    </div>
+);
