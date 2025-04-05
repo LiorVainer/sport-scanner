@@ -31,6 +31,8 @@ export const MatchSchema = z.object({
     homeTeam: TeamSchema.describe('Home team playing in the match'),
     awayTeam: TeamSchema.describe('Away team playing in the match'),
     league: z.string().describe('League in which the match is played'),
+    city: z.string().describe('The city where the match takes place'),
+    cityIataCode: z.string().describe("IATA code of the city where the match takes place"),
     stadium: z.string().describe('Stadium where the match takes place'),
     date: z.string().describe('Date of the match'),
     price: PriceRangeSchema.describe('Price range of the match tickets'),
@@ -53,9 +55,10 @@ export const PackageSchema = z
         fromDate: z.string().describe('Start date of the package'),
         toDate: z.string().describe('End date of the package'),
         location: z.string().describe('Main location of the package'),
-        flightsPrice: z.number().describe('Total combined price of all flights in the package'),
+        flightsPrice: z.number().describe(`Total combined price of all flights in the package, if a flight is round trip dont count it twice in price.
+         take just the price of the flight listed in flight to the destination and without the return flight`),
         matchesPrice: PriceRangeSchema.describe('Price range of all matches in the package'),
-        totalPrice: PriceRangeSchema.describe('Total price of the package'),
+        totalPrice: PriceRangeSchema.describe('Total price of the package, flightsPrice + matchesPrice'),
         flights: z.array(FlightSchema).describe('List of flights included in the package'),
         matches: z.array(MatchSchema).describe('List of matches included in the package'),
     })

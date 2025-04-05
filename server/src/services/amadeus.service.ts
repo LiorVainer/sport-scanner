@@ -3,6 +3,8 @@ import {ENV} from '../env/env.config';
 import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights-search-params.model';
 import {FlightOffer, FlightOffersArraySchema} from '../models/flight-offer.model';
 import {CitySearchParams} from '../models/geo.model';
+import {logger} from "../logs/logger";
+import {ProcessTypes} from "../models/log.model";
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -12,21 +14,22 @@ const AmadeusClient = new Amadeus({
 export const AmadeusService = {
     searchFlights: async (params: FlightSearchParams) => {
         const validatedParams = FlightSearchParamsSchema.parse(params);
-        const postReqParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
+        const flightOffersSearchParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
 
-        try {
-            const {data} = await AmadeusClient.shopping.flightOffersSearch.post(postReqParams);
+        logger.remote.info(`Amadeus flight search request`, {
+            processType: ProcessTypes.SEARCH_FLIGHTS,
+            searchParams: flightOffersSearchParams,
+        });
 
-            const validatedFlightsOffers = FlightOffersArraySchema.parse(data);
+        const {data} = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
 
-            return validatedFlightsOffers.filter((offer) => {
-                const price = parseFloat(offer.price.total);
-                return validatedParams.minPrice ? price >= validatedParams.minPrice : true;
-            });
-        } catch (err) {
-            console.error(`Flight search failed for ${validatedParams.dateFrom}:`, err);
-            return [];
-        }
+        logger.remote.success(`Amadeus flight search response`, {
+            processType: ProcessTypes.SEARCH_FLIGHTS,
+            response: data,
+            searchParams: flightOffersSearchParams,
+        });
+
+        return FlightOffersArraySchema.optional().parse(data);
     },
 
     priceFlight: async (offer: RawFlightOffer) => {
@@ -81,9 +84,9 @@ export const AmadeusService = {
         currencyCode: ENV.CURRENCY_CODE as CurrencyCode,
         searchCriteria: {
             maxPrice: params.maxPrice,
-            maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_FIXTURE,
+            maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_REQUEST,
             flightFilters: {
-                returnToDepartureAirport: true,
+                returnToDepartureAirport: params.isRoundTrip,
             },
         },
     }),
@@ -116,7 +119,7 @@ export const AmadeusService = {
                 keyword,
                 countryCode,
             });
-            
+
             return data;
         } catch (err) {
             console.error(`Failed to get airports for keyword: ${keyword}`, err);

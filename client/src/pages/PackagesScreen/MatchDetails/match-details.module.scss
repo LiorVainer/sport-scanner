@@ -1,102 +1,112 @@
 .matchDetailsWrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .matchDetailsCard {
-    padding-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  padding-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.matchTeamsLogos {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .divider {
-    height: 1px;
-    background-color: #e0e0e0;
-    margin: 0.25rem 0 0.75rem;
-    width: 100%;
-    border-radius: 1px;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.25rem 0 0.75rem;
+  width: 100%;
+  border-radius: 1px;
 }
 
 .image {
-    width: 90px;
-    height: 100px;
-    border-radius: 0.5rem;
-    object-fit: contain;
+  width: 90px;
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  object-fit: contain;
 }
 
 .details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 .titleRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .matchTitle {
-    font-size: 14px;
-    font-weight: 500;
-    color: #2f4f6f;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2f4f6f;
 }
 
 .matchDate {
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 500;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .meta {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .stadiumTag {
-    background-color: #2f4f6f;
-    color: white;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0.2rem 0.5rem;
-    border-radius: 1rem;
+  background-color: #2f4f6f;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
 }
 
 .leagueTag {
-    background-color: #f0f2f5;
-    color: #2f4f6f;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0.2rem 0.5rem;
-    border-radius: 1rem;
-    border: none;
+  background-color: #f0f2f5;
+  color: #2f4f6f;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  border: none;
 }
 
 .prices {
-    display: flex;
-    gap: 2rem;
-    margin-top: 0.4rem;
-    font-size: 14px;
-    color: #2f4f6f;
-    font-weight: 600;
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.4rem;
+  font-size: 14px;
+  color: #2f4f6f;
+  font-weight: 600;
 }
 
 .icon {
-    margin-right: 0.4rem;
+  margin-right: 0.4rem;
+  color: #2f4f6f;
 }
 
 .priceRange {
-    font-size: 14px;
-    color: #6b7280;
-    display: flex;
-    align-items: center;
-    font-weight: 600;
+  font-size: 14px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
 }
 
 .icon {
-    width: 14px;
-    height: 14px;
+  width: 14px;
+  height: 14px;
 }

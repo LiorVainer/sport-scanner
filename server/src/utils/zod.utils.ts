@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { z, ZodType } from 'zod';
+import {z, ZodType} from 'zod';
 
 export const ObjectIdSchema: ZodType<mongoose.Types.ObjectId, z.ZodTypeDef, string> = z
     .string()
@@ -18,5 +18,7 @@ export const StringToObjectId: ZodType<mongoose.Types.ObjectId, z.ZodTypeDef, st
         message: 'Invalid ObjectId format',
     })
     .transform((val) => new mongoose.Types.ObjectId(val));
+
+export type StringToObjectId = z.infer<typeof StringToObjectId>;
 
 export const zodDate = z.string().transform((str) => new Date(str));

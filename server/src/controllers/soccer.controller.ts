@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { soccerService } from '../services/soccer.service';
-import { PackageGenerateParamsSchema } from '../models/package-generate-params.model';
+import {Request, Response} from 'express';
+import {soccerService} from '../services/soccer.service';
 
 export const soccerController = {
     getLeagues: async (req: Request, res: Response) => {
@@ -9,7 +8,7 @@ export const soccerController = {
             const leagues = await soccerService.getLeaguesByCountry(country);
             res.status(200).json(leagues);
         } catch (e) {
-            res.status(500).json({ message: 'Error fetching leagues', error: e });
+            res.status(500).json({message: 'Error fetching leagues', error: e});
         }
     },
 
@@ -19,17 +18,17 @@ export const soccerController = {
             const venues = await soccerService.getVenuesByCountry(country);
             res.status(200).json(venues);
         } catch (e) {
-            res.status(500).json({ message: 'Error fetching venues', error: e });
+            res.status(500).json({message: 'Error fetching venues', error: e});
         }
     },
 
     getTeams: async (req: Request, res: Response) => {
         try {
-            const { league, season } = req.query;
+            const {league, season} = req.query;
             const teams = await soccerService.getTeamsByLeague(league as string, season as string);
             res.status(200).json(teams);
         } catch (e) {
-            res.status(500).json({ message: 'Error fetching teams', error: e });
+            res.status(500).json({message: 'Error fetching teams', error: e});
         }
     },
 };

@@ -16,7 +16,7 @@ export const FlightsService = {
     },
     getCityToIATACodeMap: async (cities: string[]): Promise<CityToIATACodeMap> => {
         try {
-            const iataCodes = await AIService.generateObject({
+            const {data: iataCodes} = await AIService.generateObject({
                 schema: CityWithIATASchemaArray,
                 saveOutputToFile: true,
                 messages: generateMessagesForGettingCitiesIATACodes(cities),
