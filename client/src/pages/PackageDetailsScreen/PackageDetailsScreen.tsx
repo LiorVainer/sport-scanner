@@ -1,15 +1,16 @@
-import {Button, Typography} from 'antd';
-import {ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined} from '@ant-design/icons';
-import {Link, useLocation} from 'react-router';
-import {Calendar} from 'lucide-react';
+import { Button, message, Typography } from 'antd';
+import { ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined } from '@ant-design/icons';
+import { Link, useLocation } from 'react-router';
+import { Calendar } from 'lucide-react';
 import styles from './package-details-screen.module.scss';
-import {formattedDate} from '@/utils/date.utils';
-import {Flight, Match, Package} from '@/models/package.model';
-import {FlightCard} from './FlightCard/FlightCard';
-import {MatchCard} from './MatchCard/MatchCard';
-import {ROUTES} from '@/constants/routes.const.ts';
+import { formattedDate } from '@/utils/date.utils';
+import { Flight, Match, Package } from '@/models/package.model';
+import { FlightCard } from './FlightCard/FlightCard';
+import { MatchCard } from './MatchCard/MatchCard';
+import { ROUTES } from '@/constants/routes.const.ts';
+import { SavedPackageService } from '@/api/services/saved-package.service';
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 export enum CardTypes {
     FLIGHT = 'flight',
@@ -18,7 +19,7 @@ export enum CardTypes {
 
 export const PackageDetailsScreen = () => {
     const location = useLocation();
-    const singlePackage: Package = location.state;
+    const { singlePackage, packageId } = (location.state as { singlePackage: Package; packageId: string }) || {};
 
     if (!singlePackage) return <div>Package not found</div>;
 
@@ -35,14 +36,22 @@ export const PackageDetailsScreen = () => {
             data: match,
             index,
         })),
-    ].sort((item, anotherItem) =>
-        item.date.getTime() - anotherItem.date.getTime());
+    ].sort((item, anotherItem) => item.date.getTime() - anotherItem.date.getTime());
+
+    const savePackage = async () => {
+        const savedPackage = await SavedPackageService.savePackage(packageId);
+        if (savedPackage) {
+            message.success('Package saved successfully!');
+        } else {
+            message.error('Failed to save package.');
+        }
+    };
 
     return (
         <div className={styles.packagePage}>
             <div className={styles.packageHeader}>
                 <Link className={styles.backArrow} to={`${ROUTES.PACKAGES}/results`}>
-                    <ArrowLeftOutlined className={styles.backIcon}/>
+                    <ArrowLeftOutlined className={styles.backIcon} />
                 </Link>
 
                 <div className={styles.packageInfo}>
@@ -53,16 +62,16 @@ export const PackageDetailsScreen = () => {
                 <div className={styles.packageDetails}>
                     <div className={styles.packageDetailsContainer}>
                         <Text className={styles.packageDate}>
-                            <Calendar className={styles.calendarIcon}/>
-                            {formattedDate(singlePackage.fromDate)} <ArrowRightOutlined className={styles.arrowIcon}/>
+                            <Calendar className={styles.calendarIcon} />
+                            {formattedDate(singlePackage.fromDate)} <ArrowRightOutlined className={styles.arrowIcon} />
                             {formattedDate(singlePackage.toDate)}
                         </Text>
                         <Text className={styles.packagePrice}>
                             from <strong>{singlePackage.totalPrice.min}$</strong>
                         </Text>
                     </div>
-                    <Button type="primary" className={styles.saveButton}>
-                        <PushpinOutlined/> Add To Saved
+                    <Button type="primary" className={styles.saveButton} onClick={savePackage}>
+                        <PushpinOutlined /> Add To Saved
                     </Button>
                 </div>
             </div>
@@ -84,7 +93,7 @@ export const PackageDetailsScreen = () => {
 
                         case CardTypes.MATCH: {
                             const match = item.data as Match;
-                            return <MatchCard match={match} singlePackage={singlePackage} itemIndex={item.index}/>;
+                            return <MatchCard match={match} singlePackage={singlePackage} itemIndex={item.index} />;
                         }
 
                         default:

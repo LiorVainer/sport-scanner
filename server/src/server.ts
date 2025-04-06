@@ -8,22 +8,24 @@ import dotenv from 'dotenv';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import cors from 'cors';
-import {handleErrorMiddleware} from './middlewares/error.middleware';
+import { handleErrorMiddleware } from './middlewares/error.middleware';
 import fileRoutes from './routes/file.route';
 import chatRoutes from './routes/chat.route';
 import soccerRoutes from './routes/soccer.route';
 import geoRoutes from './routes/geo.route';
-import {ENV} from './env/env.config';
+import { ENV } from './env/env.config';
 import packageRoutes from './routes/package.route';
-import {requestContextMiddleware} from "./middlewares/request-context.middleware";
-import {jwtParserMiddleware} from "./middlewares/auth.middlware";
+import { requestContextMiddleware } from './middlewares/request-context.middleware';
+import { jwtParserMiddleware } from './middlewares/auth.middlware';
+import savedPackageRoutes from './routes/saved-package.route';
+import historyRoutes from './routes/history.route';
 
 dotenv.config();
 export const app = express();
 
 app.use(bodyParser.json());
-app.use(cors({origin: '*', credentials: true}));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors({ origin: '*', credentials: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', '*');
@@ -31,8 +33,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(jwtParserMiddleware)
-app.use(requestContextMiddleware)
+app.use(jwtParserMiddleware);
+app.use(requestContextMiddleware);
 
 const port = ENV.PORT;
 
@@ -45,9 +47,9 @@ const options = {
             description: 'REST server including authentication using JWT',
         },
         servers: [
-            {url: `http://localhost:${port}`},
-            {url: `http://10.10.246.116:${port}`},
-            {url: `https://node116.cs.colman.ac.il`},
+            { url: `http://localhost:${port}` },
+            { url: `http://10.10.246.116:${port}` },
+            { url: `https://node116.cs.colman.ac.il` },
         ],
         components: {
             securitySchemes: {
@@ -71,6 +73,8 @@ db.once('open', () => console.log('Connected to database'));
 app.use('/geo', geoRoutes);
 app.use('/auth', authRoutes);
 app.use('/packages', packageRoutes);
+app.use('/histories', historyRoutes);
+app.use('/saved-packages', savedPackageRoutes);
 app.use('/users', usersRoutes);
 app.use('/chat', chatRoutes);
 app.use('/match-experiences', matchExperienceRoutes);

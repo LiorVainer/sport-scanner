@@ -1,5 +1,4 @@
 import { MAX_PRICE, MIN_PRICE } from '@/components/SearchBar/SearchBarLogic';
-import { zodDate } from '@/utils/zod.utils';
 import { z } from 'zod';
 
 export const CURRENCY_CODE = import.meta.env.CURRENCY_CODE;

@@ -14,9 +14,8 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *   description: API for generating travel + match packages
  */
 
-router.get('/saved', packageController.getSavedPackages);
+router.get('/:id', packageController.getById);
 
-router.get('/history', packageController.getHistory);
 
 /**
  * @swagger
@@ -48,8 +47,5 @@ router.get('/history', packageController.getHistory);
  */
 router.post('/generate', packageController.generatePackage);
 
-router.post('/save', packageController.savePackage);
-
-router.post('/add-to-history', packageController.addToHistory);
 
 export default router;

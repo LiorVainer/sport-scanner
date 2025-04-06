@@ -2,31 +2,32 @@ import {
     GeneratePackagesSteps,
     GeneratePackagesTimingStep,
     GeneratePackagesTimingSteps,
-    PackagesGenerationParams
+    PackagesGenerationParams,
 } from '../models/package-generate-params.model';
-import {ResponseError as AmadeusResponseError} from 'amadeus-ts';
-import {soccerService} from './soccer.service';
-import {convertPackageGenerateParamsToFixtureQueryParams} from '../converters/package-to-fixtures';
-import {FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema} from '../models/fixture.model';
-import {AIService} from '../ai/ai.service';
-import {AmadeusService} from './amadeus.service';
+import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
+import { soccerService } from './soccer.service';
+import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
+import { FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema } from '../models/fixture.model';
+import { AIService } from '../ai/ai.service';
+import { AmadeusService } from './amadeus.service';
 import {
     generateContextMessagesForPackageGeneration,
     generateFilterInvalidPackagesMessages,
 } from '../ai/utils/packages-generate-context-messages';
-import {FlightOffer} from '../models/flight-offer.model';
-import {Package, PackageArraySchema} from '../models/package.model';
-import {ENV} from '../env/env.config';
+import { FlightOffer } from '../models/flight-offer.model';
+import { Package, PackageArraySchema } from '../models/package.model';
+import { ENV } from '../env/env.config';
 import Bluebird from 'bluebird';
-import {Timer} from '../logs/timer';
-import {LogLevels} from '../models/log.model';
+import { Timer } from '../logs/timer';
+import { LogLevels } from '../models/log.model';
 
-import {tryCatch} from '../utils/try-catch.utils';
-import {FlightSearchParams} from '../models/flights-search-params.model';
-import {partitionPackagesByRules} from '../utils/package.utils';
-import {generateUserMessageForFixturePriceMap} from '../ai/utils/fixture-to-system-messages';
-import {generateFlightSearchParamsForFixtures} from '../converters/fixtures-to-flights';
-import {packagesLogger} from '../logs/packages.logger';
+import { tryCatch } from '../utils/try-catch.utils';
+import { FlightSearchParams } from '../models/flights-search-params.model';
+import { partitionPackagesByRules } from '../utils/package.utils';
+import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
+import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
+import { packagesLogger } from '../logs/packages.logger';
+import { PackageRepository } from '../repositories/package.repository';
 
 class PackageService {
     generatePackage = async (params: PackagesGenerationParams, userId?: string) => {
@@ -41,7 +42,7 @@ class PackageService {
         const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer, userId);
         if (!searchMeta) return [];
 
-        const {flightSearchParamsArray} = searchMeta;
+        const { flightSearchParamsArray } = searchMeta;
 
         const allFlightOffers = await this.fetchFlights(flightSearchParamsArray, timer, flightSearchErrors);
         if (!allFlightOffers.length) return [];
@@ -55,9 +56,9 @@ class PackageService {
         );
         if (!generatedPackagesResponse) return [];
 
-        const {result: generatedPackagesResult, contextMessages: aiContextMessages} = generatedPackagesResponse;
+        const { result: generatedPackagesResult, contextMessages: aiContextMessages } = generatedPackagesResponse;
 
-        const {valid: validPackages, invalid: invalidPackages} = await this.filterAiGeneratedPackagesByRules(
+        const { valid: validPackages, invalid: invalidPackages } = await this.filterAiGeneratedPackagesByRules(
             generatedPackagesResult.data,
             params,
             timer
@@ -91,7 +92,7 @@ class PackageService {
             packagesGeneratedCount: generatedPackagesResult.data.length,
             packagesValidCount: validPackages.length,
             requestParams: params,
-            errors: flightSearchErrors.length ? {flightSearchErrors} : undefined,
+            errors: flightSearchErrors.length ? { flightSearchErrors } : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
             },
@@ -110,7 +111,7 @@ class PackageService {
         packagesLogger.info(`🔍 Starting fixture search with filters: ${JSON.stringify(params)}`);
 
         timer.start(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
-        const {data: queryParams, error: queryError} = await tryCatch(
+        const { data: queryParams, error: queryError } = await tryCatch(
             Promise.resolve(convertPackageGenerateParamsToFixtureQueryParams(params))
         );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
@@ -131,7 +132,7 @@ class PackageService {
         packagesLogger.info(`📡 Fetching fixtures with query: ${JSON.stringify(queryParams)}`);
 
         timer.start(GeneratePackagesTimingSteps.FETCH_FIXTURES);
-        const {data: fixtures, error: fixturesError} = await tryCatch(soccerService.getFixtures(queryParams));
+        const { data: fixtures, error: fixturesError } = await tryCatch(soccerService.getFixtures(queryParams));
         timer.stop(GeneratePackagesTimingSteps.FETCH_FIXTURES);
 
         packagesLogger.info(
@@ -149,9 +150,7 @@ class PackageService {
         packagesLogger.info(`📅 Found ${fixtures.length} fixtures`);
 
         timer.start(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
-        const {data: enriched, error: priceError} = await tryCatch(
-            this.getFixturesWithTicketPriceRange(fixtures)
-        );
+        const { data: enriched, error: priceError } = await tryCatch(this.getFixturesWithTicketPriceRange(fixtures));
         timer.stop(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
 
         packagesLogger.info(
@@ -178,7 +177,7 @@ class PackageService {
         userId?: string
     ) {
         timer.start(GeneratePackagesTimingSteps.GENERATE_SEARCH_PARAMS);
-        const {data, error} = await tryCatch(generateFlightSearchParamsForFixtures(fixtures, params));
+        const { data, error } = await tryCatch(generateFlightSearchParamsForFixtures(fixtures, params));
         timer.stop(GeneratePackagesTimingSteps.GENERATE_SEARCH_PARAMS);
 
         if (!data || error) {
@@ -189,7 +188,7 @@ class PackageService {
             return null;
         }
 
-        packagesLogger.info("📅 Generated flight search params", {
+        packagesLogger.info('📅 Generated flight search params', {
             flightSearchParams: data.flightSearchParamsArray,
             fixturesCount: fixtures.length,
         });
@@ -205,16 +204,17 @@ class PackageService {
         packagesLogger.info(`🛫 Starting flight search for ${flightSearchParamsArray.length} requests`);
 
         flightSearchParamsArray.forEach((params) => {
-            packagesLogger.info(`🔍 Preparing flight search for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`);
+            packagesLogger.info(
+                `🔍 Preparing flight search for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`
+            );
         });
 
         timer.start(GeneratePackagesTimingSteps.SEARCH_FLIGHTS);
 
         const results = await Bluebird.map(
             flightSearchParamsArray,
-            async (params) =>
-                await this.fetchFlightsForParams(params, flightSearchErrors),
-            {concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT}
+            async (params) => await this.fetchFlightsForParams(params, flightSearchErrors),
+            { concurrency: ENV.FLIGHT_SEARCH_CONCURRENCY_LIMIT }
         );
 
         timer.stop(GeneratePackagesTimingSteps.SEARCH_FLIGHTS);
@@ -235,47 +235,57 @@ class PackageService {
             uniqueFlightOffers: uniqueOffers,
         });
 
-        packagesLogger.info(`⏱️ Flight search took ${timer.stepDuration(GeneratePackagesTimingSteps.SEARCH_FLIGHTS)}ms`);
+        packagesLogger.info(
+            `⏱️ Flight search took ${timer.stepDuration(GeneratePackagesTimingSteps.SEARCH_FLIGHTS)}ms`
+        );
 
         return uniqueOffers;
     }
-
 
     private async fetchFlightsForParams(
         params: FlightSearchParams,
         flightSearchErrors: { params: FlightSearchParams; error: any }[]
     ): Promise<FlightOffer[]> {
-        packagesLogger.info(`🔍 Searching flights for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
-            {searchParams: params}
+        packagesLogger.info(
+            `🔍 Searching flights for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
+            { searchParams: params }
         );
 
-        const {data: flightOffers, error} = await tryCatch<FlightOffer[] | undefined, AmadeusResponseError>(
+        const { data: flightOffers, error } = await tryCatch<FlightOffer[] | undefined, AmadeusResponseError>(
             AmadeusService.searchFlights(params)
         );
 
         if (error || !flightOffers) {
-            packagesLogger.warn(`❌ Error fetching flights for ${params.origin} → ${params.destination} on ${params.dateFrom}: ${error?.description?.[0]?.detail}`, {
-                error: error?.description?.[0]?.detail,
-                searchParams: params,
-            });
-            flightSearchErrors.push({params, error});
+            packagesLogger.warn(
+                `❌ Error fetching flights for ${params.origin} → ${params.destination} on ${params.dateFrom}: ${error?.description?.[0]?.detail}`,
+                {
+                    error: error?.description?.[0]?.detail,
+                    searchParams: params,
+                }
+            );
+            flightSearchErrors.push({ params, error });
             return [];
         }
 
         if (!flightOffers.length) {
-            packagesLogger.warn(`❌ No flight offers found for ${params.origin} -> ${params.destination} on ${params.dateFrom}`, {
-                searchParams: params,
-            });
+            packagesLogger.warn(
+                `❌ No flight offers found for ${params.origin} -> ${params.destination} on ${params.dateFrom}`,
+                {
+                    searchParams: params,
+                }
+            );
         }
 
-        packagesLogger.info(`✈️ Found ${flightOffers.length} flight offers for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`, {
-            flightOffers,
-            searchParams: params,
-        });
+        packagesLogger.info(
+            `✈️ Found ${flightOffers.length} flight offers for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
+            {
+                flightOffers,
+                searchParams: params,
+            }
+        );
 
         return flightOffers;
     }
-
 
     private async callAiToGeneratePackages(
         fixtures: FixtureItemWithPrice[],
@@ -288,11 +298,11 @@ class PackageService {
 
         timer.start(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
-        const {
-            result,
-            contextMessages,
-            error
-        } = await this.generatePackageCombinations(fixtures, flightOffers, params.originIATA);
+        const { result, contextMessages, error } = await this.generatePackageCombinations(
+            fixtures,
+            flightOffers,
+            params.originIATA
+        );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
         packagesLogger.info(
@@ -312,7 +322,7 @@ class PackageService {
         packagesLogger.info(`📊 Tokens used in response (completion): ${result.usage.completionTokens}`);
         packagesLogger.info(`📦 AI returned ${result.data.length} packages`);
 
-        return {result, contextMessages};
+        return { result, contextMessages };
     }
 
     private async filterAiGeneratedPackagesByRules(
@@ -327,23 +337,19 @@ class PackageService {
         timer.stop(GeneratePackagesTimingSteps.FILTER_PACKAGES);
 
         packagesLogger.info(`✅ ${partitionPackages.valid.length} packages passed rule-based validation`);
-        packagesLogger.info(
-            `⏱️ Filter step took ${timer.stepDuration(GeneratePackagesTimingSteps.FILTER_PACKAGES)}ms`
-        );
+        packagesLogger.info(`⏱️ Filter step took ${timer.stepDuration(GeneratePackagesTimingSteps.FILTER_PACKAGES)}ms`);
 
         return partitionPackages;
     }
 
-    private getFixturesWithTicketPriceRange = async (
-        fixtures: FixtureItem[]
-    ): Promise<FixtureItemWithPrice[]> => {
-        const {data: priceRangeList} = await AIService.generateObject({
+    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
+        const { data: priceRangeList } = await AIService.generateObject({
             schema: FixturePriceRangeListSchema,
             saveOutputToFile: true,
             messages: generateUserMessageForFixturePriceMap(fixtures),
         });
 
-        const priceMap = Object.fromEntries(priceRangeList.map(({id, ...rest}) => [id, rest]));
+        const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
 
         return fixtures.map((fixture) => ({
             ...fixture,
@@ -365,7 +371,7 @@ class PackageService {
 
         packagesLogger.info(`💬 Prepared ${contextMessages.length} context messages for AI`);
 
-        const {data: result, error} = await tryCatch(
+        const { data: result, error } = await tryCatch(
             AIService.generateObject({
                 schema: PackageArraySchema,
                 saveOutputToFile: true,
@@ -374,15 +380,15 @@ class PackageService {
             })
         );
 
-        if (!result || error) return {error};
+        if (!result || error) return { error };
 
-        return {result, contextMessages};
+        return { result, contextMessages };
     };
 
     private filterInvalidPackagesWithAI = async (packages: Package[]) => {
         const contextMessages = generateFilterInvalidPackagesMessages(packages);
 
-        const {data: result, error} = await tryCatch(
+        const { data: result, error } = await tryCatch(
             AIService.generateObject({
                 schema: PackageArraySchema,
                 saveOutputToFile: true,
@@ -393,14 +399,19 @@ class PackageService {
 
         if (!result || error) {
             packagesLogger.error(`❌ Error filtering invalid packages: ${error.message}`);
-            return {error};
+            return { error };
         }
 
         packagesLogger.info(
             `🧠 AI used ${result.usage.completionTokens} tokens for ${result.data.length} valid packages`
         );
 
-        return {result};
+        return { result };
+    };
+
+    createPackage = async (packageData: Package) => {
+        const newPackage = await PackageRepository.create(packageData);
+        return newPackage;
     };
 }
 

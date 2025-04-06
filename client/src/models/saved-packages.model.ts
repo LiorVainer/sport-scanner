@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import { StringToObjectId } from '../utils/zod.utils';
 
 const SavedPackageSchema = z.object({
-    userId: StringToObjectId,
-    packageId: StringToObjectId,
+    userId: z.string(),
+    packageId: z.string(),
 });
 
 export type SavedPackage = z.infer<typeof SavedPackageSchema>;

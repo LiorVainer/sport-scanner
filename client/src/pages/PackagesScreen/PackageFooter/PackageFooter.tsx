@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
 import { Package } from '@/models/package.model';
 import { Calendar, CircleDollarSignIcon } from 'lucide-react';
+import { HistoryService } from '@/api/services/history.service';
 
 const { Text } = Typography;
 
@@ -15,7 +16,18 @@ interface PackageFooterProps {
 
 export const PackageFooter = ({ singlePackage }: PackageFooterProps) => {
     const navigate = useNavigate();
-    const { fromDate, toDate, totalPrice, id } = singlePackage;
+    const { fromDate, toDate, totalPrice } = singlePackage;
+
+    const addToHistory = async (singlePackage: Package) => {
+        try {
+            const result = await HistoryService.addToUsersHistory(singlePackage);
+            navigate(`${ROUTES.PACKAGES}/results/${result.packageId}`, {
+                state: { singlePackage, packageId: result.packageId },
+            });
+        } catch (error) {
+            console.error('Error adding package to history:', (error as any).message);
+        }
+    };
 
     return (
         <div className={styles.footer}>
@@ -35,10 +47,7 @@ export const PackageFooter = ({ singlePackage }: PackageFooterProps) => {
                     </Text>
                 </div>
             </div>
-            <Button
-                type="primary"
-                onClick={() => navigate(`${ROUTES.PACKAGES}/results/${id}`, { state: singlePackage })}
-            >
+            <Button type="primary" onClick={() => addToHistory(singlePackage)}>
                 Continue
                 <RightOutlined />
             </Button>
