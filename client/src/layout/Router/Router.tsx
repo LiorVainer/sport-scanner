@@ -7,6 +7,7 @@ import HomeScreen from '@/pages/HomeScreen/HomeScreen';
 import { PackageDetailsScreen } from '@/pages/PackageDetailsScreen';
 import { PackagesScreen } from '@/pages/PackagesScreen';
 import { HistoryScreen } from '@/pages/HistoryScreen';
+import { SavedPackagesScreen } from '@/pages/SavedPackagesScreen';
 
 export interface RouterProps {}
 

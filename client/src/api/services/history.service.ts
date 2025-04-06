@@ -1,5 +1,5 @@
 import { axiosInstance } from '../config/axios-instance';
-import { Package } from '@/models/package.model';
+import { Package, PackageDocument } from '@/models/package.model';
 import { History } from '@/models/history.model';
 
 export const ROUTE_PREFIX = '/histories';
@@ -7,7 +7,7 @@ export const ROUTE_PREFIX = '/histories';
 export const HistoryService = {
     async getUsersHistory() {
         try {
-            const { data } = await axiosInstance.get<Package[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<PackageDocument[]>(`${ROUTE_PREFIX}/`);
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);

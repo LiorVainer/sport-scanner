@@ -19,7 +19,17 @@ export enum CardTypes {
 
 export const PackageDetailsScreen = () => {
     const location = useLocation();
-    const { singlePackage, packageId } = (location.state as { singlePackage: Package; packageId: string }) || {};
+    const {
+        singlePackage,
+        packageId,
+        backRoute = `${ROUTES.PACKAGES}/results`,
+        removeSavedPackage = false,
+    } = (location.state as {
+        singlePackage: Package;
+        packageId: string;
+        backRoute?: string;
+        removeSavedPackage?: boolean;
+    }) || {};
 
     if (!singlePackage) return <div>Package not found</div>;
 
@@ -47,10 +57,19 @@ export const PackageDetailsScreen = () => {
         }
     };
 
+    const removePackage = async () => {
+        const removedPackage = await SavedPackageService.removeSavedPackage(packageId);
+        if (removedPackage) {
+            message.success('Package removed from saved successfully!');
+        } else {
+            message.error('Failed to remove package from saved.');
+        }
+    };
+
     return (
         <div className={styles.packagePage}>
             <div className={styles.packageHeader}>
-                <Link className={styles.backArrow} to={`${ROUTES.PACKAGES}/results`}>
+                <Link className={styles.backArrow} to={backRoute}>
                     <ArrowLeftOutlined className={styles.backIcon} />
                 </Link>
 
@@ -70,8 +89,12 @@ export const PackageDetailsScreen = () => {
                             from <strong>{singlePackage.totalPrice.min}$</strong>
                         </Text>
                     </div>
-                    <Button type="primary" className={styles.saveButton} onClick={savePackage}>
-                        <PushpinOutlined /> Add To Saved
+                    <Button
+                        type="primary"
+                        className={styles.saveButton}
+                        onClick={removeSavedPackage ? removePackage : savePackage}
+                    >
+                        <PushpinOutlined /> {removeSavedPackage ? 'Remove from Saved' : 'Add To Saved'}
                     </Button>
                 </div>
             </div>

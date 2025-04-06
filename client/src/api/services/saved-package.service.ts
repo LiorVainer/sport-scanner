@@ -1,13 +1,13 @@
 import { SavedPackage } from '@/models/saved-packages.model';
 import { axiosInstance } from '../config/axios-instance';
-import { Package } from '@/models/package.model';
+import { PackageDocument } from '@/models/package.model';
 
 export const ROUTE_PREFIX = '/saved-packages';
 
 export const SavedPackageService = {
     async getUsersSavedPackages() {
         try {
-            const { data } = await axiosInstance.get<Package[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<PackageDocument[]>(`${ROUTE_PREFIX}/`);
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);
@@ -18,6 +18,16 @@ export const SavedPackageService = {
     async savePackage(packageId: string) {
         try {
             const { data } = await axiosInstance.post<SavedPackage>(`${ROUTE_PREFIX}/`, { packageId });
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+    
+    async removeSavedPackage(packageId: string) {
+        try {
+            const { data } = await axiosInstance.delete<SavedPackage>(`${ROUTE_PREFIX}/${packageId}`);
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);
