@@ -5,5 +5,5 @@ import { Screen } from '@/components/Screen';
 
 export const HistoryScreen = () => {
 
-    return <Screen className={styles.page}>homo</Screen>;
+    return <Screen className={styles.page}>nice 2</Screen>;
 };
