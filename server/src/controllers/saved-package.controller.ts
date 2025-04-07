@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { SavedPackageRepository } from '../repositories/saved-packages.repository';
-import { Package } from '../models/package.model';
 import mongoose from 'mongoose';
 
 export const savedPackageController = {

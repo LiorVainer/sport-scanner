@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { HistoryRepository } from '../repositories/history.repository';
-import { PackageRepository } from '../repositories/package.repository';
 import mongoose from 'mongoose';
-import { Package } from '../models/package.model';
 import { packageService } from '../services/package.service';
 
 export const historyController = {
