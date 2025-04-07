@@ -5,9 +5,12 @@ import { PackageDocument } from '@/models/package.model';
 export const ROUTE_PREFIX = '/saved-packages';
 
 export const SavedPackageService = {
-    async getUsersSavedPackages() {
+    async getUsersSavedPackages(packageId?: string) {
         try {
-            const { data } = await axiosInstance.get<PackageDocument[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<{ _id: string; packages: PackageDocument[] }[]>(
+                `${ROUTE_PREFIX}/`,
+                { params: { packageId } }
+            );
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);
@@ -24,7 +27,7 @@ export const SavedPackageService = {
             throw error;
         }
     },
-    
+
     async removeSavedPackage(packageId: string) {
         try {
             const { data } = await axiosInstance.delete<SavedPackage>(`${ROUTE_PREFIX}/${packageId}`);

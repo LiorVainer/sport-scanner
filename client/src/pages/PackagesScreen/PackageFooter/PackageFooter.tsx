@@ -13,28 +13,27 @@ const { Text } = Typography;
 interface PackageFooterProps {
     singlePackage: Package | PackageDocument;
     backRoute?: string;
+    isInHistoryOrSavedPage?: boolean;
 }
 
-export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) => {
+export const PackageFooter = ({ singlePackage, backRoute, isInHistoryOrSavedPage = false }: PackageFooterProps) => {
     const navigate = useNavigate();
     const { fromDate, toDate, totalPrice } = singlePackage;
 
     const addToHistory = async () => {
         try {
-            // if (blockAddingToHistory) {
-            //     navigate(`${ROUTES.PACKAGES}/results/${(singlePackage as PackageDocument)._id}`, {
-            //         state: {
-            //             singlePackage,
-            //             packageId: (singlePackage as PackageDocument)._id,
-            //             backRoute,
-            //         },
-            //     });
-            // } else {
-            const result = await HistoryService.addToUsersHistory(singlePackage);
-            navigate(`${ROUTES.PACKAGES}/results/${result.packageId}`, {
-                state: { singlePackage, packageId: result.packageId, backRoute },
-            });
-            // }
+            if (isInHistoryOrSavedPage && '_id' in singlePackage) {
+                const { _id, ...rest } = singlePackage;
+                await HistoryService.addToUsersHistory(rest);
+                navigate(`${ROUTES.PACKAGES}/results/${singlePackage._id}`, {
+                    state: { singlePackage, packageId: singlePackage._id!, backRoute },
+                });
+            } else {
+                const result = await HistoryService.addToUsersHistory(singlePackage);
+                navigate(`${ROUTES.PACKAGES}/results/${result.packageId}`, {
+                    state: { singlePackage, packageId: result.packageId, backRoute },
+                });
+            }
         } catch (error) {
             console.error('Error adding package to history:', (error as any).message);
         }

@@ -9,6 +9,7 @@ import { FlightCard } from './FlightCard/FlightCard';
 import { MatchCard } from './MatchCard/MatchCard';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { SavedPackageService } from '@/api/services/saved-package.service';
+import { useQuery } from '@tanstack/react-query';
 
 const { Title, Text } = Typography;
 
@@ -23,13 +24,20 @@ export const PackageDetailsScreen = () => {
         singlePackage,
         packageId,
         backRoute = `${ROUTES.PACKAGES}/results`,
-        removeSavedPackage = false,
     } = (location.state as {
         singlePackage: Package;
         packageId: string;
         backRoute?: string;
-        removeSavedPackage?: boolean;
     }) || {};
+
+    const { data: isPackageSaved, refetch: refetchIsPackageSaved } = useQuery({
+        queryKey: ['isPackageSaved', packageId],
+        queryFn: async () => {
+            const result = await SavedPackageService.getUsersSavedPackages(packageId);
+            return result.length > 0;
+        },
+        enabled: !!packageId && '_id' in singlePackage,
+    });
 
     if (!singlePackage) return <div>Package not found</div>;
 
@@ -52,6 +60,7 @@ export const PackageDetailsScreen = () => {
         const savedPackage = await SavedPackageService.savePackage(packageId);
         if (savedPackage) {
             message.success('Package saved successfully!');
+            refetchIsPackageSaved();
         } else {
             message.error('Failed to save package.');
         }
@@ -61,6 +70,7 @@ export const PackageDetailsScreen = () => {
         const removedPackage = await SavedPackageService.removeSavedPackage(packageId);
         if (removedPackage) {
             message.success('Package removed from saved successfully!');
+            refetchIsPackageSaved();
         } else {
             message.error('Failed to remove package from saved.');
         }
@@ -92,9 +102,9 @@ export const PackageDetailsScreen = () => {
                     <Button
                         type="primary"
                         className={styles.saveButton}
-                        onClick={removeSavedPackage ? removePackage : savePackage}
+                        onClick={isPackageSaved ? removePackage : savePackage}
                     >
-                        <PushpinOutlined /> {removeSavedPackage ? 'Remove from Saved' : 'Add To Saved'}
+                        <PushpinOutlined /> {isPackageSaved ? 'Remove from Saved' : 'Add To Saved'}
                     </Button>
                 </div>
             </div>

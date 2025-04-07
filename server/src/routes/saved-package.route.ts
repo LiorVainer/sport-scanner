@@ -7,9 +7,10 @@ const router = Router();
 
 ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 
-
 router.get('/', savedPackageController.getUsersSavedPackages);
 
 router.post('/', savedPackageController.addToUsersSavedPackages);
+
+router.delete('/:packageId', savedPackageController.removeUsersSavedPackage);
 
 export default router;

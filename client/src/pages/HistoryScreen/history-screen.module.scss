@@ -3,7 +3,13 @@
     flex-direction: column;
     background-color: #f0f2f5;
     padding: 5rem 28%;
-    gap: 3rem;
+    gap: 2rem;
+}
+
+.packageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .packageCard {
@@ -63,4 +69,11 @@
     color: #2f4f6f;
     flex-shrink: 0;
     display: none;
+}
+
+.dateHeader {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #2a2a2a;
 }

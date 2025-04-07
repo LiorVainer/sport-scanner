@@ -9,22 +9,37 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { PackageFooter } from '../PackagesScreen/PackageFooter';
 import { ROUTES } from '@/constants/routes.const';
 import { PackageSkeleton } from '../PackagesScreen/PackageSkeleton';
-
+import { NoSavedPackages } from './NoSavedPackages';
 
 export const SavedPackagesScreen = () => {
-
     const {
-        data: userHistory,
+        data: usersSavedPackages,
         isLoading,
         isError,
         error,
     } = useQuery({
         queryKey: ['usersSavedPackages'],
-        queryFn: SavedPackageService.getUsersSavedPackages,
+        queryFn: () => SavedPackageService.getUsersSavedPackages(),
     });
 
     if (isError) {
         return <Screen className={styles.page}>Error: {(error as Error).message}</Screen>;
+    }
+
+    if (isLoading) {
+        return (
+            <Screen className={styles.page}>
+                <PackageSkeleton />
+            </Screen>
+        );
+    }
+
+    if (!usersSavedPackages || usersSavedPackages.length === 0) {
+        return (
+            <Screen className={styles.page}>
+                <NoSavedPackages />
+            </Screen>
+        );
     }
 
     const renderMatchList = (singlePackage: PackageDocument) =>
@@ -51,16 +66,22 @@ export const SavedPackagesScreen = () => {
         });
 
     const renderPackages = () =>
-        userHistory?.map((singlePackage) => (
-            <div className={styles.packageCard} key={singlePackage.id}>
-                <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
-                <div className={styles.divider} />
-                <PackageFooter
-                    singlePackage={singlePackage}
-                    backRoute={`/${ROUTES.SAVED_PACKAGES.replace(/^\/+/, '')}`}
-                />
+        usersSavedPackages.map(({ _id: date, packages }) => (
+            <div className={styles.packageContainer} key={date}>
+                <h3 className={styles.dateHeader}>{date}</h3>
+                {packages.map((singlePackage) => (
+                    <div className={styles.packageCard} key={singlePackage.id}>
+                        <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
+                        <div className={styles.divider} />
+                        <PackageFooter
+                            singlePackage={singlePackage}
+                            backRoute={`/${ROUTES.SAVED_PACKAGES.replace(/^\/+/, '')}`}
+                            isInHistoryOrSavedPage
+                        />
+                    </div>
+                ))}
             </div>
         ));
 
-    return <Screen className={styles.page}>{isLoading ? <PackageSkeleton /> : renderPackages()}</Screen>;
+    return <Screen className={styles.page}>{renderPackages()}</Screen>;
 };

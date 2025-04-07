@@ -7,7 +7,7 @@ export const ROUTE_PREFIX = '/histories';
 export const HistoryService = {
     async getUsersHistory() {
         try {
-            const { data } = await axiosInstance.get<PackageDocument[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<{ _id: string; packages: PackageDocument[] }[]>(`${ROUTE_PREFIX}/`);
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);

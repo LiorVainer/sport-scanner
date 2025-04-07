@@ -8,7 +8,7 @@ import { packageService } from '../services/package.service';
 export const historyController = {
     getUsersHistory: async (req: Request, res: Response) => {
         try {
-            const packages = await HistoryRepository.aggregate<Package>([
+            const pipeline: mongoose.PipelineStage[] = [
                 {
                     $match: {
                         userId: new mongoose.Types.ObjectId(req.userId),
@@ -22,11 +22,24 @@ export const historyController = {
                         as: 'package',
                     },
                 },
+                { $unwind: '$package' },
                 {
-                    $unwind: '$package',
+                    $sort: { package: -1 },
                 },
-                { $replaceRoot: { newRoot: '$package' } },
-            ]);
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: { format: '%d/%m/%Y', date: '$createdAt' },
+                        },
+                        packages: { $push: '$package' },
+                    },
+                },
+                {
+                    $sort: { _id: -1 },
+                },
+            ];
+
+            const packages = await HistoryRepository.aggregate(pipeline);
             res.status(200).send(packages);
         } catch (err) {
             res.status(500).send(err);

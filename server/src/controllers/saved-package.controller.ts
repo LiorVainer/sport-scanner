@@ -6,12 +6,18 @@ import mongoose from 'mongoose';
 export const savedPackageController = {
     getUsersSavedPackages: async (req: Request, res: Response) => {
         try {
-            const packages = await SavedPackageRepository.aggregate<Package>([
-                {
-                    $match: {
-                        userId: new mongoose.Types.ObjectId(req.userId),
-                    },
-                },
+            const { packageId } = req.query;
+
+            const matchStage: Record<string, any> = {
+                userId: new mongoose.Types.ObjectId(req.userId),
+            };
+
+            if (packageId) {
+                matchStage.packageId = new mongoose.Types.ObjectId(packageId as string);
+            }
+
+            const pipeline: mongoose.PipelineStage[] = [
+                { $match: matchStage },
                 {
                     $lookup: {
                         from: 'packages',
@@ -20,11 +26,25 @@ export const savedPackageController = {
                         as: 'package',
                     },
                 },
+                { $unwind: '$package' },
                 {
-                    $unwind: '$package',
+                    $sort: { package: -1 },
                 },
-                { $replaceRoot: { newRoot: '$package' } },
-            ]);
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: { format: '%d/%m/%Y', date: '$createdAt' },
+                        },
+                        packages: { $push: '$package' },
+                    },
+                },
+                {
+                    $sort: { _id: -1 },
+                },
+            ];
+
+            const packages = await SavedPackageRepository.aggregate(pipeline);
+
             res.status(200).send(packages);
         } catch (err) {
             res.status(500).send(err);
@@ -35,6 +55,18 @@ export const savedPackageController = {
         try {
             const savedPackage = await SavedPackageRepository.create({
                 packageId: req.body.packageId,
+                userId: req.userId,
+            });
+            res.status(200).send(savedPackage);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
+
+    removeUsersSavedPackage: async (req: Request, res: Response) => {
+        try {
+            const savedPackage = await SavedPackageRepository.findOneAndDelete({
+                packageId: req.params.packageId,
                 userId: req.userId,
             });
             res.status(200).send(savedPackage);

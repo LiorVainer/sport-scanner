@@ -9,6 +9,7 @@ import { PackageFooter } from '../PackagesScreen/PackageFooter';
 import { PackageSkeleton } from '../PackagesScreen/PackageSkeleton';
 import { Match, PackageDocument } from '@/models/package.model';
 import { ROUTES } from '@/constants/routes.const';
+import { NoHistory } from './NoHistory';
 
 export const HistoryScreen = () => {
     const {
@@ -23,6 +24,22 @@ export const HistoryScreen = () => {
 
     if (isError) {
         return <Screen className={styles.page}>Error: {(error as Error).message}</Screen>;
+    }
+
+    if (isLoading) {
+        return (
+            <Screen className={styles.page}>
+                <PackageSkeleton />
+            </Screen>
+        );
+    }
+
+    if (!userHistory || userHistory.length === 0) {
+        return (
+            <Screen className={styles.page}>
+                <NoHistory />
+            </Screen>
+        );
     }
 
     const renderMatchList = (singlePackage: PackageDocument) =>
@@ -49,16 +66,22 @@ export const HistoryScreen = () => {
         });
 
     const renderPackages = () =>
-        userHistory?.map((singlePackage) => (
-            <div className={styles.packageCard} key={singlePackage.id}>
-                <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
-                <div className={styles.divider} />
-                <PackageFooter
-                    singlePackage={singlePackage}
-                    backRoute={`/${ROUTES.HISTORY.replace(/^\/+/, '')}`}
-                />
+        userHistory.map(({ _id: date, packages }) => (
+            <div className={styles.packageContainer} key={date}>
+                <h3 className={styles.dateHeader}>{date}</h3>
+                {packages.map((singlePackage) => (
+                    <div className={styles.packageCard} key={singlePackage.id}>
+                        <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
+                        <div className={styles.divider} />
+                        <PackageFooter
+                            singlePackage={singlePackage}
+                            backRoute={`/${ROUTES.HISTORY.replace(/^\/+/, '')}`}
+                            isInHistoryOrSavedPage
+                        />
+                    </div>
+                ))}
             </div>
         ));
 
-    return <Screen className={styles.page}>{isLoading ? <PackageSkeleton /> : renderPackages()}</Screen>;
+    return <Screen className={styles.page}>{renderPackages()}</Screen>;
 };
