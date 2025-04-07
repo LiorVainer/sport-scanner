@@ -16,6 +16,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.7.2",
         "@fortawesome/react-fontawesome": "^0.2.2",
         "@hookform/resolvers": "^4.1.2",
+        "@microsoft/fetch-event-source": "^2.0.1",
         "@react-oauth/google": "^0.12.1",
         "@tanstack/react-query": "^5.64.1",
         "@types/lodash": "^4.17.15",
@@ -36,6 +37,7 @@
         "eslint-plugin-react": "^7.28.0",
         "eslint-plugin-react-hooks": "^5.0.0",
         "eslint-plugin-react-refresh": "^0.4.16",
+        "event-source-polyfill": "^1.0.31",
         "framer-motion": "^12.5.0",
         "globals": "^15.14.0",
         "jwt-decode": "^4.0.0",
@@ -63,6 +65,7 @@
         "zod": "^3.24.1"
     },
     "devDependencies": {
+        "@types/event-source-polyfill": "^1.0.5",
         "vite-plugin-svgr": "^4.3.0"
     }
 }

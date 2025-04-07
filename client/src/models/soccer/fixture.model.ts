@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {LeagueSchema, TeamSchema, VenueSchema} from './soccer.model';
-import {PriceRangeSchema} from './price-range.model';
-import {ENV} from '../env/env.config';
+import {PriceRangeSchema} from '../price-range.model';
 
 export const FixtureQueryParamsSchema = z.object({
     id: z.number().optional(),
@@ -91,14 +90,13 @@ export type FixtureResponse = z.infer<typeof FixtureResponseSchema>;
 export const FixturePriceRangeSchema = z
     .object({
         id: z.string().describe('The fixture ID as a string'),
-        min: z.number().describe(`Minimum estimated ticket price in ${ENV.CURRENCY_CODE}`),
-        max: z.number().describe(`Maximum estimated ticket price in ${ENV.CURRENCY_CODE}`),
+        min: z.number(),
+        max: z.number(),
     })
     .describe('Price range details for a specific fixture');
 
 export const FixturePriceRangeListSchema = z
     .array(FixturePriceRangeSchema)
-    .describe(`An array of price range objects, each with fixture ID, min and max price in ${ENV.CURRENCY_CODE}`);
 
 export type FixturePriceRange = z.infer<typeof FixturePriceRangeSchema>;
 export type FixturePriceRangeList = z.infer<typeof FixturePriceRangeListSchema>;

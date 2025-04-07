@@ -1,5 +1,5 @@
-import {PackagesGenerationParams} from '../models/package-generate-params.model';
-import {FixtureQueryParams} from '../models/fixture.model';
+import {PackagesGenerationParams} from '../models/packages/package-generate-params.model';
+import {FixtureQueryParams} from '../models/soccer/fixture.model';
 import {calculateCurrentSeason} from '../utils/soccer.utils';
 
 export const convertPackageGenerateParamsToFixtureQueryParams = (

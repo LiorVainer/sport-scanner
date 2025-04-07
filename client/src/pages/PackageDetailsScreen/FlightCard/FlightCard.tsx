@@ -1,7 +1,7 @@
 import styles from './flight-card.module.scss';
-import { Flight } from '@/models/package.model';
-import { FlightLabel } from './FlightLabel/FlightLabel';
-import { FlightDetails } from './FlightDetails/FlightDetails';
+import {Flight} from '@/models/packages/package.model.ts';
+import {FlightLabel} from './FlightLabel/FlightLabel';
+import {FlightDetails} from './FlightDetails/FlightDetails';
 
 interface FlightCardProps {
     flight: Flight;
@@ -9,10 +9,10 @@ interface FlightCardProps {
     totalFlights: number;
 }
 
-export const FlightCard = ({ flight, itemIndex, totalFlights }: FlightCardProps) => {
+export const FlightCard = ({flight, itemIndex, totalFlights}: FlightCardProps) => {
     const {
-        origin: { iataCode: originCode, name: originName },
-        destination: { iataCode: destinationCode, name: destinationName },
+        origin: {iataCode: originCode, name: originName},
+        destination: {iataCode: destinationCode, name: destinationName},
         departureDate,
         price,
         searchFlightTicketsLink,
@@ -31,7 +31,7 @@ export const FlightCard = ({ flight, itemIndex, totalFlights }: FlightCardProps)
 
     return (
         <div className={styles.flightCardContainer}>
-            <FlightLabel label={getFlightLabel(itemIndex, totalFlights)} from={originName} to={destinationName} />
+            <FlightLabel label={getFlightLabel(itemIndex, totalFlights)} from={originName} to={destinationName}/>
             <FlightDetails
                 from={originCode}
                 to={destinationCode}

@@ -2,7 +2,7 @@ import {Tag, Typography} from 'antd';
 import {EnvironmentOutlined, TrophyOutlined} from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import {formattedDate} from '@/utils/date.utils';
-import {Match, Package} from '@/models/package.model';
+import {Match, Package} from '@/models/packages/package.model.ts';
 import {MatchHeader} from '../MatchHeader/MatchHeader';
 // import { TicketsPlane } from 'lucide-react';
 

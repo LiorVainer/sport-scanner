@@ -4,7 +4,7 @@ import {Link, useLocation} from 'react-router';
 import {Calendar} from 'lucide-react';
 import styles from './package-details-screen.module.scss';
 import {formattedDate} from '@/utils/date.utils';
-import {Flight, Match, Package} from '@/models/package.model';
+import {Flight, Match, Package} from '@/models/packages/package.model.ts';
 import {FlightCard} from './FlightCard/FlightCard';
 import {MatchCard} from './MatchCard/MatchCard';
 import {ROUTES} from '@/constants/routes.const.ts';

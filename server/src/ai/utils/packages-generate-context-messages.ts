@@ -1,8 +1,8 @@
 import {CoreMessage} from 'ai';
-import {ExtendedFixtureItem} from '../../models/fixture.model';
+import {ExtendedFixtureItem} from '../../models/soccer/fixture.model';
 import {message} from './message.utils';
-import {FlightOffer} from '../../models/flight-offer.model';
-import {Package} from '../../models/package.model';
+import {FlightOffer} from '../../models/flights/flight-offer.model';
+import {Package} from '../../models/packages/package.model';
 import {ENV} from "../../env/env.config";
 
 const introMessage = () =>

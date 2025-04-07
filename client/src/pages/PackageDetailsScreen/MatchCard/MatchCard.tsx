@@ -1,8 +1,8 @@
 import styles from './match-card.module.scss';
-import { Match, Package } from '@/models/package.model';
-import { romanize } from 'romans';
-import { MatchLabel } from './MatchLabel';
-import { MatchDetails } from './MatchDetails';
+import {Match, Package} from '@/models/packages/package.model.ts';
+import {romanize} from 'romans';
+import {MatchLabel} from './MatchLabel';
+import {MatchDetails} from './MatchDetails';
 
 interface MatchCardProps {
     match: Match;
@@ -10,8 +10,8 @@ interface MatchCardProps {
     itemIndex: number;
 }
 
-export const MatchCard = ({ match, singlePackage, itemIndex }: MatchCardProps) => {
-    const { fromDate, toDate, location } = singlePackage;
+export const MatchCard = ({match, singlePackage, itemIndex}: MatchCardProps) => {
+    const {fromDate, toDate, location} = singlePackage;
 
     const splitLocation = location.split('&')[itemIndex] || location;
 
@@ -23,7 +23,7 @@ export const MatchCard = ({ match, singlePackage, itemIndex }: MatchCardProps) =
                 startDate={fromDate}
                 endDate={toDate}
             />
-            <MatchDetails match={match} />
+            <MatchDetails match={match}/>
         </div>
     );
 };

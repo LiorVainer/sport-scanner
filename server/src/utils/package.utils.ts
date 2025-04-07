@@ -1,4 +1,4 @@
-import {Package} from '../models/package.model';
+import {Package} from '../models/packages/package.model';
 import {isBefore, parseISO} from 'date-fns';
 
 type PartitionedPackages = {

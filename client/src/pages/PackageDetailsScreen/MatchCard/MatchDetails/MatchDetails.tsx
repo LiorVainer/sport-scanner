@@ -2,7 +2,7 @@ import {Button, Tag, Typography} from 'antd';
 import {EnvironmentOutlined, TrophyOutlined} from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import {formattedDate} from '@/utils/date.utils';
-import {Match} from '@/models/package.model';
+import {Match} from '@/models/packages/package.model.ts';
 
 const {Text} = Typography;
 

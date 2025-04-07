@@ -1,10 +1,10 @@
-import {ExtendedFixtureItem} from '../models/fixture.model';
-import {FlightSearchParams} from '../models/flights-search-params.model';
+import {ExtendedFixtureItem} from '../models/soccer/fixture.model';
+import {FlightSearchParams} from '../models/flights/flights-search-params.model';
 import moment from 'moment';
-import {PackagesGenerationParams} from '../models/package-generate-params.model';
+import {PackagesGenerationParams} from '../models/packages/package-generate-params.model';
 import {calculateAdjustedPrice} from '../utils/price.utils';
 import {FlightsService} from '../services/flight.service';
-import {CityToIATACodeMap} from '../models/iata.model';
+import {CityToIATACodeMap} from '../models/flights/iata.model';
 import {ENV} from '../env/env.config';
 
 const buildFlightSearchParams = (

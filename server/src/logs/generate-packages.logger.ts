@@ -1,9 +1,9 @@
-import {GeneratePackagesTimingStep, PackagesGenerationParams} from '../models/package-generate-params.model';
+import {GeneratePackagesTimingStep, PackagesGenerationParams} from '../models/packages/package-generate-params.model';
 import {CoreMessage, LanguageModelUsage} from "ai";
 import {CustomLogLevel} from "./levels.logger";
-import {Package} from "../models/package.model";
-import {FlightSearchParams} from "../models/flights-search-params.model";
-import {FixtureItem} from "../models/fixture.model";
+import {Package} from "../models/packages/package.model";
+import {FlightSearchParams} from "../models/flights/flights-search-params.model";
+import {FixtureItem} from "../models/soccer/fixture.model";
 
 export type GeneratePackagesLogTimings = Partial<Record<GeneratePackagesTimingStep, number>>;
 

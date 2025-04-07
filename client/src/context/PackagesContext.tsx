@@ -1,24 +1,55 @@
-import {createContext, useContext} from 'react';
-import {Package, PackageGenerateParams} from '@/models/package.model';
-import {UseMutateFunction, useMutation} from "@tanstack/react-query";
-import {PackageService} from "@api/services/package.service.ts";
+import {createContext, useContext, useState} from 'react';
+import {Package, PackageGenerateParams} from '@/models/packages/package.model.ts';
+import {UseMutateFunction, useMutation} from '@tanstack/react-query';
+import {PackageService} from '@api/services/package.service';
+import {PackagesGenerationProgressUpdate} from '@/models/packages/package-generation-progress-update.model.ts';
+import {GeneratePackagesSteps} from "@/models/packages/packages-generate-steps.model.ts";
 
 interface PackagesContextType {
     packages: Package[] | undefined;
     isLoading: boolean;
-    fetchPackages: UseMutateFunction<Package[], Error, PackageGenerateParams>
+    progressSteps: PackagesGenerationProgressUpdate[];
+    fetchPackages: UseMutateFunction<Package[], Error, PackageGenerateParams>;
+    hideProgressSteps: boolean;
+    setHideProgressSteps: (hide: boolean) => void;
 }
 
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
 
-export const PackagesProvider = ({children}: { children: React.ReactNode }) => {
+const HIDE_PROGRESS_STEPS_TIMEOUT = 1500;
 
-    const {mutate: fetchPackages, isPending, data: packages} = useMutation({
-        mutationFn: (params: PackageGenerateParams) => PackageService.getPackages(params),
+export const PackagesProvider = ({children}: { children: React.ReactNode }) => {
+    const [progressSteps, setProgressSteps] = useState<PackagesGenerationProgressUpdate[]>([]);
+    const [hideProgressSteps, setHideProgressSteps] = useState(false);
+
+
+    const {mutate: generatePackages, isPending, data: packages} = useMutation({
+        mutationFn: (params: PackageGenerateParams) =>
+            PackageService.getPackages(params, (newProgressStep) => {
+                setProgressSteps((prev) => [...prev, newProgressStep])
+
+                if (newProgressStep.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES) {
+                    setHideProgressSteps(true);
+                }
+            }),
     });
 
+    const fetchPackages = async (params: PackageGenerateParams) => {
+        setHideProgressSteps(false);
+        setProgressSteps([]);
+        generatePackages(params);
+    }
+
     return (
-        <PackagesContext.Provider value={{packages, isLoading: isPending, fetchPackages}}>
+        <PackagesContext.Provider
+            value={{
+                packages,
+                isLoading: isPending,
+                progressSteps,
+                fetchPackages,
+                hideProgressSteps,
+                setHideProgressSteps
+            }}>
             {children}
         </PackagesContext.Provider>
     );

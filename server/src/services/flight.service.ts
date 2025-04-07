@@ -1,6 +1,6 @@
 import {AIService} from '../ai/ai.service';
 import {generateMessagesForGettingCitiesIATACodes} from '../ai/utils/cities-to-iata-messages';
-import {CityToIATACodeMap, CityWithIATASchemaArray} from '../models/iata.model';
+import {CityToIATACodeMap, CityWithIATASchemaArray} from '../models/flights/iata.model';
 import {AmadeusService} from './amadeus.service';
 
 export const FlightsService = {

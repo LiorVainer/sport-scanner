@@ -1,12 +1,26 @@
 import {Request, Response} from 'express';
-import {PackagesGenerationParams} from "../models/package-generate-params.model";
+import {PackagesGenerationParams} from "../models/packages/package-generate-params.model";
 import {packageService} from "../services/package.service";
-
+import {PackagesGenerationProgressUpdate} from "../models/packages/package-generation-progress-update.model";
 
 export const packageController = {
-    generatePackage: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
+    generatePackages: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
         const generatedPackage = await packageService.generatePackage(req.body, req.userId);
 
         res.status(200).send(generatedPackage);
+    },
+    streamPackageGeneration: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        res.flushHeaders();
+
+        const emit = (event: PackagesGenerationProgressUpdate) => {
+            res.write(`data: ${JSON.stringify(event)}\n\n`);
+        };
+
+        await packageService.generatePackage(req.body, req.userId, emit);
+
+        res.end();
     }
 };

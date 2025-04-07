@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './packages-screen.module.scss';
 import {Screen} from '@/components/Screen';
-import {Match, Package} from '@/models/package.model';
+import {Match, Package} from '@/models/packages/package.model.ts';
 import {PackageSkeleton} from './PackageSkeleton/PackageSkeleton';
 import {MatchDetails} from './MatchDetails/MatchDetails';
 import {PackageFooter} from './PackageFooter/PackageFooter';
@@ -10,6 +10,7 @@ import {useNavigate} from 'react-router';
 import {usePackages} from '@/context/PackagesContext';
 import {Button} from 'antd';
 import {ArrowRightOutlined} from '@ant-design/icons';
+import {PackagesGenerationProgressTimeline} from "@pages/PackagesScreen/PackagesGenerationProgressTimeline";
 
 export const PackagesScreen = () => {
     const {isLoading, packages} = usePackages();
@@ -31,10 +32,11 @@ export const PackagesScreen = () => {
         );
     }
 
+
     const renderMatchList = (singlePackage: Package) =>
         singlePackage.matches.map((match: Match, index: number) => {
             const previousMatch = index > 0 ? singlePackage.matches[index - 1] : null;
-            
+
             const showHeader =
                 match.homeTeam.id !== previousMatch?.homeTeam.id
 
@@ -67,6 +69,7 @@ export const PackagesScreen = () => {
 
     return (
         <Screen className={styles.page}>
+            {true && <PackagesGenerationProgressTimeline/>}
             {isLoading ? <PackageSkeleton/> : renderPackages()}
         </Screen>
     );

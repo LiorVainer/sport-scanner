@@ -12,7 +12,7 @@
   gap: 2rem;
 }
 
-.matchTeamsLogos {
+.fixtureTeams {
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -109,4 +109,11 @@
 .icon {
   width: 14px;
   height: 14px;
+}
+
+.matchTeamsLogos {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }

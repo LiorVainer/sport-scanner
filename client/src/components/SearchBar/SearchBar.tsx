@@ -13,7 +13,7 @@ import classes from './search-bar.module.scss';
 import {ROUTES} from '@/constants/routes.const';
 import {useNavigate} from 'react-router';
 import {GeoService} from '@/api/services/geo.service';
-import {PackageGenerateParams, PackageGenerateParamsSchema} from '@/models/package.model';
+import {PackageGenerateParams, PackageGenerateParamsSchema} from '@/models/packages/package.model.ts';
 import {usePackages} from '@/context/PackagesContext';
 
 const {RangePicker} = DatePicker;

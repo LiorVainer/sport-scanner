@@ -1,6 +1,6 @@
 import {z} from 'zod';
-import {PriceRangeSchema} from './price-range.model';
-import {ENV} from '../env/env.config';
+import {PriceRangeSchema} from '../price-range.model';
+import {ENV} from '../../env/env.config';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),

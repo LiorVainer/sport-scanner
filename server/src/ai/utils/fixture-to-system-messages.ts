@@ -1,7 +1,7 @@
-import { CoreSystemMessage } from 'ai';
-import { message, system } from './message.utils';
-import { FixtureItem } from '../../models/fixture.model';
-import { ENV } from '../../env/env.config';
+import {CoreSystemMessage} from 'ai';
+import {message} from './message.utils';
+import {FixtureItem} from '../../models/soccer/fixture.model';
+import {ENV} from '../../env/env.config';
 
 export const generateSystemMessagesFromFixture = (fixture: FixtureItem): CoreSystemMessage[] => [
     message.system(`This is a soccer match between ${fixture.teams.home.name} and ${fixture.teams.away.name}.`),
@@ -13,11 +13,11 @@ export const generateSystemMessagesFromFixture = (fixture: FixtureItem): CoreSys
 ];
 
 export const generateUserMessageForFixturePriceMap = (fixtures: FixtureItem[]) => {
-    const lines = fixtures.map(({ fixture, teams, league }) => {
-        const { id, venue, date } = fixture;
-        const { home, away } = teams;
-        const { name: venueName, city } = venue;
-        const { name: leagueName, season } = league;
+    const lines = fixtures.map(({fixture, teams, league}) => {
+        const {id, venue, date} = fixture;
+        const {home, away} = teams;
+        const {name: venueName, city} = venue;
+        const {name: leagueName, season} = league;
 
         return message.user(
             `Fixture ${id}: ${home.name} vs ${away.name} at ${venueName} (${city}), date: ${date}, league: ${leagueName}, season: ${season}`

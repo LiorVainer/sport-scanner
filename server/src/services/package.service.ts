@@ -1,50 +1,98 @@
-import {
-    GeneratePackagesSteps,
-    GeneratePackagesTimingStep,
-    GeneratePackagesTimingSteps,
-    PackagesGenerationParams
-} from '../models/package-generate-params.model';
+import {PackagesGenerationParams} from '../models/packages/package-generate-params.model';
 import {ResponseError as AmadeusResponseError} from 'amadeus-ts';
 import {soccerService} from './soccer.service';
 import {convertPackageGenerateParamsToFixtureQueryParams} from '../converters/package-to-fixtures';
-import {FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema} from '../models/fixture.model';
+import {FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema} from '../models/soccer/fixture.model';
 import {AIService} from '../ai/ai.service';
 import {AmadeusService} from './amadeus.service';
 import {
     generateContextMessagesForPackageGeneration,
     generateFilterInvalidPackagesMessages,
 } from '../ai/utils/packages-generate-context-messages';
-import {FlightOffer} from '../models/flight-offer.model';
-import {Package, PackageArraySchema} from '../models/package.model';
+import {FlightOffer} from '../models/flights/flight-offer.model';
+import {Package, PackageArraySchema} from '../models/packages/package.model';
 import {ENV} from '../env/env.config';
 import Bluebird from 'bluebird';
 import {Timer} from '../logs/timer';
-import {LogLevels} from '../models/log.model';
 
 import {tryCatch} from '../utils/try-catch.utils';
-import {FlightSearchParams} from '../models/flights-search-params.model';
+import {FlightSearchParams} from '../models/flights/flights-search-params.model';
 import {partitionPackagesByRules} from '../utils/package.utils';
 import {generateUserMessageForFixturePriceMap} from '../ai/utils/fixture-to-system-messages';
 import {generateFlightSearchParamsForFixtures} from '../converters/fixtures-to-flights';
 import {packagesLogger} from '../logs/packages.logger';
+import {PackagesGenerationProgressUpdate} from "../models/packages/package-generation-progress-update.model";
+import {GeneratePackagesSteps} from "../models/packages/packages-generate-steps.model";
+import {
+    GeneratePackagesTimingStep,
+    GeneratePackagesTimingSteps
+} from "../models/packages/packages-generate-timings.model";
 
 class PackageService {
-    generatePackage = async (params: PackagesGenerationParams, userId?: string) => {
+    generatePackage = async (
+        params: PackagesGenerationParams,
+        userId?: string,
+        emit?: (update: PackagesGenerationProgressUpdate) => void
+    ): Promise<Package[]> => {
         const timer = new Timer<GeneratePackagesTimingStep>();
         const flightSearchErrors: { params: FlightSearchParams; error: string }[] = [];
 
-        packagesLogger.info(`📦 Generating package with params: ${JSON.stringify(params)}`);
+        emit?.({
+            step: GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS,
+            message: 'Creating fixture search params...',
+            dateRange: params.date,
+        });
 
         const fixtures = await this.fetchFixturesWithPrice(params, timer, userId);
         if (!fixtures) return [];
 
+        emit?.({
+            step: GeneratePackagesSteps.FETCH_FIXTURES,
+            message: 'Fetching fixtures...',
+        });
+
+        emit?.({
+            step: GeneratePackagesSteps.FOUND_FIXTURES,
+            message: `Found ${fixtures.length} fixtures.`,
+            fixturesCount: fixtures.length,
+            fixtures,
+            matchCities: fixtures.map(f => f.fixture.venue.city).filter(Boolean) as string[],
+        });
+
         const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer, userId);
         if (!searchMeta) return [];
 
+        emit?.({
+            step: GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES,
+            message: 'Enriching fixtures with price ranges...',
+        });
+
+        emit?.({
+            step: GeneratePackagesSteps.GENERATE_SEARCH_PARAMS,
+            message: 'Generating flight search parameters...',
+        });
+
         const {flightSearchParamsArray} = searchMeta;
+
+        emit?.({
+            step: GeneratePackagesSteps.SEARCH_FLIGHTS,
+            message: `Searching flights (${flightSearchParamsArray.length} requests)...`,
+            totalRequests: flightSearchParamsArray.length,
+        });
 
         const allFlightOffers = await this.fetchFlights(flightSearchParamsArray, timer, flightSearchErrors);
         if (!allFlightOffers.length) return [];
+
+        emit?.({
+            step: GeneratePackagesSteps.FOUND_FLIGHTS,
+            message: `Found ${allFlightOffers.length} flight offers.`,
+            totalOffers: allFlightOffers.length,
+        });
+
+        emit?.({
+            step: GeneratePackagesSteps.GENERATE_PACKAGES,
+            message: 'Generating packages...',
+        });
 
         const generatedPackagesResponse = await this.callAiToGeneratePackages(
             fixtures,
@@ -55,52 +103,36 @@ class PackageService {
         );
         if (!generatedPackagesResponse) return [];
 
-        const {result: generatedPackagesResult, contextMessages: aiContextMessages} = generatedPackagesResponse;
+        const {result: generatedPackagesResult} = generatedPackagesResponse;
 
-        const {valid: validPackages, invalid: invalidPackages} = await this.filterAiGeneratedPackagesByRules(
+        emit?.({
+            step: GeneratePackagesSteps.AI_GENERATED_PACKAGES,
+            message: `AI generated ${generatedPackagesResult.data.length} packages.`,
+            aiGeneratedCount: generatedPackagesResult.data.length,
+        });
+
+        emit?.({
+            step: GeneratePackagesSteps.FILTER_PACKAGES,
+            message: 'Filtering packages...',
+        });
+
+        const {valid: validPackages} = await this.filterAiGeneratedPackagesByRules(
             generatedPackagesResult.data,
             params,
             timer
         );
         if (!validPackages) return [];
 
-        if (invalidPackages.length > 0) {
-            packagesLogger.warn(`⚠️ ${invalidPackages.length} invalid packages filtered out`, {
-                invalidPackages,
-                logId: 'invalid_packages',
-            });
-        }
-
-        if (flightSearchErrors.length) {
-            packagesLogger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed`);
-        }
-
-        packagesLogger.structured({
-            message: `🎉 Generated ${validPackages.length} valid packages in ${timer.total()}ms`,
-            level: LogLevels.SUCCESS,
+        emit?.({
             step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
-            executionTime: timer.total(),
-            timings: timer.timings(),
-            aiContextMessagesCount: aiContextMessages.length,
-            aiContextMessages,
-            flightsSearchRequestsParams: flightSearchParamsArray,
-            flightsSearchRequestsCount: flightSearchParamsArray.length,
-            fixturesCount: fixtures.length,
-            fixtures,
-            flightsCount: allFlightOffers.length,
-            packagesGeneratedCount: generatedPackagesResult.data.length,
-            packagesValidCount: validPackages.length,
-            requestParams: params,
-            errors: flightSearchErrors.length ? {flightSearchErrors} : undefined,
-            aiTokensUsage: {
-                packageGeneration: generatedPackagesResult.usage,
-            },
-            packagesGenerated: validPackages,
-            userId,
+            message: `✅ Finished generating ${validPackages.length} valid packages.`,
+            packages: validPackages,
+            durationMs: timer.total(),
         });
 
         return validPackages;
     };
+
 
     private async fetchFixturesWithPrice(
         params: PackagesGenerationParams,
