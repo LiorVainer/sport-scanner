@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { History } from '../models/history.model';
+import { ENV } from '../env/env.config';
 
 const historySchema = new Schema<History>(
     {
@@ -8,6 +9,8 @@ const historySchema = new Schema<History>(
     },
     { timestamps: { createdAt: true, updatedAt: true } }
 );
+
+historySchema.index({ createdAt: 1 }, { expireAfterSeconds: ENV.TTL_FOR_HISTORY_DOCUMENTS });
 
 export const HistoryRepository = mongoose.model<History>('histories', historySchema);
 

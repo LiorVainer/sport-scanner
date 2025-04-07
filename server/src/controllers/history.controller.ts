@@ -47,16 +47,12 @@ export const historyController = {
     addToUsersHistory: async (req: Request, res: Response) => {
         try {
             const { id, ...rest } = req.body;
-            console.log('homo', rest);
             const newPackage = await packageService.createPackage(rest);
 
-            console.log('newPackage', newPackage);
-            console.log('packageId', newPackage._id);
             const newPackageInHistory = await HistoryRepository.create({
                 packageId: newPackage._id,
                 userId: req.userId,
             });
-            console.log(newPackageInHistory);
             res.status(200).send(newPackageInHistory);
         } catch (err) {
             res.status(500).send(err);
