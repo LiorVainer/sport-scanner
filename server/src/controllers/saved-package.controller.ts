@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { SavedPackageRepository } from '../repositories/saved-packages.repository';
 import mongoose from 'mongoose';
+import { PopulatedSavedPackage, SavedPackage } from '../models/saved-packages.model';
+import { populateAggregation } from '../queries/package.query';
 
 export const savedPackageController = {
     getUsersSavedPackages: async (req: Request, res: Response) => {
@@ -15,35 +17,9 @@ export const savedPackageController = {
                 matchStage.packageId = new mongoose.Types.ObjectId(packageId as string);
             }
 
-            const pipeline: mongoose.PipelineStage[] = [
-                { $match: matchStage },
-                {
-                    $lookup: {
-                        from: 'packages',
-                        localField: 'packageId',
-                        foreignField: '_id',
-                        as: 'package',
-                    },
-                },
-                { $unwind: '$package' },
-                {
-                    $sort: { package: -1 },
-                },
-                {
-                    $group: {
-                        _id: {
-                            $dateToString: { format: '%d/%m/%Y', date: '$createdAt' },
-                        },
-                        packages: { $push: '$package' },
-                    },
-                },
-                {
-                    $sort: { _id: -1 },
-                },
-            ];
-
-            const packages = await SavedPackageRepository.aggregate(pipeline);
-
+            const packages: PopulatedSavedPackage[] = await SavedPackageRepository.aggregate(
+                populateAggregation({ $match: matchStage })
+            );
             res.status(200).send(packages);
         } catch (err) {
             res.status(500).send(err);
@@ -52,7 +28,7 @@ export const savedPackageController = {
 
     addToUsersSavedPackages: async (req: Request, res: Response) => {
         try {
-            const savedPackage = await SavedPackageRepository.create({
+            const savedPackage: SavedPackage = await SavedPackageRepository.create({
                 packageId: req.body.packageId,
                 userId: req.userId,
             });
@@ -64,7 +40,7 @@ export const savedPackageController = {
 
     removeUsersSavedPackage: async (req: Request, res: Response) => {
         try {
-            const savedPackage = await SavedPackageRepository.findOneAndDelete({
+            const savedPackage: SavedPackage | null = await SavedPackageRepository.findOneAndDelete({
                 packageId: req.params.packageId,
                 userId: req.userId,
             });

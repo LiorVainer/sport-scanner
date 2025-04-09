@@ -1,13 +1,13 @@
 import { axiosInstance } from '../config/axios-instance';
-import { Package, PackageDocument } from '@/models/package.model';
-import { History } from '@/models/history.model';
+import { Package } from '@/models/package.model';
+import { History, PopulatedHistory } from '@/models/history.model';
 
 export const ROUTE_PREFIX = '/histories';
 
 export const HistoryService = {
     async getUsersHistory() {
         try {
-            const { data } = await axiosInstance.get<{ _id: string; packages: PackageDocument[] }[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<PopulatedHistory[]>(`${ROUTE_PREFIX}/`);
             return data;
         } catch (error) {
             console.error('Error:', (error as any).message);

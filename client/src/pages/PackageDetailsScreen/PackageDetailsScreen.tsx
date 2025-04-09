@@ -1,15 +1,17 @@
 import { Button, message, Typography } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined } from '@ant-design/icons';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import styles from './package-details-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils';
-import { Flight, Match, Package } from '@/models/package.model';
+import { Flight, Match, PackageDocument } from '@/models/package.model';
 import { FlightCard } from './FlightCard/FlightCard';
 import { MatchCard } from './MatchCard/MatchCard';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { SavedPackageService } from '@/api/services/saved-package.service';
 import { useQuery } from '@tanstack/react-query';
+import { PackageService } from '@/api/services/package.service';
+import { useEffect, useState } from 'react';
 
 const { Title, Text } = Typography;
 
@@ -19,45 +21,34 @@ export enum CardTypes {
 }
 
 export const PackageDetailsScreen = () => {
+    const { packageId } = useParams<{ packageId: string }>();
     const location = useLocation();
+    const backRoute = (location.state as { backRoute?: string })?.backRoute || `${ROUTES.HOME}`;
+    const [timelineItems, setTimelineItems] = useState<
+        { type: CardTypes; date: Date; data: Flight | Match; index: number }[]
+    >([]);
+
     const {
-        singlePackage,
-        packageId,
-        backRoute = `${ROUTES.PACKAGES}/results`,
-    } = (location.state as {
-        singlePackage: Package;
-        packageId: string;
-        backRoute?: string;
-    }) || {};
+        data: singlePackage,
+        isLoading,
+        error,
+    } = useQuery<PackageDocument>({
+        queryKey: ['package', packageId],
+        queryFn: async () => PackageService.getById(packageId!),
+        enabled: !!packageId,
+    });
 
     const { data: isPackageSaved, refetch: refetchIsPackageSaved } = useQuery({
         queryKey: ['isPackageSaved', packageId],
         queryFn: async () => {
-            const result = await SavedPackageService.getUsersSavedPackages(packageId);
+            const result = await SavedPackageService.getUsersSavedPackages(packageId!);
             return result.length > 0;
         },
-        enabled: !!packageId && '_id' in singlePackage,
+        enabled: !!packageId && !!singlePackage?._id,
     });
 
-    if (!singlePackage) return <div>Package not found</div>;
-
-    const timelineItems = [
-        ...singlePackage.flights.map((flight: Flight, index: number) => ({
-            type: CardTypes.FLIGHT,
-            date: new Date(flight.departureDate),
-            data: flight,
-            index,
-        })),
-        ...singlePackage.matches.map((match: Match, index: number) => ({
-            type: CardTypes.MATCH,
-            date: new Date(match.date),
-            data: match,
-            index,
-        })),
-    ].sort((item, anotherItem) => item.date.getTime() - anotherItem.date.getTime());
-
     const savePackage = async () => {
-        const savedPackage = await SavedPackageService.savePackage(packageId);
+        const savedPackage = await SavedPackageService.savePackage(packageId!);
         if (savedPackage) {
             message.success('Package saved successfully!');
             refetchIsPackageSaved();
@@ -67,7 +58,7 @@ export const PackageDetailsScreen = () => {
     };
 
     const removePackage = async () => {
-        const removedPackage = await SavedPackageService.removeSavedPackage(packageId);
+        const removedPackage = await SavedPackageService.removeSavedPackage(packageId!);
         if (removedPackage) {
             message.success('Package removed from saved successfully!');
             refetchIsPackageSaved();
@@ -76,64 +67,102 @@ export const PackageDetailsScreen = () => {
         }
     };
 
+    useEffect(() => {
+        if (singlePackage) {
+            console.log(singlePackage);
+            setTimelineItems(
+                [
+                    ...singlePackage.flights.map((flight: Flight, index: number) => ({
+                        type: CardTypes.FLIGHT,
+                        date: new Date(flight.departureDate),
+                        data: flight,
+                        index,
+                    })),
+                    ...singlePackage.matches.map((match: Match, index: number) => ({
+                        type: CardTypes.MATCH,
+                        date: new Date(match.date),
+                        data: match,
+                        index,
+                    })),
+                ].sort((item, anotherItem) => item.date.getTime() - anotherItem.date.getTime())
+            );
+        }
+    }, [singlePackage]);
+
     return (
         <div className={styles.packagePage}>
-            <div className={styles.packageHeader}>
-                <Link className={styles.backArrow} to={backRoute}>
-                    <ArrowLeftOutlined className={styles.backIcon} />
-                </Link>
+            {isLoading ? (
+                <div>Loading...</div>
+            ) : error || !singlePackage ? (
+                <div>Package not found</div>
+            ) : (
+                <>
+                    <div className={styles.packageHeader}>
+                        <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
+                            <ArrowLeftOutlined className={styles.backIcon} />
+                        </Link>
 
-                <div className={styles.packageInfo}>
-                    <Title className={styles.packageTitle}>{singlePackage.title}</Title>
-                    <Text className={styles.packageDescription}>{singlePackage.description}</Text>
-                </div>
+                        <div className={styles.packageInfo}>
+                            <Title className={styles.packageTitle}>{singlePackage.title}</Title>
+                            <Text className={styles.packageDescription}>{singlePackage.description}</Text>
+                        </div>
 
-                <div className={styles.packageDetails}>
-                    <div className={styles.packageDetailsContainer}>
-                        <Text className={styles.packageDate}>
-                            <Calendar className={styles.calendarIcon} />
-                            {formattedDate(singlePackage.fromDate)} <ArrowRightOutlined className={styles.arrowIcon} />
-                            {formattedDate(singlePackage.toDate)}
-                        </Text>
-                        <Text className={styles.packagePrice}>
-                            from <strong>{singlePackage.totalPrice.min}$</strong>
-                        </Text>
+                        <div className={styles.packageDetails}>
+                            <div className={styles.packageDetailsContainer}>
+                                <Text className={styles.packageDate}>
+                                    <Calendar className={styles.calendarIcon} />
+                                    {formattedDate(singlePackage.fromDate)}{' '}
+                                    <ArrowRightOutlined className={styles.arrowIcon} />
+                                    {formattedDate(singlePackage.toDate)}
+                                </Text>
+                                <Text className={styles.packagePrice}>
+                                    from <strong>{singlePackage.totalPrice?.min ?? 'N/A'}$</strong>
+                                </Text>
+                            </div>
+                            <Button
+                                type="primary"
+                                className={styles.saveButton}
+                                onClick={isPackageSaved ? removePackage : savePackage}
+                            >
+                                <PushpinOutlined /> {isPackageSaved ? 'Remove from Saved' : 'Add To Saved'}
+                            </Button>
+                        </div>
                     </div>
-                    <Button
-                        type="primary"
-                        className={styles.saveButton}
-                        onClick={isPackageSaved ? removePackage : savePackage}
-                    >
-                        <PushpinOutlined /> {isPackageSaved ? 'Remove from Saved' : 'Add To Saved'}
-                    </Button>
-                </div>
-            </div>
 
-            <div className={styles.cardsSection}>
-                {timelineItems.map((item, timelineIndex) => {
-                    switch (item.type) {
-                        case CardTypes.FLIGHT: {
-                            const flight = item.data as Flight;
-                            return (
-                                <FlightCard
-                                    key={`flight-${timelineIndex}`}
-                                    flight={flight}
-                                    itemIndex={item.index}
-                                    totalFlights={singlePackage.flights.length}
-                                />
-                            );
-                        }
+                    <div className={styles.cardsSection}>
+                        {timelineItems.map((item, timelineIndex) => {
+                            switch (item.type) {
+                                case CardTypes.FLIGHT: {
+                                    const flight = item.data as Flight;
+                                    return (
+                                        <FlightCard
+                                            key={`flight-${timelineIndex}`}
+                                            flight={flight}
+                                            itemIndex={item.index}
+                                            totalFlights={singlePackage.flights.length}
+                                        />
+                                    );
+                                }
 
-                        case CardTypes.MATCH: {
-                            const match = item.data as Match;
-                            return <MatchCard match={match} singlePackage={singlePackage} itemIndex={item.index} />;
-                        }
+                                case CardTypes.MATCH: {
+                                    const match = item.data as Match;
+                                    return (
+                                        <MatchCard
+                                            key={`match-${timelineIndex}`}
+                                            match={match}
+                                            singlePackage={singlePackage}
+                                            itemIndex={item.index}
+                                        />
+                                    );
+                                }
 
-                        default:
-                            return null;
-                    }
-                })}
-            </div>
+                                default:
+                                    return null;
+                            }
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

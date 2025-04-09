@@ -19,7 +19,7 @@ export const Router = (_props: RouterProps) => {
                 <Route element={<Layout />}>
                     <Route path={ROUTES.HOME} element={<HomeScreen />} />
                     <Route path={`${ROUTES.PACKAGES}/results`} element={<PackagesScreen />} />
-                    <Route path={`${ROUTES.PACKAGES}/results/:id`} element={<PackageDetailsScreen />} />
+                    <Route path={`${ROUTES.PACKAGES}/results/:packageId`} element={<PackageDetailsScreen />} />
                     <Route path={ROUTES.HISTORY} element={<HistoryScreen />} />
                     <Route path={ROUTES.SAVED_PACKAGES} element={<SavedPackagesScreen />} />
                 </Route>

@@ -1,13 +1,12 @@
-import { SavedPackage } from '@/models/saved-packages.model';
+import { PopulatedSavedPackage, SavedPackage } from '@/models/saved-packages.model';
 import { axiosInstance } from '../config/axios-instance';
-import { PackageDocument } from '@/models/package.model';
 
 export const ROUTE_PREFIX = '/saved-packages';
 
 export const SavedPackageService = {
     async getUsersSavedPackages(packageId?: string) {
         try {
-            const { data } = await axiosInstance.get<{ _id: string; packages: PackageDocument[] }[]>(
+            const { data } = await axiosInstance.get<PopulatedSavedPackage[]>(
                 `${ROUTE_PREFIX}/`,
                 { params: { packageId } }
             );

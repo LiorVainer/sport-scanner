@@ -59,7 +59,10 @@ export const PackagesScreen = () => {
             <div className={styles.packageCard} key={singlePackage.id}>
                 <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
                 <div className={styles.divider} />
-                <PackageFooter singlePackage={singlePackage} />
+                <PackageFooter
+                    singlePackage={singlePackage}
+                    backRoute={`${ROUTES.PACKAGES}/results`}
+                />
             </div>
         ));
 

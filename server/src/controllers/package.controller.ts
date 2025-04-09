@@ -12,7 +12,7 @@ export const packageController = {
 
     getById: async (req: Request, res: Response) => {
         const packageId = req.params.id;
-        const packageData = await PackageRepository.find({ _id: packageId });
+        const [packageData] = await PackageRepository.find({ _id: packageId });
 
         if (!packageData) {
             res.status(404).send({ message: 'Package not found' });

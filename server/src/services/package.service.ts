@@ -409,10 +409,7 @@ class PackageService {
         return { result };
     };
 
-    createPackage = async (packageData: Package) => {
-        const newPackage = await PackageRepository.create(packageData);
-        return newPackage;
-    };
+    createPackage = async (packageData: Package) => PackageRepository.create(packageData);
 }
 
 export const packageService = new PackageService();
