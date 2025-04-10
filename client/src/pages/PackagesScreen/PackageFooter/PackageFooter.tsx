@@ -14,16 +14,19 @@ const { Text } = Typography;
 interface PackageFooterProps {
     singlePackage: Package | PackageDocument;
     backRoute?: string;
-    isInHistoryOrSavedPage?: boolean;
 }
 
-export const PackageFooter = ({ singlePackage, backRoute, isInHistoryOrSavedPage = false }: PackageFooterProps) => {
+export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) => {
     const navigate = useNavigate();
     const { fromDate, toDate, totalPrice } = singlePackage;
 
+    const isSavedPackage = (pkg: Package | PackageDocument): pkg is PackageDocument => {
+        return '_id' in pkg && Boolean(pkg._id);
+    };
+
     const addToHistory = async () => {
         try {
-            if (isInHistoryOrSavedPage && '_id' in singlePackage) {
+            if (isSavedPackage(singlePackage)) {
                 const { _id, ...rest } = singlePackage;
                 const newPackage = await PackageService.create(rest);
                 await UsersService.addToUsersHistory(newPackage._id);
