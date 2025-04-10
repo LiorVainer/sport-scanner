@@ -61,7 +61,7 @@ export const PackagesScreen = () => {
                 <div className={styles.divider} />
                 <PackageFooter
                     singlePackage={singlePackage}
-                    backRoute={`${ROUTES.PACKAGES}/results`}
+                    backRoute={ROUTES.PACKAGES}
                 />
             </div>
         ));

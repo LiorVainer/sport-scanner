@@ -17,8 +17,6 @@ import { ENV } from './env/env.config';
 import packageRoutes from './routes/package.route';
 import { requestContextMiddleware } from './middlewares/request-context.middleware';
 import { jwtParserMiddleware } from './middlewares/auth.middlware';
-import savedPackageRoutes from './routes/saved-package.route';
-import historyRoutes from './routes/history.route';
 
 dotenv.config();
 export const app = express();
@@ -73,8 +71,6 @@ db.once('open', () => console.log('Connected to database'));
 app.use('/geo', geoRoutes);
 app.use('/auth', authRoutes);
 app.use('/packages', packageRoutes);
-app.use('/histories', historyRoutes);
-app.use('/saved-packages', savedPackageRoutes);
 app.use('/users', usersRoutes);
 app.use('/chat', chatRoutes);
 app.use('/match-experiences', matchExperienceRoutes);

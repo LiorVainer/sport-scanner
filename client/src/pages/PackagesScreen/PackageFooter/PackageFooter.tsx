@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
 import { Package, PackageDocument } from '@/models/package.model';
 import { Calendar, CircleDollarSignIcon } from 'lucide-react';
-import { HistoryService } from '@/api/services/history.service';
+import { UsersService } from '@/api/services/users.service';
 
 const { Text } = Typography;
 
@@ -24,13 +24,13 @@ export const PackageFooter = ({ singlePackage, backRoute, isInHistoryOrSavedPage
         try {
             if (isInHistoryOrSavedPage && '_id' in singlePackage) {
                 const { _id, ...rest } = singlePackage;
-                await HistoryService.addToUsersHistory(rest);
-                navigate(`${ROUTES.PACKAGES}/results/${singlePackage._id}`, {
+                await UsersService.addToUsersHistory(rest);
+                navigate(`${ROUTES.PACKAGES}/${singlePackage._id}`, {
                     state: { singlePackage, packageId: singlePackage._id!, backRoute },
                 });
             } else {
-                const result = await HistoryService.addToUsersHistory(singlePackage);
-                navigate(`${ROUTES.PACKAGES}/results/${result.packageId}`, {
+                const result = await UsersService.addToUsersHistory(singlePackage);
+                navigate(`${ROUTES.PACKAGES}/${result.packageId}`, {
                     state: { singlePackage, packageId: result.packageId, backRoute },
                 });
             }

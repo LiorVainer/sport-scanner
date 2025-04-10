@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './saved-packages-screen.module.scss';
 import { Screen } from '@/components/Screen';
-import { SavedPackageService } from '@/api/services/saved-package.service';
 import { useQuery } from '@tanstack/react-query';
 import { Match, PackageDocument } from '@/models/package.model';
 import { MatchDetails } from '../PackagesScreen/MatchDetails';
@@ -10,6 +9,7 @@ import { PackageFooter } from '../PackagesScreen/PackageFooter';
 import { ROUTES } from '@/constants/routes.const';
 import { PackageSkeleton } from '../PackagesScreen/PackageSkeleton';
 import { NoSavedPackages } from './NoSavedPackages';
+import { UsersService } from '@/api/services/users.service';
 
 export const SavedPackagesScreen = () => {
     const {
@@ -19,7 +19,7 @@ export const SavedPackagesScreen = () => {
         error,
     } = useQuery({
         queryKey: ['usersSavedPackages'],
-        queryFn: () => SavedPackageService.getUsersSavedPackages(),
+        queryFn: () => UsersService.getUsersSavedPackages(),
     });
 
     if (isError) {

@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
-import bcryptjs from 'bcryptjs';
 import { UserRepository } from '../repositories/user.repository';
-import { CreateUserBody, UpdateUserBody } from '../types/user.types';
+import { UpdateUserBody } from '../types/user.types';
+import { PopulatedSavedPackage, SavedPackage } from '../models/saved-packages.model';
+import { packageService } from '../services/package.service';
+import { HistoryRepository } from '../repositories/history.repository';
+import { PopulatedHistory, History } from '../models/history.model';
+import mongoose from 'mongoose';
+import { populateAggregation } from '../queries/package.query';
+import { SavedPackageRepository } from '../repositories/saved-packages.repository';
 
 export const userController = {
     updateUserById: async (req: Request<Record<any, any>, {}, UpdateUserBody>, res: Response) => {
@@ -22,6 +28,81 @@ export const userController = {
             res.status(200).send(publicUser);
         } catch (err) {
             res.status(500).send({ message: 'Error updating user', error: err });
+        }
+    },
+
+    getUsersHistory: async (req: Request, res: Response) => {
+        try {
+            const matchStage = {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(req.userId),
+                },
+            };
+
+            const packages: PopulatedHistory[] = await HistoryRepository.aggregate(populateAggregation(matchStage));
+            res.status(200).send(packages);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
+
+    addToUsersHistory: async (req: Request, res: Response) => {
+        try {
+            const { id, ...rest } = req.body;
+            const newPackage = await packageService.createPackage(rest);
+
+            const newPackageInHistory: History = await HistoryRepository.create({
+                packageId: newPackage._id,
+                userId: req.userId,
+            });
+            res.status(200).send(newPackageInHistory);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
+
+    getUsersSavedPackages: async (req: Request, res: Response) => {
+        try {
+            const { packageId } = req.query;
+
+            const matchStage: Record<string, any> = {
+                userId: new mongoose.Types.ObjectId(req.userId),
+            };
+
+            if (packageId) {
+                matchStage.packageId = new mongoose.Types.ObjectId(packageId as string);
+            }
+
+            const packages: PopulatedSavedPackage[] = await SavedPackageRepository.aggregate(
+                populateAggregation({ $match: matchStage })
+            );
+            res.status(200).send(packages);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
+
+    savePackageForUser: async (req: Request, res: Response) => {
+        try {
+            const savedPackage: SavedPackage = await SavedPackageRepository.create({
+                packageId: req.params.packageId,
+                userId: req.userId,
+            });
+            res.status(200).send(savedPackage);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
+
+    unsavePackageForUser: async (req: Request, res: Response) => {
+        try {
+            const savedPackage: SavedPackage | null = await SavedPackageRepository.findOneAndDelete({
+                packageId: req.params.packageId,
+                userId: req.userId,
+            });
+            res.status(200).send(savedPackage);
+        } catch (err) {
+            res.status(500).send(err);
         }
     },
 };

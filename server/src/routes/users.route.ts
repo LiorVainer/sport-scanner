@@ -45,6 +45,14 @@ router.use(authMiddleware);
  *           description: The timestamp of when the user details were last updated
  */
 
+router.get('/packages/history', authMiddleware, userController.getUsersHistory);
+router.get('/packages/saved', authMiddleware, userController.getUsersSavedPackages);
+
+router.post('/packages/history', authMiddleware, userController.addToUsersHistory);
+router.post('/packages/:packageId/save', authMiddleware, userController.savePackageForUser);
+
+router.delete('/packages/:packageId/unsave', authMiddleware, userController.unsavePackageForUser);
+
 /**
  * @swagger
  * /users/{id}:

@@ -8,10 +8,10 @@ import { Flight, Match, PackageDocument } from '@/models/package.model';
 import { FlightCard } from './FlightCard/FlightCard';
 import { MatchCard } from './MatchCard/MatchCard';
 import { ROUTES } from '@/constants/routes.const.ts';
-import { SavedPackageService } from '@/api/services/saved-package.service';
 import { useQuery } from '@tanstack/react-query';
 import { PackageService } from '@/api/services/package.service';
 import { useEffect, useState } from 'react';
+import { UsersService } from '@/api/services/users.service';
 
 const { Title, Text } = Typography;
 
@@ -41,14 +41,14 @@ export const PackageDetailsScreen = () => {
     const { data: isPackageSaved, refetch: refetchIsPackageSaved } = useQuery({
         queryKey: ['isPackageSaved', packageId],
         queryFn: async () => {
-            const result = await SavedPackageService.getUsersSavedPackages(packageId!);
+            const result = await UsersService.getUsersSavedPackages(packageId!);
             return result.length > 0;
         },
         enabled: !!packageId && !!singlePackage?._id,
     });
 
     const savePackage = async () => {
-        const savedPackage = await SavedPackageService.savePackage(packageId!);
+        const savedPackage = await UsersService.savePackageForUser(packageId!);
         if (savedPackage) {
             message.success('Package saved successfully!');
             refetchIsPackageSaved();
@@ -58,7 +58,7 @@ export const PackageDetailsScreen = () => {
     };
 
     const removePackage = async () => {
-        const removedPackage = await SavedPackageService.removeSavedPackage(packageId!);
+        const removedPackage = await UsersService.unsavePackageForUser(packageId!);
         if (removedPackage) {
             message.success('Package removed from saved successfully!');
             refetchIsPackageSaved();
@@ -69,7 +69,6 @@ export const PackageDetailsScreen = () => {
 
     useEffect(() => {
         if (singlePackage) {
-            console.log(singlePackage);
             setTimelineItems(
                 [
                     ...singlePackage.flights.map((flight: Flight, index: number) => ({

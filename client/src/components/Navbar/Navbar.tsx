@@ -23,10 +23,10 @@ export const Navbar = () => {
 
             <div className={classes.right}>
                 <div className={classes.navLinks}>
-                    <Link to={ROUTES.HISTORY}>history</Link>
+                    <Link to={ROUTES.HISTORY}>History</Link>
                 </div>
                 <div className={classes.navLinks}>
-                    <Link to={ROUTES.SAVED_PACKAGES}>saved</Link>
+                    <Link to={ROUTES.SAVED_PACKAGES}>Saved</Link>
                 </div>
                 <NavbarUserDropdown showModal={showModal} />
                 <EditProfileModal isOpen={isModalOpen} handleCancel={handleCancel} />

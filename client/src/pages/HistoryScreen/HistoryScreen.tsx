@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './history-screen.module.scss';
 import { Screen } from '@/components/Screen';
 import { useQuery } from '@tanstack/react-query';
-import { HistoryService } from '@/api/services/history.service';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { MatchDetails } from '../PackagesScreen/MatchDetails';
 import { PackageFooter } from '../PackagesScreen/PackageFooter';
@@ -10,6 +9,7 @@ import { PackageSkeleton } from '../PackagesScreen/PackageSkeleton';
 import { Match, PackageDocument } from '@/models/package.model';
 import { ROUTES } from '@/constants/routes.const';
 import { NoHistory } from './NoHistory';
+import { UsersService } from '@/api/services/users.service';
 
 export const HistoryScreen = () => {
     const {
@@ -19,7 +19,7 @@ export const HistoryScreen = () => {
         error,
     } = useQuery({
         queryKey: ['usersHistory'],
-        queryFn: HistoryService.getUsersHistory,
+        queryFn: UsersService.getUsersHistory,
     });
 
     if (isError) {

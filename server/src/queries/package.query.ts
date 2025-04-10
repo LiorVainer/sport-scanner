@@ -1,7 +1,7 @@
 import mongoose, { PipelineStage } from 'mongoose';
 
 export const populateAggregation = (matchStage: PipelineStage): mongoose.PipelineStage[] => [
-    { $match: matchStage },
+    matchStage,
     {
         $lookup: {
             from: 'packages',
