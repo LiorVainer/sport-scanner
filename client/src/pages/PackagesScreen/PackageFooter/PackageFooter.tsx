@@ -7,6 +7,7 @@ import { ROUTES } from '@/constants/routes.const';
 import { Package, PackageDocument } from '@/models/package.model';
 import { Calendar, CircleDollarSignIcon } from 'lucide-react';
 import { UsersService } from '@/api/services/users.service';
+import { PackageService } from '@/api/services/package.service';
 
 const { Text } = Typography;
 
@@ -24,12 +25,14 @@ export const PackageFooter = ({ singlePackage, backRoute, isInHistoryOrSavedPage
         try {
             if (isInHistoryOrSavedPage && '_id' in singlePackage) {
                 const { _id, ...rest } = singlePackage;
-                await UsersService.addToUsersHistory(rest);
+                const newPackage = await PackageService.create(rest);
+                await UsersService.addToUsersHistory(newPackage._id);
                 navigate(`${ROUTES.PACKAGES}/${singlePackage._id}`, {
                     state: { singlePackage, packageId: singlePackage._id!, backRoute },
                 });
             } else {
-                const result = await UsersService.addToUsersHistory(singlePackage);
+                const newPackage = await PackageService.create(singlePackage);
+                const result = await UsersService.addToUsersHistory(newPackage._id);
                 navigate(`${ROUTES.PACKAGES}/${result.packageId}`, {
                     state: { singlePackage, packageId: result.packageId, backRoute },
                 });

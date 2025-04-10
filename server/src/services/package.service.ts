@@ -408,8 +408,6 @@ class PackageService {
 
         return { result };
     };
-
-    createPackage = async (packageData: Package) => PackageRepository.create(packageData);
 }
 
 export const packageService = new PackageService();

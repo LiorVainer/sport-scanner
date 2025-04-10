@@ -23,4 +23,14 @@ export const PackageService = {
             throw error;
         }
     },
+
+    async create(newPackage: Package) {
+        try {
+            const { data } = await axiosInstance.post<PackageDocument>(`${ROUTE_PREFIX}/`, newPackage);
+            return data;
+        } catch (error) {
+            console.error('Error creating package:', (error as any).message);
+            throw error;
+        }
+    },
 } satisfies Record<string, (...args: any[]) => Promise<any>>;

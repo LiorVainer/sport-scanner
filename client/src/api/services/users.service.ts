@@ -2,7 +2,6 @@ import { PublicUserSchema, User } from '@/models/user.model.ts';
 import { axiosInstance } from '../config/axios-instance';
 import { ROUTE_PREFIX as PACKAGES_ROUTE_PREFIX } from './package.service';
 import { History, PopulatedHistory } from '@/models/history.model';
-import { Package } from '@/models/package.model';
 import { PopulatedSavedPackage, SavedPackage } from '@/models/saved-packages.model';
 
 export const ROUTE_PREFIX = '/users';
@@ -37,11 +36,10 @@ export const UsersService = {
         }
     },
 
-    async addToUsersHistory(selectedPackage: Package) {
+    async addToUsersHistory(packageId: string) {
         try {
             const { data } = await axiosInstance.post<History>(
-                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/history`,
-                selectedPackage
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/${packageId}/history`
             );
             return data;
         } catch (error) {

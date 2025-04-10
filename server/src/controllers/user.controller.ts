@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/user.repository';
 import { UpdateUserBody } from '../types/user.types';
 import { PopulatedSavedPackage, SavedPackage } from '../models/saved-packages.model';
-import { packageService } from '../services/package.service';
 import { HistoryRepository } from '../repositories/history.repository';
 import { PopulatedHistory, History } from '../models/history.model';
 import mongoose from 'mongoose';
@@ -48,11 +47,8 @@ export const userController = {
 
     addToUsersHistory: async (req: Request, res: Response) => {
         try {
-            const { id, ...rest } = req.body;
-            const newPackage = await packageService.createPackage(rest);
-
             const newPackageInHistory: History = await HistoryRepository.create({
-                packageId: newPackage._id,
+                packageId: req.params.packageId,
                 userId: req.userId,
             });
             res.status(200).send(newPackageInHistory);

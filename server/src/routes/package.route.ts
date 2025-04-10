@@ -16,7 +16,6 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 
 router.get('/:id', packageController.getById);
 
-
 /**
  * @swagger
  * /package/generate:
@@ -45,7 +44,7 @@ router.get('/:id', packageController.getById);
  *       500:
  *         description: Error generating package
  */
+router.post('/', packageController.createPackage);
 router.post('/generate', packageController.generatePackage);
-
 
 export default router;

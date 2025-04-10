@@ -20,4 +20,15 @@ export const packageController = {
 
         res.status(200).send(packageData);
     },
+
+    createPackage: async (req: Request, res: Response) => {
+        const { id, ...rest } = req.body;
+        
+        try {
+            const newPackage = await PackageRepository.create(rest);
+            res.status(200).send(newPackage);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
 };
