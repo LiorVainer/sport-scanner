@@ -1,5 +1,5 @@
-import {GeneratePackagesSteps} from "@/models/packages/packages-generate-steps.model";
-import {PackagesGenerationProgressUpdate} from "@/models/packages/package-generation-progress-update.model.ts";
+import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model';
+import { PackagesGenerationProgressUpdate } from '@/models/packages/package-generation-progress-update.model.ts';
 
 export const getProgressStepMessage = (progressUpdate: PackagesGenerationProgressUpdate): string => {
     switch (progressUpdate.step) {
@@ -10,7 +10,7 @@ export const getProgressStepMessage = (progressUpdate: PackagesGenerationProgres
             return '📡 Fetching upcoming matches...';
 
         case GeneratePackagesSteps.FOUND_FIXTURES:
-            return `🎯 Found ${progressUpdate.fixturesCount} match${progressUpdate.fixturesCount > 1 ? 'es' : ''}`;
+            return `🎯 Found ${progressUpdate.fixtures.length} match${progressUpdate.fixtures.length > 1 ? 'es' : ''}`;
 
         case GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES:
             return '💰 Estimating ticket prices for each match...';
@@ -19,7 +19,7 @@ export const getProgressStepMessage = (progressUpdate: PackagesGenerationProgres
             return '✈️ Planning your travel routes...';
 
         case GeneratePackagesSteps.SEARCH_FLIGHTS:
-            return `🛫 Searching for flights across ${progressUpdate.totalRequests} routes...`;
+            return `🛫 Searching for flights across ${progressUpdate.flightOffersSearchesParams.length} routes...`;
 
         case GeneratePackagesSteps.FOUND_FLIGHTS:
             return `📦 Found ${progressUpdate.totalOffers} flight options!`;

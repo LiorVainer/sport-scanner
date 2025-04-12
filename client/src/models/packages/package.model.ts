@@ -1,11 +1,8 @@
-import {MAX_PRICE, MIN_PRICE} from '@components/SearchBar/SearchBarLogic.ts';
-import {z} from 'zod';
-
-export const CURRENCY_CODE = import.meta.env.CURRENCY_CODE;
+import { z } from 'zod';
 
 export const PriceRangeSchema = z.object({
-    min: z.number().describe(`Minimum estimated ticket price in ${CURRENCY_CODE}`),
-    max: z.number().describe(`Maximum estimated ticket price in ${CURRENCY_CODE}`),
+    min: z.number(),
+    max: z.number(),
 });
 
 export const CityInfoSchema = z.object({
@@ -13,12 +10,20 @@ export const CityInfoSchema = z.object({
     iataCode: z.string().length(3).describe('IATA code of the airport'),
 });
 
+export const FlightPurposeSchema = z
+    .enum(['departure', 'return', 'connecting'])
+    .describe('Purpose of the flight, either departure or return');
+export const FlightPurposeEnum = FlightPurposeSchema.Enum;
+
 export const FlightSchema = z.object({
     id: z.number().describe('Unique identifier of the flight'),
     origin: CityInfoSchema.describe('Origin city information'),
     destination: CityInfoSchema.describe('Destination city information'),
-    price: z.number().describe(`Total flight price in ${CURRENCY_CODE}`),
+    price: z.number(),
     departureDate: z.string().describe('Flight departure date'),
+    purpose: z
+        .enum(['departure', 'return', 'connecting'])
+        .describe('Purpose of the flight, either departure or return'),
     searchFlightTicketsLink: z
         .string()
         .describe(
@@ -47,25 +52,60 @@ export const MatchSchema = z.object({
         ),
 });
 
+export const PackageTimelineItemType = {
+    FLIGHT: 'flight',
+    DESTINATION: 'destination',
+} as const;
+
+export const DestinationSchema = z.object({
+    type: z
+        .literal(PackageTimelineItemType.DESTINATION)
+        .describe('Type of the timeline item, always "destination" for this schema'),
+    city: z.string().describe('City name of the destination'),
+    startDate: z.string().describe('Start date of the stay in the destination'),
+    endDate: z.string().describe('End date of the stay in the destination'),
+    matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
+});
+
+export const FlightItemSchema = FlightSchema.extend({
+    type: z
+        .literal(PackageTimelineItemType.FLIGHT)
+        .describe('Type of the timeline item, always "flight" for this schema'),
+});
+
+export const TimelineItemSchema = z
+    .discriminatedUnion('type', [FlightItemSchema, DestinationSchema])
+    .describe('Timeline item, either a flight or a destination');
+
 export const PackageSchema = z
     .object({
         id: z.number().describe('Unique identifier of the package'),
         title: z
             .string()
             .describe(
-                'Title of the travel package, make it catchy and attractive, if it is only one match, include the name of the teams and the league'
+                'Title of the travel package. Make it catchy and attractive. If the package includes one match, include the team names and the league.'
             ),
-        description: z.string().describe('Description of what the package includes'),
-        fromDate: z.string().describe('Start date of the package'),
-        toDate: z.string().describe('End date of the package'),
-        location: z.string().describe('Main location of the package'),
-        flightsPrice: z.number().describe('Total combined price of all flights in the package'),
-        matchesPrice: PriceRangeSchema.describe('Price range of all matches in the package'),
-        totalPrice: PriceRangeSchema.describe('Total price of the package'),
-        flights: z.array(FlightSchema).describe('List of flights included in the package'),
-        matches: z.array(MatchSchema).describe('List of matches included in the package'),
+        description: z.string().describe('Description of what the package includes: matches, flights, dates.'),
+        fromDate: z.string().describe('Start date of the package. This is the earliest flight or match date.'),
+        toDate: z.string().describe('End date of the package. This is the latest return flight or match date.'),
+        location: z.string().describe('Primary location of the package, typically the first destination city.'),
+        flightsPrice: z.number().describe(
+            `Total combined price of all flights in the package. 
+If a flight is round trip, only count the price of the outgoing flight. 
+There can be multiple flights depending on the number of destinations.`
+        ),
+        matchesPrice: PriceRangeSchema.describe(
+            'Price range (min-max) of all match tickets in the package. Multiple matches are allowed.'
+        ),
+        totalPrice: PriceRangeSchema.describe(
+            'Total price range of the package. This includes the flightsPrice and matchesPrice combined.'
+        ),
+        timeline: z.array(TimelineItemSchema).describe(
+            `Ordered timeline of the package that mixes flight and destination events.
+There can be multiple destinations and flights in a single package, each with one or more matches.`
+        ),
     })
-    .describe('travel package that combines flights and matches');
+    .describe('Travel package that combines multiple destinations, flights, and football matches');
 
 export type PriceRange = z.infer<typeof PriceRangeSchema>;
 export type Match = z.infer<typeof MatchSchema>;
@@ -73,26 +113,12 @@ export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
+export type TimelineItem = z.infer<typeof TimelineItemSchema>;
+export type FlightItem = z.infer<typeof FlightItemSchema>;
+export type Destination = z.infer<typeof DestinationSchema>;
 
 export const PackageDocumentSchema = PackageSchema.extend({
     _id: z.string(),
 });
 
 export type PackageDocument = z.infer<typeof PackageDocumentSchema>;
-
-export const PackageGenerateParamsSchema = z.object({
-    originIATA: z.string().min(1, {message: 'Origin Airport is required'}),
-    date: z.object({
-        from: z.string().nonempty({message: 'Start Date is required'}),
-        to: z.string().nonempty({message: 'End Date is required'}),
-    }),
-    price: z.object({
-        min: z.number().min(MIN_PRICE, {message: 'Min Price is required'}),
-        max: z.number().max(MAX_PRICE, {message: 'Max Price is required'}),
-    }),
-    country: z.string().optional(),
-    league: z.number().min(1, {message: 'League is required'}),
-    team: z.number(),
-});
-
-export type PackageGenerateParams = z.infer<typeof PackageGenerateParamsSchema>;

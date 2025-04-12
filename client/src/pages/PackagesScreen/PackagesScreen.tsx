@@ -1,19 +1,16 @@
 import React from 'react';
 import styles from './packages-screen.module.scss';
-import {Screen} from '@/components/Screen';
-import {Match, Package} from '@/models/packages/package.model.ts';
-import {PackageSkeleton} from './PackageSkeleton/PackageSkeleton';
-import {MatchDetails} from './MatchDetails/MatchDetails';
-import {PackageFooter} from './PackageFooter/PackageFooter';
-import {ROUTES} from '@/constants/routes.const';
-import {useNavigate} from 'react-router';
-import {usePackages} from '@/context/PackagesContext';
-import {Button} from 'antd';
-import {ArrowRightOutlined} from '@ant-design/icons';
-import {PackagesGenerationProgressTimeline} from "@pages/PackagesScreen/PackagesGenerationProgressTimeline";
+import { Screen } from '@/components/Screen';
+import { PackageSkeleton } from './PackageSkeleton/PackageSkeleton';
+import { ROUTES } from '@/constants/routes.const';
+import { useNavigate } from 'react-router';
+import { usePackages } from '@/context/PackagesContext';
+import { Button } from 'antd';
+import { PackagesGenerationProgressTimeline } from '@pages/PackagesScreen/PackagesGenerationProgressTimeline';
+import { PackageCard } from '@components/PackageCard';
 
 export const PackagesScreen = () => {
-    const {isLoading, packages, hideProgressSteps} = usePackages();
+    const { isLoading, packages, hideProgressSteps } = usePackages();
     const navigate = useNavigate();
 
     const handleRetry = () => navigate(ROUTES.HOME);
@@ -32,47 +29,14 @@ export const PackagesScreen = () => {
         );
     }
 
-
-    const renderMatchList = (singlePackage: Package) =>
-        singlePackage.matches.map((match: Match, index: number) => {
-            const previousMatch = index > 0 ? singlePackage.matches[index - 1] : null;
-
-            const showHeader = match.homeTeam.id !== previousMatch?.homeTeam.id;
-
-            const isNotLast = index !== singlePackage.matches.length - 1;
-
-            return (
-                <React.Fragment key={match.id}>
-                    <div className={styles.matchItem}>
-                        <MatchDetails
-                            {...(previousMatch && {showHeader})}
-                            match={match}
-                            singlePackage={singlePackage}
-                            matchIndex={index}
-                        />
-                    </div>
-                    {isNotLast && <ArrowRightOutlined className={styles.arrowIcon}/>}
-                </React.Fragment>
-            );
-        });
-
-
-    const renderPackages = () =>
-        packages?.map((singlePackage) => (
-            <div className={styles.packageCard} key={singlePackage.id}>
-                <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
-                <div className={styles.divider}/>
-                <PackageFooter
-                    singlePackage={singlePackage}
-                    backRoute={ROUTES.PACKAGES}
-                />
-            </div>
-        ));
-
     return (
         <Screen className={styles.page}>
-            {!hideProgressSteps && <PackagesGenerationProgressTimeline/>}
-            {isLoading ? <PackageSkeleton/> : renderPackages()}
+            <PackagesGenerationProgressTimeline />
+            {isLoading ? (
+                <PackageSkeleton />
+            ) : (
+                packages?.map((singlePackage) => <PackageCard singlePackage={singlePackage} />)
+            )}
         </Screen>
     );
 };

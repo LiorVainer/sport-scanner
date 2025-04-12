@@ -1,30 +1,24 @@
 import { z } from 'zod';
-import { PriceRangeSchema } from '../price-range.model';
+import { PriceRangeSchema } from './price-range.model';
+import { ENV } from '../env/env.config';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
     iataCode: z.string().length(3).describe('IATA code of the airport'),
 });
 
-export const FlightPurposeSchema = z
-    .enum(['departure', 'return', 'connecting'])
-    .describe(
-        'Purpose of the flight, either "departure", "return" or "connecting" ("connecting" is used for flights that are between packages destinations).'
-    );
-
 export const FlightSchema = z.object({
-    id: z.number(),
-    origin: CityInfoSchema,
-    destination: CityInfoSchema,
-    price: z.number(),
-    departureDate: z.string(),
-    purpose: FlightPurposeSchema,
-    searchFlightTicketsLink: z.string(),
-}).describe(`
-  Represents a complete flight between two cities in the timeline.
-  This may internally include segments (e.g. TLV → FCO → MUC), but
-  only the full flight should be included here — NOT individual segments.
-`);
+    id: z.number().describe('Unique identifier of the flight'),
+    origin: CityInfoSchema.describe('Origin city information'),
+    destination: CityInfoSchema.describe('Destination city information'),
+    price: z.number().describe(`Total flight price in ${ENV.CURRENCY_CODE}`),
+    departureDate: z.string().describe('Flight departure date'),
+    searchFlightTicketsLink: z
+        .string()
+        .describe(
+            'Real link to search for the flight on skyscanner website, use the flight details to generate the link, insert the IATA codes and dates in the link, based on the skyscanner link format'
+        ),
+});
 
 export const TeamSchema = z.object({
     id: z.number().describe('Unique identifier of the team'),
@@ -71,32 +65,22 @@ export const PackageSchema = z
         title: z
             .string()
             .describe(
-                'Title of the travel package. Make it catchy and attractive. If the package includes one match, include the team names and the league.'
+                'Title of the travel package, make it catchy and attractive, if it is only one match, include the name of the teams and the league'
             ),
-        description: z.string().describe('Description of what the package includes: matches, flights, dates.'),
-        fromDate: z.string().describe('Start date of the package. This is the earliest flight or match date.'),
-        toDate: z.string().describe('End date of the package. This is the latest return flight or match date.'),
-        location: z.string().describe('Primary location of the package, typically the first destination city.'),
-        flightsPrice: z.number().describe(
-            `Total combined price of all flights in the package. 
-If a flight is round trip, only count the price of the outgoing flight. 
-There can be multiple flights depending on the number of destinations.`
-        ),
-        matchesPrice: PriceRangeSchema.describe(
-            'Price range (min-max) of all match tickets in the package. Multiple matches are allowed.'
-        ),
-        totalPrice: PriceRangeSchema.describe(
-            'Total price range of the package. This includes the flightsPrice and matchesPrice combined.'
-        ),
-        timeline: z.array(TimelineItemSchema).describe(`
-  The timeline contains full flights and destinations in chronological order.
-  Flights must represent full offers between cities (e.g. TLV → MUC) and not individual segments.
-  If a flight contains multiple legs (segments), it should still appear as a single item.
-  Do NOT include each segment separately. 
-  Destinations group the matches at a given city.
-`),
+        description: z.string().describe('Description of what the package includes'),
+        fromDate: z.string().describe('Start date of the package'),
+        toDate: z.string().describe('End date of the package'),
+        location: z.string().describe('Main location of the package'),
+        flightsPrice: z.number()
+            .describe(`Total combined price of all flights in the package, if a flight is round trip dont count it twice in price.
+         take just the price of the flight listed in flight to the destination and without the return flight`),
+        matchesPrice: PriceRangeSchema.describe('Price range of all matches in the package'),
+        totalPrice: PriceRangeSchema.describe('Total price of the package, flightsPrice + matchesPrice'),
+        timeline: z
+            .array(TimelineItemSchema)
+            .describe('Timeline of the package, consisting of flights and destinations in chronological order'),
     })
-    .describe('Travel package that combines multiple destinations, flights, and football matches');
+    .describe('travel package that combines flights and matches');
 
 export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
 

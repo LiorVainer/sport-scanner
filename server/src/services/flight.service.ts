@@ -1,7 +1,11 @@
-import {AIService} from '../ai/ai.service';
-import {generateMessagesForGettingCitiesIATACodes} from '../ai/utils/cities-to-iata-messages';
-import {CityToIATACodeMap, CityWithIATASchemaArray} from '../models/flights/iata.model';
-import {AmadeusService} from './amadeus.service';
+import { AIService } from '../ai/ai.service';
+import { generateMessagesForGettingCitiesIATACodes } from '../ai/utils/cities-to-iata-messages';
+import {
+    CityIataToCityMetadataCodeMap,
+    CityNameToCityMetadataCodeMap,
+    CityWithIATASchemaArray,
+} from '../models/flights/iata.model';
+import { AmadeusService } from './amadeus.service';
 
 export const FlightsService = {
     getIATACodeByCity: async (city: string): Promise<string | null> => {
@@ -14,15 +18,28 @@ export const FlightsService = {
             return null;
         }
     },
-    getCityToIATACodeMap: async (cities: string[]): Promise<CityToIATACodeMap> => {
+    getCityToIATACodeMap: async (
+        cities: string[]
+    ): Promise<{
+        cityNameToCityMetadata: CityNameToCityMetadataCodeMap;
+        cityIataToCityMetadata: CityIataToCityMetadataCodeMap;
+    }> => {
         try {
-            const {data: iataCodes} = await AIService.generateObject({
+            const { data: iataCodes } = await AIService.generateObject({
                 schema: CityWithIATASchemaArray,
                 saveOutputToFile: true,
                 messages: generateMessagesForGettingCitiesIATACodes(cities),
             });
 
-            return Object.fromEntries(cities.map((city, index) => [city, iataCodes[index].iataCode]));
+            const cityNameToCityMetadata = Object.fromEntries(cities.map((city, index) => [city, iataCodes[index]]));
+            const cityIataToCityMetadata = Object.fromEntries(
+                Object.entries(cityNameToCityMetadata).map(([_, metadata]) => [metadata.iataCode, metadata])
+            );
+
+            return {
+                cityNameToCityMetadata,
+                cityIataToCityMetadata,
+            };
         } catch (err) {
             console.error(`AI failed to provide IATA codes for ${cities}`, err);
             throw new Error(`AI failed to provide IATA codes for ${cities}`);

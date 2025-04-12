@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { Package, CityInfo, Flight, Match, Team } from '../models/package.model';
+import { CityInfo, Match, Package, Team } from '../models/package.model';
 import { PriceRange } from '../models/price-range.model';
 
 const PriceRangeSchema = new Schema<PriceRange>(
@@ -13,19 +13,7 @@ const PriceRangeSchema = new Schema<PriceRange>(
 const CityInfoSchema = new Schema<CityInfo>(
     {
         name: { type: String, required: true },
-        iataCode: { type: String, required: true, length: 3 },
-    },
-    { _id: false }
-);
-
-const FlightSchema = new Schema<Flight>(
-    {
-        id: { type: Number, required: true },
-        origin: { type: CityInfoSchema, required: true },
-        destination: { type: CityInfoSchema, required: true },
-        price: { type: Number, required: true },
-        departureDate: { type: String, required: true },
-        searchFlightTicketsLink: { type: String, required: true },
+        iataCode: { type: String, required: true },
     },
     { _id: false }
 );
@@ -55,7 +43,38 @@ const MatchSchema = new Schema<Match>(
     { _id: false }
 );
 
-export const PackageSchema = new Schema<Omit<Package, 'id'>>(
+// Timeline discriminated union (flight | destination)
+
+const FlightItemSchema = new Schema(
+    {
+        type: { type: String, enum: ['flight'], required: true },
+        id: { type: Number, required: true },
+        origin: { type: CityInfoSchema, required: true },
+        destination: { type: CityInfoSchema, required: true },
+        price: { type: Number, required: true },
+        departureDate: { type: String, required: true },
+        purpose: {
+            type: String,
+            enum: ['departure', 'return', 'connecting'],
+            required: true,
+        },
+        searchFlightTicketsLink: { type: String, required: true },
+    },
+    { _id: false }
+);
+
+const DestinationSchema = new Schema(
+    {
+        type: { type: String, enum: ['destination'], required: true },
+        city: { type: String, required: true },
+        startDate: { type: String, required: true },
+        endDate: { type: String, required: true },
+        matches: { type: [MatchSchema], required: true },
+    },
+    { _id: false }
+);
+
+export const PackageSchema = new Schema<Omit<Package, 'id' | 'timeline'> & { timeline: any }>(
     {
         title: { type: String, required: true },
         description: { type: String, required: true },
@@ -65,8 +84,10 @@ export const PackageSchema = new Schema<Omit<Package, 'id'>>(
         flightsPrice: { type: Number, required: true },
         matchesPrice: { type: PriceRangeSchema, required: true },
         totalPrice: { type: PriceRangeSchema, required: true },
-        flights: { type: [FlightSchema], required: true },
-        matches: { type: [MatchSchema], required: true },
+        timeline: {
+            type: [Schema.Types.Mixed],
+            required: true,
+        },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

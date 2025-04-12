@@ -1,20 +1,8 @@
-.page {
-  display: flex;
-  flex-direction: column;
-  background-color: #f0f2f5;
-  padding: 5rem 28%;
-  gap: 2rem;
-}
-
-.packageContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
+@use '../../theme/theme' as *;
 
 .packageCard {
   background-color: #ffffff;
-  border-radius: 1rem;
+  border-radius: $card-border-radius;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   padding: 1.5rem;
   display: flex;
@@ -56,24 +44,9 @@
   border-radius: 10px;
 }
 
-.matchItem {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-  width: 100%;
-}
-
 .arrowIcon {
   font-size: 28px;
   color: #2f4f6f;
   flex-shrink: 0;
   display: none;
-}
-
-.dateHeader {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 20px 0 10px;
-  color: #2a2a2a;
 }

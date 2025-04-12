@@ -1,29 +1,17 @@
 import styles from './match-card.module.scss';
-import {Match, Package} from '@/models/packages/package.model.ts';
-import {romanize} from 'romans';
-import {MatchLabel} from './MatchLabel';
-import {MatchDetails} from './MatchDetails';
+import { Match } from '@/models/packages/package.model.ts';
+import { MatchDetails } from './MatchDetails';
 
 interface MatchCardProps {
     match: Match;
-    singlePackage: Package;
     itemIndex: number;
 }
 
-export const MatchCard = ({match, singlePackage, itemIndex}: MatchCardProps) => {
-    const {fromDate, toDate, location} = singlePackage;
-
-    const splitLocation = location.split('&')[itemIndex] || location;
-
+export const MatchCard = ({ match, itemIndex }: MatchCardProps) => {
     return (
         <div className={styles.matchCardContainer}>
-            <MatchLabel
-                label={`Match ${romanize(itemIndex + 1)}`}
-                location={splitLocation}
-                startDate={fromDate}
-                endDate={toDate}
-            />
-            <MatchDetails match={match}/>
+            {/*<MatchLabel label={`Match ${romanize(itemIndex + 1)}`} />*/}
+            <MatchDetails match={match} />
         </div>
     );
 };

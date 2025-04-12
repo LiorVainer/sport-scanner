@@ -1,23 +1,12 @@
-import { Tag, Typography } from 'antd';
+import { Tag } from 'antd';
 import styles from './match-label.module.scss';
-import { ArrowRightOutlined } from '@ant-design/icons';
-import { formattedDate } from '@/utils/date.utils';
-
-const { Text } = Typography;
 
 interface MatchLabelProps {
     label: string;
-    location: string;
-    startDate: string;
-    endDate: string;
 }
 
-export const MatchLabel = ({ label, location, startDate, endDate }: MatchLabelProps) => (
+export const MatchLabel = ({ label }: MatchLabelProps) => (
     <div className={styles.matchLabelContainer}>
         <Tag className={styles.matchTag}>{label}</Tag>
-        <Text strong className={styles.matchLocation}>
-            {location} ({formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />{' '}
-            {formattedDate(endDate)})
-        </Text>
     </div>
 );

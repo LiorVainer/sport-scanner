@@ -1,8 +1,10 @@
-import {z} from 'zod';
-import {PackageSchema} from './package.model.ts';
-import {DateRangeSchema} from './package-generate-params.model.ts';
-import {FixtureItemSchema} from "@/models/soccer/fixture.model.ts";
-import {GeneratePackagesSteps} from "@/models/packages/packages-generate-steps.model.ts";
+import { z } from 'zod';
+import { PackageSchema } from './package.model.ts';
+import { DateRangeSchema } from './package-generate-params.model.ts';
+import { FixtureItemSchema, FixtureItemWithPriceSchema } from '@/models/soccer/fixture.model.ts';
+import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
+import { FlightSearchParamsSchema } from '@/models/flights/flights-search-params.model.ts';
+import { CityIataToCityMetadataCodeMapSchema } from '../flights/iata.model.ts';
 
 const BaseUpdateSchema = z.object({
     message: z.string(),
@@ -19,13 +21,12 @@ const FetchFixturesSchema = BaseUpdateSchema.extend({
 
 const FoundFixturesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FOUND_FIXTURES),
-    fixturesCount: z.number(),
     fixtures: FixtureItemSchema.array(),
-    matchCities: z.array(z.string()),
 });
 
 const AddPriceRangeToFixturesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES),
+    fixtures: FixtureItemWithPriceSchema.array(),
 });
 
 const GenerateSearchParamsSchema = BaseUpdateSchema.extend({
@@ -34,7 +35,8 @@ const GenerateSearchParamsSchema = BaseUpdateSchema.extend({
 
 const SearchFlightsSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.SEARCH_FLIGHTS),
-    totalRequests: z.number(),
+    flightOffersSearchesParams: FlightSearchParamsSchema.array(),
+    cityIataToCityMetadata: CityIataToCityMetadataCodeMapSchema,
 });
 
 const FoundFlightsSchema = BaseUpdateSchema.extend({
