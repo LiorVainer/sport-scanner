@@ -10,7 +10,7 @@ import { MatchCard } from './MatchCard/MatchCard';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { useQuery } from '@tanstack/react-query';
 import { PackageService } from '@/api/services/package.service';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { UsersService } from '@/api/services/users.service';
 
 const { Title, Text } = Typography;
@@ -24,9 +24,6 @@ export const PackageDetailsScreen = () => {
     const { packageId } = useParams<{ packageId: string }>();
     const location = useLocation();
     const backRoute = (location.state as { backRoute?: string })?.backRoute || `${ROUTES.HOME}`;
-    const [timelineItems, setTimelineItems] = useState<
-        { type: CardTypes; date: Date; data: Flight | Match; index: number }[]
-    >([]);
 
     const {
         data: singlePackage,
@@ -67,25 +64,23 @@ export const PackageDetailsScreen = () => {
         }
     };
 
-    useEffect(() => {
-        if (singlePackage) {
-            setTimelineItems(
-                [
-                    ...singlePackage.flights.map((flight: Flight, index: number) => ({
-                        type: CardTypes.FLIGHT,
-                        date: new Date(flight.departureDate),
-                        data: flight,
-                        index,
-                    })),
-                    ...singlePackage.matches.map((match: Match, index: number) => ({
-                        type: CardTypes.MATCH,
-                        date: new Date(match.date),
-                        data: match,
-                        index,
-                    })),
-                ].sort((item, anotherItem) => item.date.getTime() - anotherItem.date.getTime())
-            );
-        }
+    const timelineItems = useMemo(() => {
+        if (!singlePackage) return [];
+
+        return [
+            ...singlePackage.flights.map((flight, index) => ({
+                type: CardTypes.FLIGHT,
+                date: new Date(flight.departureDate),
+                data: flight,
+                index,
+            })),
+            ...singlePackage.matches.map((match, index) => ({
+                type: CardTypes.MATCH,
+                date: new Date(match.date),
+                data: match,
+                index,
+            })),
+        ].sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [singlePackage]);
 
     return (

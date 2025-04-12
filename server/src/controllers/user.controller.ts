@@ -1,29 +1,17 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../repositories/user.repository';
 import { UpdateUserBody } from '../types/user.types';
-import { PopulatedSavedPackage, SavedPackage } from '../models/saved-packages.model';
-import { HistoryRepository } from '../repositories/history.repository';
-import { PopulatedHistory, History } from '../models/history.model';
-import mongoose from 'mongoose';
-import { populateAggregation } from '../queries/package.query';
-import { SavedPackageRepository } from '../repositories/saved-packages.repository';
+import { UserService } from '../services/user.service';
+
 
 export const userController = {
     updateUserById: async (req: Request<Record<any, any>, {}, UpdateUserBody>, res: Response) => {
         try {
-            const userId = req.params.id;
-            const user = await UserRepository.findById(userId);
-            if (!user) {
-                res.status(404).send({ message: 'User not found' });
-                return;
-            }
-
-            const updatedUser = await UserRepository.findByIdAndUpdate(userId, req.body, { new: true });
+            const updatedUser = await UserService.updateUserById(req.params.id, req.body);
             if (!updatedUser) {
                 res.status(404).send({ message: 'User not found' });
                 return;
             }
-            const { password, refreshTokens, ...publicUser } = updatedUser.toObject();
+            const { password, refreshTokens, ...publicUser } = updatedUser;
             res.status(200).send(publicUser);
         } catch (err) {
             res.status(500).send({ message: 'Error updating user', error: err });
@@ -32,14 +20,8 @@ export const userController = {
 
     getUsersHistory: async (req: Request, res: Response) => {
         try {
-            const matchStage = {
-                $match: {
-                    userId: new mongoose.Types.ObjectId(req.userId),
-                },
-            };
-
-            const packages: PopulatedHistory[] = await HistoryRepository.aggregate(populateAggregation(matchStage));
-            res.status(200).send(packages);
+            const history = await UserService.getUsersHistory(req.userId!);
+            res.status(200).send(history);
         } catch (err) {
             res.status(500).send(err);
         }
@@ -47,11 +29,8 @@ export const userController = {
 
     addToUsersHistory: async (req: Request, res: Response) => {
         try {
-            const newPackageInHistory: History = await HistoryRepository.create({
-                packageId: req.params.packageId,
-                userId: req.userId,
-            });
-            res.status(200).send(newPackageInHistory);
+            const newEntry = await UserService.addToUsersHistory(req.userId!, req.params.packageId);
+            res.status(200).send(newEntry);
         } catch (err) {
             res.status(500).send(err);
         }
@@ -59,18 +38,9 @@ export const userController = {
 
     getUsersSavedPackages: async (req: Request, res: Response) => {
         try {
-            const { packageId } = req.query;
-
-            const matchStage: Record<string, any> = {
-                userId: new mongoose.Types.ObjectId(req.userId),
-            };
-
-            if (packageId) {
-                matchStage.packageId = new mongoose.Types.ObjectId(packageId as string);
-            }
-
-            const packages: PopulatedSavedPackage[] = await SavedPackageRepository.aggregate(
-                populateAggregation({ $match: matchStage })
+            const packages = await UserService.getUsersSavedPackages(
+                req.userId!,
+                req.query.packageId as string | undefined
             );
             res.status(200).send(packages);
         } catch (err) {
@@ -80,11 +50,8 @@ export const userController = {
 
     savePackageForUser: async (req: Request, res: Response) => {
         try {
-            const savedPackage: SavedPackage = await SavedPackageRepository.create({
-                packageId: req.params.packageId,
-                userId: req.userId,
-            });
-            res.status(200).send(savedPackage);
+            const saved = await UserService.savePackage(req.userId!, req.params.packageId);
+            res.status(200).send(saved);
         } catch (err) {
             res.status(500).send(err);
         }
@@ -92,11 +59,8 @@ export const userController = {
 
     unsavePackageForUser: async (req: Request, res: Response) => {
         try {
-            const savedPackage: SavedPackage | null = await SavedPackageRepository.findOneAndDelete({
-                packageId: req.params.packageId,
-                userId: req.userId,
-            });
-            res.status(200).send(savedPackage);
+            const removed = await UserService.unsavePackage(req.userId!, req.params.packageId);
+            res.status(200).send(removed);
         } catch (err) {
             res.status(500).send(err);
         }

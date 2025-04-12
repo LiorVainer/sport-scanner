@@ -1,0 +1,55 @@
+import { UpdateUserBody } from '../types/user.types';
+import { UserRepository } from '../repositories/user.repository';
+import { History, PopulatedHistory } from '../models/history.model';
+import { SavedPackage, PopulatedSavedPackage } from '../models/saved-packages.model';
+import { HistoryRepository } from '../repositories/history.repository';
+import { SavedPackageRepository } from '../repositories/saved-packages.repository';
+import mongoose from 'mongoose';
+import { populateAggregation } from '../queries/package.query';
+
+export const UserService = {
+    async updateUserById(
+        userId: string,
+        data: UpdateUserBody
+    ): Promise<Omit<any, 'password' | 'refreshTokens'> | null> {
+        const user = await UserRepository.findById(userId);
+        if (!user) return null;
+
+        const updatedUser = await UserRepository.findByIdAndUpdate(userId, data, { new: true });
+        return updatedUser ? updatedUser.toObject() : null;
+    },
+
+    async getUsersHistory(userId: string): Promise<PopulatedHistory[]> {
+        const matchStage = {
+            $match: { userId: new mongoose.Types.ObjectId(userId) },
+        };
+        return await HistoryRepository.aggregate(populateAggregation(matchStage));
+    },
+
+    async addToUsersHistory(userId: string, packageId: string): Promise<History> {
+        return await HistoryRepository.create({
+            packageId,
+            userId,
+        });
+    },
+
+    async getUsersSavedPackages(userId: string, packageId?: string): Promise<PopulatedSavedPackage[]> {
+        const matchStage: Record<string, any> = {
+            userId: new mongoose.Types.ObjectId(userId),
+        };
+
+        if (packageId) {
+            matchStage.packageId = new mongoose.Types.ObjectId(packageId);
+        }
+
+        return await SavedPackageRepository.aggregate(populateAggregation({ $match: matchStage }));
+    },
+
+    async savePackage(userId: string, packageId: string): Promise<SavedPackage> {
+        return await SavedPackageRepository.create({ userId, packageId });
+    },
+
+    async unsavePackage(userId: string, packageId: string): Promise<SavedPackage | null> {
+        return await SavedPackageRepository.findOneAndDelete({ userId, packageId });
+    },
+};
