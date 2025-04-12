@@ -1,0 +1,15 @@
+.noHistoryContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    gap: 16px;
+    color: #444;
+}
+
+.icon {
+    font-size: 48px;
+    color: #1890ff;
+}

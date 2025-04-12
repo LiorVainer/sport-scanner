@@ -51,7 +51,6 @@ export const AuthPage = () => {
 
             handleAuthResponse(loginResponse);
             navigate(ROUTES.HOME);
-            // navigate(`${ROUTES.PACKAGES}/results`);
         } catch (error) {
             console.error('Google login error', error);
             setErrorMessage('Google Login failed');
@@ -95,7 +94,6 @@ export const AuthPage = () => {
         if (response) {
             handleAuthResponse(response);
             navigate(ROUTES.HOME);
-            // navigate(`${ROUTES.PACKAGES}/results`);
         }
     };
 

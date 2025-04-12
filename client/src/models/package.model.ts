@@ -1,5 +1,4 @@
 import { MAX_PRICE, MIN_PRICE } from '@/components/SearchBar/SearchBarLogic';
-import { zodDate } from '@/utils/zod.utils';
 import { z } from 'zod';
 
 export const CURRENCY_CODE = import.meta.env.CURRENCY_CODE;
@@ -74,6 +73,12 @@ export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
+
+export const PackageDocumentSchema = PackageSchema.extend({
+    _id: z.string(),
+});
+
+export type PackageDocument = z.infer<typeof PackageDocumentSchema>;
 
 export const PackageGenerateParamsSchema = z.object({
     originIATA: z.string().min(1, { message: 'Origin Airport is required' }),

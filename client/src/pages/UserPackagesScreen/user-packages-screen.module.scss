@@ -1,0 +1,79 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f2f5;
+    padding: 5rem 28%;
+    gap: 2rem;
+}
+
+.packageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.packageCard {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 0.25rem 0 0.75rem;
+    width: 100%;
+    border-radius: 1px;
+}
+
+.packageCard:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.matches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    gap: 2rem;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+}
+
+.matches::-webkit-scrollbar {
+    height: 10px;
+}
+
+.matches::-webkit-scrollbar-thumb {
+    background-color: #b0b0b0;
+    border-radius: 10px;
+}
+
+.matchItem {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+.arrowIcon {
+    font-size: 28px;
+    color: #2f4f6f;
+    flex-shrink: 0;
+    display: none;
+}
+
+.dateHeader {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #2a2a2a;
+}
