@@ -6,12 +6,13 @@ import { HistoryRepository } from '../repositories/history.repository';
 import { SavedPackageRepository } from '../repositories/saved-packages.repository';
 import mongoose from 'mongoose';
 import { populateAggregation } from '../queries/package.query';
+import { User } from '../models/user.model';
 
 export const UserService = {
     async updateUserById(
         userId: string,
         data: UpdateUserBody
-    ): Promise<Omit<any, 'password' | 'refreshTokens'> | null> {
+    ): Promise<Omit<User, 'password' | 'refreshTokens'> | null> {
         const user = await UserRepository.findById(userId);
         if (!user) return null;
 
