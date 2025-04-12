@@ -13,7 +13,7 @@ import {ArrowRightOutlined} from '@ant-design/icons';
 import {PackagesGenerationProgressTimeline} from "@pages/PackagesScreen/PackagesGenerationProgressTimeline";
 
 export const PackagesScreen = () => {
-    const {isLoading, packages} = usePackages();
+    const {isLoading, packages, hideProgressSteps} = usePackages();
     const navigate = useNavigate();
 
     const handleRetry = () => navigate(ROUTES.HOME);
@@ -37,8 +37,7 @@ export const PackagesScreen = () => {
         singlePackage.matches.map((match: Match, index: number) => {
             const previousMatch = index > 0 ? singlePackage.matches[index - 1] : null;
 
-            const showHeader =
-                match.homeTeam.id !== previousMatch?.homeTeam.id
+            const showHeader = match.homeTeam.id !== previousMatch?.homeTeam.id;
 
             const isNotLast = index !== singlePackage.matches.length - 1;
 
@@ -63,13 +62,16 @@ export const PackagesScreen = () => {
             <div className={styles.packageCard} key={singlePackage.id}>
                 <div className={styles.matches}>{renderMatchList(singlePackage)}</div>
                 <div className={styles.divider}/>
-                <PackageFooter singlePackage={singlePackage}/>
+                <PackageFooter
+                    singlePackage={singlePackage}
+                    backRoute={ROUTES.PACKAGES}
+                />
             </div>
         ));
 
     return (
         <Screen className={styles.page}>
-            {true && <PackagesGenerationProgressTimeline/>}
+            {!hideProgressSteps && <PackagesGenerationProgressTimeline/>}
             {isLoading ? <PackageSkeleton/> : renderPackages()}
         </Screen>
     );

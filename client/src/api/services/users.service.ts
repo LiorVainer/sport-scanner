@@ -1,5 +1,8 @@
 import { PublicUserSchema, User } from '@/models/user.model.ts';
 import { axiosInstance } from '../config/axios-instance';
+import { ROUTE_PREFIX as PACKAGES_ROUTE_PREFIX } from './package.service';
+import { History, PopulatedHistory } from '@/models/history.model';
+import { PopulatedSavedPackage, SavedPackage } from '@/models/saved-packages.model';
 
 export const ROUTE_PREFIX = '/users';
 
@@ -17,6 +20,69 @@ export const UsersService = {
             return user;
         } catch (error) {
             console.error(`Error updating user with ID ${userId}:`, error);
+            throw error;
+        }
+    },
+
+    async getUsersHistory() {
+        try {
+            const { data } = await axiosInstance.get<PopulatedHistory[]>(
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/history`
+            );
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async addToUsersHistory(packageId: string) {
+        try {
+            const { data } = await axiosInstance.post<History>(
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/${packageId}/history`
+            );
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async getUsersSavedPackages(packageId?: string) {
+        try {
+            const { data } = await axiosInstance.get<PopulatedSavedPackage[]>(
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/saved`,
+                {
+                    params: { packageId },
+                }
+            );
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async savePackageForUser(packageId: string) {
+        try {
+            const { data } = await axiosInstance.post<SavedPackage>(
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/${packageId}/save`
+            );
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async unsavePackageForUser(packageId: string) {
+        try {
+            const { data } = await axiosInstance.delete<SavedPackage>(
+                `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/${packageId}/unsave`
+            );
+            return data;
+        } catch (error) {
+            console.error('Error:', (error as any).message);
             throw error;
         }
     },

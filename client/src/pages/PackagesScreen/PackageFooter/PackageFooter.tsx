@@ -4,18 +4,45 @@ import {Button, Typography} from 'antd';
 import {formattedDate} from '@/utils/date.utils';
 import {useNavigate} from 'react-router';
 import {ROUTES} from '@/constants/routes.const';
-import {Package} from '@/models/packages/package.model.ts';
-import {Calendar, CircleDollarSignIcon} from 'lucide-react';
+import {Package, PackageDocument } from '@/models/packages/package.model.ts';
+import {Calendar, CircleDollarSignIcon} from 'lucide-react';import { UsersService } from '@/api/services/users.service';
+import { PackageService } from '@/api/services/package.service';
 
 const {Text} = Typography;
 
 interface PackageFooterProps {
-    singlePackage: Package;
+    singlePackage: Package | PackageDocument;
+    backRoute?: string;
 }
 
-export const PackageFooter = ({singlePackage}: PackageFooterProps) => {
+export const PackageFooter = ({singlePackage, backRoute }: PackageFooterProps) => {
     const navigate = useNavigate();
-    const {fromDate, toDate, totalPrice, id} = singlePackage;
+    const {fromDate, toDate, totalPrice} = singlePackage;
+
+    const isSavedPackage = (pkg: Package | PackageDocument): pkg is PackageDocument => {
+        return '_id' in pkg && Boolean(pkg._id);
+    };
+
+    const addToHistory = async () => {
+        try {
+            if (isSavedPackage(singlePackage)) {
+                const { _id, ...rest } = singlePackage;
+                const newPackage = await PackageService.create(rest);
+                await UsersService.addToUsersHistory(newPackage._id);
+                navigate(`${ROUTES.PACKAGES} /${singlePackage._id}`, {
+                    state: { singlePackage, packageId: singlePackage._id!, backRoute },
+                });
+            } else {
+                const newPackage = await PackageService.create(singlePackage);
+                const result = await UsersService.addToUsersHistory(newPackage._id);
+                navigate(`${ROUTES.PACKAGES}/${result.packageId}`, {
+                    state: { singlePackage, packageId: result.packageId, backRoute },
+                });
+            }
+        } catch (error) {
+            console.error('Error adding package to history:', (error as any).message);
+        }
+    };
 
     return (
         <div className={styles.footer}>
@@ -35,12 +62,9 @@ export const PackageFooter = ({singlePackage}: PackageFooterProps) => {
                     </Text>
                 </div>
             </div>
-            <Button
-                type="primary"
-                onClick={() => navigate(`${ROUTES.PACKAGES}/results/${id}`, {state: singlePackage})}
-            >
+            <Button type="primary" onClick={addToHistory}>
                 Continue
-                <RightOutlined/>
+                <RightOutlined />
             </Button>
         </div>
     );

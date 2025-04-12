@@ -1,5 +1,5 @@
 import {axiosInstance, SERVER_URL} from '../config/axios-instance';
-import {Package, PackageGenerateParams} from '@/models/packages/package.model.ts';
+import {Package, PackageDocument, PackageGenerateParams} from '@/models/packages/package.model.ts';
 import {
     PackagesGenerationProgressUpdate,
     PackagesGenerationProgressUpdateSchema
@@ -59,7 +59,25 @@ export const PackageService = {
             });
         });
 
-    }
+    },
 
+    async getById(packageId: string) {
+        try {
+            const { data } = await axiosInstance.get<PackageDocument>(`${ROUTE_PREFIX}/${packageId}`);
+            return data;
+        } catch (error) {
+            console.error('Error getting package by id:', (error as any).message);
+            throw error;
+        }
+    },
 
+    async create(newPackage: Package) {
+        try {
+            const { data } = await axiosInstance.post<PackageDocument>(`${ROUTE_PREFIX}/`, newPackage);
+            return data;
+        } catch (error) {
+            console.error('Error creating package:', (error as any).message);
+            throw error;
+        }
+    },
 } satisfies Record<string, (...args: any[]) => Promise<any>>;

@@ -14,6 +14,8 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *   description: API for generating travel + match packages
  */
 
+router.get('/:id', packageController.getById);
+
 /**
  * @swagger
  * /package/generate:
@@ -42,8 +44,8 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *       500:
  *         description: Error generating package
  */
+router.post('/', packageController.createPackage);
 router.post('/generate', packageController.generatePackages);
-
 router.post('/generate/stream', packageController.streamPackageGeneration);
 
 export default router;

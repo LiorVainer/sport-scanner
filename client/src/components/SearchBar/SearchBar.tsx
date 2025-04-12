@@ -81,7 +81,7 @@ const SearchBar = () => {
 
     const onSubmit = (values: PackageGenerateParams) => {
         const {country, ...formValues} = values;
-        navigate(`${ROUTES.PACKAGES}/results`);
+        navigate(ROUTES.PACKAGES);
         fetchPackages(formValues);
     };
 

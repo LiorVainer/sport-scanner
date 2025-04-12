@@ -1,4 +1,5 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
+import { PackageRepository } from '../repositories/package.repository';
 import {PackagesGenerationParams} from "../models/packages/package-generate-params.model";
 import {packageService} from "../services/package.service";
 import {PackagesGenerationProgressUpdate} from "../models/packages/package-generation-progress-update.model";
@@ -22,5 +23,26 @@ export const packageController = {
         await packageService.generatePackage(req.body, req.userId, emit);
 
         res.end();
-    }
+    },
+    getById: async (req: Request, res: Response) => {
+        const packageId = req.params.id;
+        const [packageData] = await PackageRepository.find({ _id: packageId });
+
+        if (!packageData) {
+            res.status(404).send({ message: 'Package not found' });
+        }
+
+        res.status(200).send(packageData);
+    },
+
+    createPackage: async (req: Request, res: Response) => {
+        const { id, ...rest } = req.body;
+
+        try {
+            const newPackage = await PackageRepository.create(rest);
+            res.status(200).send(newPackage);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    },
 };

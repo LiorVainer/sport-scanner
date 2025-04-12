@@ -71,3 +71,9 @@ export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
+
+export const PackageDocumentSchema = PackageSchema.extend({
+    _id: z.string(),
+});
+
+export type PackageDocument = z.infer<typeof PackageDocumentSchema>;
