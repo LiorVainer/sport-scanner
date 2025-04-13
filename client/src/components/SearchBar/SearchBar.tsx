@@ -1,7 +1,15 @@
 import React, { useRef } from 'react';
 import { AutoComplete, Button, DatePicker, Form, Select, Slider } from 'antd';
 import dayjs from 'dayjs';
-import { CalendarOutlined, DollarOutlined, EnvironmentOutlined, TeamOutlined, TrophyOutlined } from '@ant-design/icons';
+import {
+    CalendarOutlined,
+    CloseCircleOutlined,
+    DollarOutlined,
+    EnvironmentOutlined,
+    SearchOutlined,
+    TeamOutlined,
+    TrophyOutlined,
+} from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
@@ -26,14 +34,22 @@ const { Option } = Select;
 const MIN_KEYWORD_LEN = 3;
 const MAX_KEYWORD_LEN = 50;
 
-const calcDefaultGenerateParams: () => PackagesGenerationParams = () => ({
-    originIATA: '',
-    date: { from: '', to: '' },
-    price: { min: MIN_PRICE, max: MAX_PRICE },
-    league: undefined,
-    team: undefined,
-    country: undefined,
-});
+const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
+    const today = dayjs();
+    const inTwoWeeks = today.add(2, 'weeks');
+
+    return {
+        originIATA: '',
+        date: {
+            from: today.format('YYYY-MM-DD'),
+            to: inTwoWeeks.format('YYYY-MM-DD'),
+        },
+        price: { min: MIN_PRICE, max: MAX_PRICE },
+        league: undefined,
+        team: undefined,
+        country: undefined,
+    };
+};
 
 const SearchBar = () => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
@@ -51,7 +67,7 @@ const SearchBar = () => {
         control,
         handleSubmit,
         watch,
-        formState: { isValid },
+        formState: { isValid, isDirty },
         reset,
         resetField,
     } = useForm<PackagesGenerationParams>({
@@ -289,14 +305,23 @@ const SearchBar = () => {
                     </Form.Item>
                 </div>
 
-                <Form.Item className={classes.buttonGroup}>
-                    <Button type="primary" shape="round" size="large" htmlType="submit" disabled={!isValid}>
+                <div className={classes.buttonGroup}>
+                    <Button
+                        type="primary"
+                        icon={<SearchOutlined />}
+                        shape="round"
+                        size="large"
+                        htmlType="submit"
+                        disabled={!isValid}
+                    >
                         Search
                     </Button>
-                    <Button danger shape="round" size="large" onClick={onClear}>
-                        Clear Search
-                    </Button>
-                </Form.Item>
+                    {isDirty && (
+                        <Button danger icon={<CloseCircleOutlined />} shape="round" size="large" onClick={onClear}>
+                            Clear
+                        </Button>
+                    )}
+                </div>
             </Form>
         </div>
     );

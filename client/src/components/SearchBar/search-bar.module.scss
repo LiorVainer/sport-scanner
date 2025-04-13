@@ -12,6 +12,7 @@
   height: 100%;
   padding-block: 5rem;
   overflow: hidden;
+  width: 100%;
 }
 
 .main {
@@ -24,7 +25,15 @@
   border-radius: $system-border-radius;
   padding: 6rem;
   overflow: hidden;
+  width: 100%;
+  align-items: center;
+}
 
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .overlay {
@@ -78,6 +87,7 @@
   align-items: baseline;
   position: relative;
   z-index: 1;
+  width: fit-content;
 
   :global {
     .ant-select-single .ant-select-selector {

@@ -22,7 +22,7 @@ const PackagesContext = createContext<PackagesContextType | undefined>(undefined
 export const PackagesProvider = ({ children }: { children: React.ReactNode }) => {
     const [progressSteps, setProgressSteps] = useState<PackagesGenerationProgressUpdate[]>([]);
     const [hideProgressSteps, setHideProgressSteps] = useState(false);
-    const [packages, setPackages] = useLocalStorage<Package[] | undefined>('packages-results', undefined);
+    const [packages, setPackages] = useLocalStorage<Package[] | undefined>('packages-generated', undefined);
 
     const { mutate: generatePackages, isPending } = useMutation({
         mutationFn: (params: PackagesGenerationParams) =>
