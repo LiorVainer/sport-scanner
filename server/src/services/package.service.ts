@@ -66,7 +66,16 @@ class PackageService {
         });
 
         const allFlightOffers = await this.fetchFlights(flightSearchParamsArray, timer, flightSearchErrors);
-        if (!allFlightOffers.length) return [];
+        if (!allFlightOffers.length) {
+            packagesLogger.error('❌ No flight offers found');
+            emit?.({
+                step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
+                message: '❌ No flight offers found',
+                durationMs: timer.total(),
+                packages: [],
+            });
+            return [];
+        }
 
         emit?.({
             step: GeneratePackagesSteps.FOUND_FLIGHTS,
@@ -86,7 +95,10 @@ class PackageService {
             timer,
             userId
         );
-        if (!generatedPackagesResponse) return [];
+        if (!generatedPackagesResponse) {
+            packagesLogger.error('❌ Error generating packages');
+            return [];
+        }
 
         const { result: generatedPackagesResult } = generatedPackagesResponse;
 
@@ -106,7 +118,16 @@ class PackageService {
             params,
             timer
         );
-        if (!validPackages) return [];
+        if (!validPackages) {
+            packagesLogger.error(`❌ Error filtering packages:`, { invalidPackages });
+            emit?.({
+                step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
+                message: `✅ Finished generating 0 valid packages.`,
+                packages: [],
+                durationMs: timer.total(),
+            });
+            return [];
+        }
         if (invalidPackages.length > 1) {
             packagesLogger.warn(`⚠️ ${invalidPackages.length} packages were filtered out`, {
                 invalidPackages,
