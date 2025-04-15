@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { CityInfo, Match, Package, Team } from '../models/package.model';
+import { CityInfo, Match, Package, Team } from '../models/packages/package.model';
 import { PriceRange } from '../models/price-range.model';
 
 const PriceRangeSchema = new Schema<PriceRange>(
@@ -81,8 +81,8 @@ export const PackageSchema = new Schema<
     {
         title: { type: String, required: true },
         description: { type: String, required: true },
-        fromDate: { type: String, required: true },
-        toDate: { type: String, required: true },
+        startDate: { type: String, required: true },
+        endDate: { type: String, required: true },
         location: { type: String, required: true },
         flightsPrice: { type: Number, required: true },
         matchesPrice: { type: PriceRangeSchema, required: true },

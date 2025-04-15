@@ -84,9 +84,9 @@ export const PackageDetailsScreen = () => {
                             <div className={styles.packageDetailsContainer}>
                                 <Text className={styles.packageDate}>
                                     <Calendar className={styles.calendarIcon} />
-                                    {formattedDate(singlePackage.fromDate)}{' '}
+                                    {formattedDate(singlePackage.startDate)}{' '}
                                     <ArrowRightOutlined className={styles.arrowIcon} />
-                                    {formattedDate(singlePackage.toDate)}
+                                    {formattedDate(singlePackage.endDate)}
                                 </Text>
                                 <Text className={styles.packagePrice}>
                                     from <strong>{singlePackage.totalPrice?.min ?? 'N/A'}$</strong>

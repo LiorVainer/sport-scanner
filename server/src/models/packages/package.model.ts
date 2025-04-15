@@ -77,15 +77,20 @@ export const PackageMetadata = z
 
         durationDays: z.number().describe('Total duration of the trip in days, based on startDate and endDate'),
 
-        daysInEachCity: z
+        destinations: z
             .array(
                 z.object({
                     cityName: z.string().describe('The name of the city visited'),
                     cityIata: z.string().length(3).describe('The IATA code of the city visited'),
                     days: z.number().describe('Number of days spent in the city'),
+                    matchesCount: z
+                        .number()
+                        .describe('Number of matches of the package that are in the city during the trip'),
                 })
             )
-            .describe('List of all cities visited with how many days were spent in each'),
+            .describe(
+                'List of cities visited in the package, with the number of days spent in each city and the number of matches in that city'
+            ),
 
         averageMatchTicketPrice: z.number().describe('Average of min and max ticket price across all matches'),
     })

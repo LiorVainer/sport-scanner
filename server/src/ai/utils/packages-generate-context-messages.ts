@@ -30,7 +30,7 @@ const rulesMessage = (maxPackages: number) =>
         `Generate up to ${maxPackages} valid travel packages from the data above.
 
 Each package must include:
-- title, description, fromDate, toDate
+- title, description, startDate, endDate
 - a timeline array: consists of **full flights** and **destination blocks**
 - destinations include one or more matches with ticket prices
 - flights include origin, destination, departure date, purpose, price, and ticket link
