@@ -62,6 +62,7 @@ export const DestinationSchema = z.object({
         .literal(PackageTimelineItemType.DESTINATION)
         .describe('Type of the timeline item, always "destination" for this schema'),
     city: z.string().describe('City name of the destination'),
+    cityIataCode: z.string().length(3).describe('IATA code of the destination city'),
     startDate: z.string().describe('Start date of the stay in the destination'),
     endDate: z.string().describe('End date of the stay in the destination'),
     matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
