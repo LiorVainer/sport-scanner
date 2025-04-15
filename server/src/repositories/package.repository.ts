@@ -43,8 +43,6 @@ const MatchSchema = new Schema<Match>(
     { _id: false }
 );
 
-// Timeline discriminated union (flight | destination)
-
 const FlightItemSchema = new Schema(
     {
         type: { type: String, enum: ['flight'], required: true },
@@ -74,7 +72,12 @@ const DestinationSchema = new Schema(
     { _id: false }
 );
 
-export const PackageSchema = new Schema<Omit<Package, 'id' | 'timeline'> & { timeline: any }>(
+export const PackageSchema = new Schema<
+    Omit<Package, 'id' | 'timeline' | 'metadata'> & {
+        timeline: any;
+        metadata: any;
+    }
+>(
     {
         title: { type: String, required: true },
         description: { type: String, required: true },
@@ -86,6 +89,10 @@ export const PackageSchema = new Schema<Omit<Package, 'id' | 'timeline'> & { tim
         totalPrice: { type: PriceRangeSchema, required: true },
         timeline: {
             type: [Schema.Types.Mixed],
+            required: true,
+        },
+        metadata: {
+            type: Schema.Types.Mixed,
             required: true,
         },
     },

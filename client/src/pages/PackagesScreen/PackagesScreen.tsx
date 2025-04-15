@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './packages-screen.module.scss';
 import { Screen } from '@/components/Screen';
 import { PackageSkeleton } from './PackageSkeleton/PackageSkeleton';
@@ -10,7 +9,7 @@ import { PackagesGenerationProgressTimeline } from '@pages/PackagesScreen/Packag
 import { PackageCard } from '@components/PackageCard';
 
 export const PackagesScreen = () => {
-    const { isLoading, packages, hideProgressSteps } = usePackages();
+    const { isLoading, packages } = usePackages();
     const navigate = useNavigate();
 
     const handleRetry = () => navigate(ROUTES.HOME);

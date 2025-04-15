@@ -7,9 +7,10 @@ import { DestinationSection } from '@components/DestinationSection';
 
 export interface PackageCardProps {
     singlePackage: Package;
+    backRoute?: string;
 }
 
-export const PackageCard = ({ singlePackage }: PackageCardProps) => {
+export const PackageCard = ({ singlePackage, backRoute }: PackageCardProps) => {
     const destinations = useMemo(
         () => singlePackage.timeline.filter((item): item is Destination => item.type === 'destination'),
         [singlePackage]
@@ -23,7 +24,7 @@ export const PackageCard = ({ singlePackage }: PackageCardProps) => {
                 ))}
             </div>
             <div className={styles.divider} />
-            <PackageFooter singlePackage={singlePackage} backRoute={ROUTES.PACKAGES} />
+            <PackageFooter singlePackage={singlePackage} backRoute={backRoute ?? ROUTES.PACKAGES} />
         </div>
     );
 };

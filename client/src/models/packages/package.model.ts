@@ -77,6 +77,32 @@ export const TimelineItemSchema = z
     .discriminatedUnion('type', [FlightItemSchema, DestinationSchema])
     .describe('Timeline item, either a flight or a destination');
 
+export const PackageMetadata = z
+    .object({
+        destinationsCount: z.number().describe('Number of different cities (destinations) included in this package'),
+
+        flightsCount: z.number().describe('Total number of flights included in the timeline of the package'),
+
+        matchesCount: z.number().describe('Total number of matches included in the package'),
+
+        citiesVisited: z.array(z.string()).describe('List of cities visited in this package'),
+
+        durationDays: z.number().describe('Total duration of the trip in days, based on startDate and endDate'),
+
+        daysInEachCity: z
+            .array(
+                z.object({
+                    cityName: z.string().describe('The name of the city visited'),
+                    cityIata: z.string().length(3).describe('The IATA code of the city visited'),
+                    days: z.number().describe('Number of days spent in the city'),
+                })
+            )
+            .describe('List of all cities visited with how many days were spent in each'),
+
+        averageMatchTicketPrice: z.number().describe('Average of min and max ticket price across all matches'),
+    })
+    .describe('Supplementary metadata to help categorize, explain, or filter the travel package');
+
 export const PackageSchema = z
     .object({
         id: z.number().describe('Unique identifier of the package'),
@@ -86,8 +112,8 @@ export const PackageSchema = z
                 'Title of the travel package. Make it catchy and attractive. If the package includes one match, include the team names and the league.'
             ),
         description: z.string().describe('Description of what the package includes: matches, flights, dates.'),
-        fromDate: z.string().describe('Start date of the package. This is the earliest flight or match date.'),
-        toDate: z.string().describe('End date of the package. This is the latest return flight or match date.'),
+        startDate: z.string().describe('Start date of the package. This is the earliest flight or match date.'),
+        endDate: z.string().describe('End date of the package. This is the latest return flight or match date.'),
         location: z.string().describe('Primary location of the package, typically the first destination city.'),
         flightsPrice: z.number().describe(
             `Total combined price of all flights in the package. 
@@ -104,6 +130,7 @@ There can be multiple flights depending on the number of destinations.`
             `Ordered timeline of the package that mixes flight and destination events.
 There can be multiple destinations and flights in a single package, each with one or more matches.`
         ),
+        metadata: PackageMetadata,
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 
