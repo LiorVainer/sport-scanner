@@ -1,17 +1,18 @@
 import { axiosInstance, SERVER_URL } from '../config/axios-instance';
-import { Package, PackageDocument, PackageGenerateParams } from '@/models/packages/package.model.ts';
+import { Package, PackageDocument } from '@/models/packages/package.model.ts';
 import {
     PackagesGenerationProgressUpdate,
     PackagesGenerationProgressUpdateSchema,
 } from '@/models/packages/package-generation-progress-update.model.ts';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
+import { PackagesGenerationParams } from '@/models/packages/package-generate-params.model.ts';
 
 export const ROUTE_PREFIX = '/packages';
 
 export const PackageService = {
     getPackages: async function (
-        params: PackageGenerateParams,
+        params: PackagesGenerationParams,
         onProgress?: (progress: PackagesGenerationProgressUpdate) => void
     ): Promise<Package[]> {
         if (!onProgress) {
@@ -28,6 +29,7 @@ export const PackageService = {
                 headers: {
                     Accept: 'text/event-stream',
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                 },
                 signal: controller.signal,
                 async onopen(response) {
