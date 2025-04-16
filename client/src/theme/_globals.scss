@@ -16,15 +16,6 @@
   align-items: center;
 }
 
-//@mixin card {
-//  border-radius: $system-border-radius;
-//  background-color: $primary;
-//  width: 100%;
-//  display: flex;
-//  flex-direction: column;
-//  padding: 3rem;
-//}
-
 @mixin card {
   display: flex;
   flex-direction: column;

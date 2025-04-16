@@ -17,7 +17,7 @@ export const PackageCard = ({ singlePackage, backRoute }: PackageCardProps) => {
     );
 
     return (
-        <div className={styles.packageCard} key={singlePackage.id}>
+        <div className={styles.packageCard}>
             <div className={styles.destinations}>
                 {destinations.map((destination) => (
                     <DestinationSection destination={destination} />

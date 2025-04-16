@@ -1,22 +1,21 @@
-import {axiosInstance, SERVER_URL} from '../config/axios-instance';
-import {Package, PackageDocument, PackageGenerateParams} from '@/models/packages/package.model.ts';
+import { axiosInstance, SERVER_URL } from '../config/axios-instance';
+import { Package, PackageDocument, PackageGenerateParams } from '@/models/packages/package.model.ts';
 import {
     PackagesGenerationProgressUpdate,
-    PackagesGenerationProgressUpdateSchema
-} from "@/models/packages/package-generation-progress-update.model.ts";
-import {fetchEventSource} from "@microsoft/fetch-event-source";
-import {GeneratePackagesSteps} from "@/models/packages/packages-generate-steps.model.ts";
+    PackagesGenerationProgressUpdateSchema,
+} from '@/models/packages/package-generation-progress-update.model.ts';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
 
 export const ROUTE_PREFIX = '/packages';
 
 export const PackageService = {
-
     getPackages: async function (
         params: PackageGenerateParams,
         onProgress?: (progress: PackagesGenerationProgressUpdate) => void
     ): Promise<Package[]> {
         if (!onProgress) {
-            const {data} = await axiosInstance.post<Package[]>(`${ROUTE_PREFIX}/generate`, params);
+            const { data } = await axiosInstance.post<Package[]>(`${ROUTE_PREFIX}/generate`, params);
             return data;
         }
 
@@ -33,9 +32,8 @@ export const PackageService = {
                 signal: controller.signal,
                 async onopen(response) {
                     if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
-                        // Connection OK
                     } else {
-                        controller.abort(); // stop retrying
+                        controller.abort();
                         reject(new Error(`Unexpected response: ${response.status}`));
                     }
                 },
@@ -44,7 +42,7 @@ export const PackageService = {
                     const validated = PackagesGenerationProgressUpdateSchema.parse(data);
 
                     if (validated.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES) {
-                        onProgress(validated)
+                        onProgress(validated);
                         controller.abort();
                         resolve(validated.packages);
                     } else {
@@ -58,7 +56,6 @@ export const PackageService = {
                 openWhenHidden: false,
             });
         });
-
     },
 
     async getById(packageId: string) {

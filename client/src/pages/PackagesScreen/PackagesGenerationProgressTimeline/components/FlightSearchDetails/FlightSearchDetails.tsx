@@ -20,13 +20,13 @@ export const FlightSearchDetails = ({
     return (
         <div className={styles.infoBlock}>
             <div className={styles.fixtureList}>
-                {flightOffersSearchesParams.map((params, i) => {
+                {flightOffersSearchesParams.map((params, index) => {
                     const { origin, destination, dateTo, isRoundTrip } = params;
                     const originCity = cityIataToCityMetadata[origin];
                     const destinationCity = cityIataToCityMetadata[destination];
 
                     return (
-                        <div className={styles.flightsSearchItem} key={i}>
+                        <div className={styles.flightsSearchItem} key={index}>
                             <div className={styles.flightsCities}>
                                 <div className={styles.flightCityDetails}>
                                     <span className={styles.flightCity}>{originCity?.bigCityInIata}</span>

@@ -11,29 +11,29 @@ import { PackagesGenerationParams } from '@/models/packages/package-generate-par
 interface PackagesContextType {
     packages: Package[] | undefined;
     isLoading: boolean;
-    progressSteps: PackagesGenerationProgressUpdate[];
+    progressUpdates: PackagesGenerationProgressUpdate[];
     fetchPackages: UseMutateFunction<Package[], Error, PackagesGenerationParams>;
-    hideProgressSteps: boolean;
-    setHideProgressSteps: (hide: boolean) => void;
+    hideProgressTimeline: boolean;
+    setHideProgressTimeline: (hide: boolean) => void;
 }
 
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
 
 export const PackagesProvider = ({ children }: { children: React.ReactNode }) => {
-    const [progressSteps, setProgressSteps] = useState<PackagesGenerationProgressUpdate[]>([]);
-    const [hideProgressSteps, setHideProgressSteps] = useState(false);
+    const [progressUpdates, setProgressUpdates] = useState<PackagesGenerationProgressUpdate[]>([]);
+    const [hideProgressTimeline, setHideProgressTimeline] = useState(false);
     const [packages, setPackages] = useLocalStorage<Package[] | undefined>('packages-generated', undefined);
 
     const { mutate: generatePackages, isPending } = useMutation({
         mutationFn: (params: PackagesGenerationParams) =>
             PackageService.getPackages(params, (newProgressStep) => {
-                setProgressSteps((prev) => [...prev, newProgressStep]);
+                setProgressUpdates((prev) => [...prev, newProgressStep]);
 
                 if (newProgressStep.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES) {
                     message.success(
                         `Generated ${newProgressStep.packages.length} packages for you in ${(newProgressStep.durationMs / 1000).toFixed(2)} seconds`
                     );
-                    setHideProgressSteps(true);
+                    setHideProgressTimeline(true);
                 }
             }),
         onSuccess: (data) => {
@@ -42,8 +42,8 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
     });
 
     const fetchPackages = async (params: PackagesGenerationParams) => {
-        setHideProgressSteps(false);
-        setProgressSteps([]);
+        setHideProgressTimeline(false);
+        setProgressUpdates([]);
         generatePackages(params);
     };
 
@@ -52,10 +52,10 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
             value={{
                 packages,
                 isLoading: isPending,
-                progressSteps,
+                progressUpdates,
                 fetchPackages,
-                hideProgressSteps,
-                setHideProgressSteps,
+                hideProgressTimeline,
+                setHideProgressTimeline,
             }}
         >
             {children}

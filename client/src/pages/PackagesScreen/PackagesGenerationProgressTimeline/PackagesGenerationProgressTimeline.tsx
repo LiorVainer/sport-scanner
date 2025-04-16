@@ -6,7 +6,7 @@ import { ProgressTimelineItem } from '@pages/PackagesScreen/PackagesGenerationPr
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
 
 export const PackagesGenerationProgressTimeline = () => {
-    const { progressSteps, hideProgressSteps, setHideProgressSteps, isLoading, packages } = usePackages();
+    const { progressUpdates, hideProgressTimeline, setHideProgressTimeline, isLoading, packages } = usePackages();
 
     return (
         <div className={styles.container}>
@@ -20,18 +20,18 @@ export const PackagesGenerationProgressTimeline = () => {
                 <Button
                     type="primary"
                     className={styles.hideButton}
-                    onClick={() => setHideProgressSteps(!hideProgressSteps)}
+                    onClick={() => setHideProgressTimeline(!hideProgressTimeline)}
                 >
-                    {hideProgressSteps ? 'Show' : 'Hide'} Progress
+                    {hideProgressTimeline ? 'Show' : 'Hide'} Progress
                 </Button>
             </div>
 
-            {!hideProgressSteps && (
+            {!hideProgressTimeline && (
                 <Timeline className={styles.timeline}>
-                    {progressSteps.map((step, idx) => {
+                    {progressUpdates.map((progressUpdate, index) => {
                         const isDone =
-                            idx < progressSteps.length - 1 ||
-                            step.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES;
+                            index < progressUpdates.length - 1 ||
+                            progressUpdate.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES;
                         return (
                             <Timeline.Item
                                 dot={
@@ -44,7 +44,7 @@ export const PackagesGenerationProgressTimeline = () => {
                                 color={isDone ? 'green' : 'blue'}
                                 className={styles.timelineItem}
                             >
-                                <ProgressTimelineItem step={step} />
+                                <ProgressTimelineItem progressUpdate={progressUpdate} />
                             </Timeline.Item>
                         );
                     })}

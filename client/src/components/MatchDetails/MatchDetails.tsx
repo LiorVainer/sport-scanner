@@ -3,7 +3,6 @@ import { EnvironmentOutlined, TrophyOutlined } from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { Match } from '@/models/packages/package.model.ts';
-// import { TicketsPlane } from 'lucide-react';
 
 const { Text } = Typography;
 
