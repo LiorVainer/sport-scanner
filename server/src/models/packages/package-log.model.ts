@@ -1,4 +1,4 @@
-import {LogSchema, ProcessTypes} from "./log.model";
+import {LogSchema, ProcessTypes} from "../log.model";
 import {z} from "zod";
 
 export const GeneratePackagesLogSchema = LogSchema.extend({

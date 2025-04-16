@@ -1,28 +1,34 @@
-import { Typography, Button } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
+import { Button, Typography } from 'antd';
+import { ArrowRightOutlined, ExportOutlined } from '@ant-design/icons';
 import styles from './flight-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { TicketsPlane } from 'lucide-react';
+import { Flight } from '@/models/packages/package.model.ts';
+import React from 'react';
 
 const { Text } = Typography;
 
 interface FlightDetailsProps {
-    from: string;
-    to: string;
-    departureDate: string;
-    price: number;
-    linkForTicket: string;
+    flight: Flight;
 }
 
-export const FlightDetails = ({ from, to, departureDate, price, linkForTicket }: FlightDetailsProps) => {
+export const FlightDetails = ({ flight }: FlightDetailsProps) => {
+    const {
+        origin: { name: originName },
+        destination: { name: destinationName },
+        departureDate,
+        price,
+        searchFlightTicketsLink,
+    } = flight;
+
     return (
         <div className={styles.flightDetailsContainer}>
             <div className={styles.flightRouteInfo}>
                 <TicketsPlane className={styles.airplaneIcon} />
                 <Text strong className={styles.flightRoute}>
-                    {from}
+                    {originName}
                     <ArrowRightOutlined className={styles.arrowIcon} />
-                    {to}
+                    {destinationName}
                 </Text>
                 <Text type="secondary" className={styles.flightDate}>
                     ({formattedDate(departureDate)})
@@ -35,8 +41,13 @@ export const FlightDetails = ({ from, to, departureDate, price, linkForTicket }:
                         {price}$
                     </Text>
                 </div>
-                <a href={linkForTicket} target="_blank" rel="noopener noreferrer">
-                    <Button type="primary" className={styles.flightTicketButton}>
+                <a href={searchFlightTicketsLink} target="_blank" rel="noopener noreferrer">
+                    <Button
+                        type="primary"
+                        color={'purple'}
+                        icon={<ExportOutlined />}
+                        className={styles.flightTicketButton}
+                    >
                         Flight Tickets
                     </Button>
                 </a>

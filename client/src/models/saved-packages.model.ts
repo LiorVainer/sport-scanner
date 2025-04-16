@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { PackageDocumentSchema } from './package.model';
 import { zodDate } from '@/utils/zod.utils';
+import { PackageDocumentSchema } from './packages/package.model';
 
 const SavedPackageSchema = z.object({
     _id: z.string(),

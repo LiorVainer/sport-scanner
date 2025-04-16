@@ -6,7 +6,8 @@ import {ENV} from '../env/env.config';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     if (!req.userId) {
-        return res.status(401).json({message: 'Unauthorized'});
+        res.status(401).json({message: 'Unauthorized'});
+        return;
     }
     next();
 };

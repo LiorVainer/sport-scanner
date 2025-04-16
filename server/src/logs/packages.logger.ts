@@ -3,7 +3,7 @@ import {LogLevels, ProcessTypes} from '../models/log.model';
 import {GeneratePackagesLogParams} from './generate-packages.logger';
 import {ENV} from '../env/env.config';
 import {CustomLogLevel} from "./levels.logger";
-import {GeneratePackagesStep} from "../models/package-generate-params.model";
+import {GeneratePackagesStep} from "../models/packages/package-generate-params.model";
 
 export const packagesLogger = {
     info: (message: string, meta?: Record<string, any>) => {

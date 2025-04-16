@@ -4,21 +4,15 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import styles from './package-details-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils';
-import { Flight, Match, PackageDocument } from '@/models/package.model';
+import { PackageDocument, PackageTimelineItemType } from '@/models/packages/package.model.ts';
 import { FlightCard } from './FlightCard/FlightCard';
-import { MatchCard } from './MatchCard/MatchCard';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { useQuery } from '@tanstack/react-query';
 import { PackageService } from '@/api/services/package.service';
-import { useMemo } from 'react';
 import { UsersService } from '@/api/services/users.service';
+import { DestinationCard } from '@pages/PackageDetailsScreen/DestinationCard';
 
 const { Title, Text } = Typography;
-
-export enum CardTypes {
-    FLIGHT = 'flight',
-    MATCH = 'match',
-}
 
 export const PackageDetailsScreen = () => {
     const { packageId } = useParams<{ packageId: string }>();
@@ -64,24 +58,9 @@ export const PackageDetailsScreen = () => {
         }
     };
 
-    const timelineItems = useMemo(() => {
-        if (!singlePackage) return [];
-
-        return [
-            ...singlePackage.flights.map((flight, index) => ({
-                type: CardTypes.FLIGHT,
-                date: new Date(flight.departureDate),
-                data: flight,
-                index,
-            })),
-            ...singlePackage.matches.map((match, index) => ({
-                type: CardTypes.MATCH,
-                date: new Date(match.date),
-                data: match,
-                index,
-            })),
-        ].sort((a, b) => a.date.getTime() - b.date.getTime());
-    }, [singlePackage]);
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className={styles.packagePage}>
@@ -105,9 +84,9 @@ export const PackageDetailsScreen = () => {
                             <div className={styles.packageDetailsContainer}>
                                 <Text className={styles.packageDate}>
                                     <Calendar className={styles.calendarIcon} />
-                                    {formattedDate(singlePackage.fromDate)}{' '}
+                                    {formattedDate(singlePackage.startDate)}{' '}
                                     <ArrowRightOutlined className={styles.arrowIcon} />
-                                    {formattedDate(singlePackage.toDate)}
+                                    {formattedDate(singlePackage.endDate)}
                                 </Text>
                                 <Text className={styles.packagePrice}>
                                     from <strong>{singlePackage.totalPrice?.min ?? 'N/A'}$</strong>
@@ -124,31 +103,14 @@ export const PackageDetailsScreen = () => {
                     </div>
 
                     <div className={styles.cardsSection}>
-                        {timelineItems.map((item, timelineIndex) => {
+                        {singlePackage.timeline.map((item, timelineIndex) => {
                             switch (item.type) {
-                                case CardTypes.FLIGHT: {
-                                    const flight = item.data as Flight;
-                                    return (
-                                        <FlightCard
-                                            key={`flight-${timelineIndex}`}
-                                            flight={flight}
-                                            itemIndex={item.index}
-                                            totalFlights={singlePackage.flights.length}
-                                        />
-                                    );
+                                case PackageTimelineItemType.FLIGHT: {
+                                    return <FlightCard key={`flight-${timelineIndex}`} flight={item} />;
                                 }
 
-                                case CardTypes.MATCH: {
-                                    const match = item.data as Match;
-                                    return (
-                                        <MatchCard
-                                            key={`match-${timelineIndex}`}
-                                            match={match}
-                                            singlePackage={singlePackage}
-                                            itemIndex={item.index}
-                                        />
-                                    );
-                                }
+                                case PackageTimelineItemType.DESTINATION:
+                                    return <DestinationCard key={`destination-${timelineIndex}`} destination={item} />;
 
                                 default:
                                     return null;

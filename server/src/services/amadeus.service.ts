@@ -1,7 +1,7 @@
 import Amadeus, {CurrencyCode, FlightOffer as RawFlightOffer, FlightOffersSearchPostParams} from 'amadeus-ts';
 import {ENV} from '../env/env.config';
-import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights-search-params.model';
-import {FlightOffer, FlightOffersArraySchema} from '../models/flight-offer.model';
+import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights/flights-search-params.model';
+import {FlightOffer, FlightOffersArraySchema} from '../models/flights/flight-offer.model';
 import {CitySearchParams} from '../models/geo.model';
 import {logger} from "../logs/logger";
 import {ProcessTypes} from "../models/log.model";

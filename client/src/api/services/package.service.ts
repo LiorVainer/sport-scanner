@@ -1,17 +1,61 @@
-import { axiosInstance } from '../config/axios-instance';
-import { Package, PackageDocument, PackageGenerateParams } from '@/models/package.model';
+import { axiosInstance, SERVER_URL } from '../config/axios-instance';
+import { Package, PackageDocument, PackageGenerateParams } from '@/models/packages/package.model.ts';
+import {
+    PackagesGenerationProgressUpdate,
+    PackagesGenerationProgressUpdateSchema,
+} from '@/models/packages/package-generation-progress-update.model.ts';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
 
 export const ROUTE_PREFIX = '/packages';
 
 export const PackageService = {
-    async getPackages(packageDate: PackageGenerateParams) {
-        try {
-            const { data } = await axiosInstance.post<Package[]>(`${ROUTE_PREFIX}/generate`, packageDate);
+    getPackages: async function (
+        params: PackageGenerateParams,
+        onProgress?: (progress: PackagesGenerationProgressUpdate) => void
+    ): Promise<Package[]> {
+        if (!onProgress) {
+            const { data } = await axiosInstance.post<Package[]>(`${ROUTE_PREFIX}/generate`, params);
             return data;
-        } catch (error) {
-            console.error('Error generating packages:', (error as any).message);
-            throw error;
         }
+
+        return new Promise<Package[]>((resolve, reject) => {
+            const controller = new AbortController();
+
+            fetchEventSource(`${SERVER_URL}${ROUTE_PREFIX}/generate/stream`, {
+                method: 'POST',
+                body: JSON.stringify(params),
+                headers: {
+                    Accept: 'text/event-stream',
+                    'Content-Type': 'application/json',
+                },
+                signal: controller.signal,
+                async onopen(response) {
+                    if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
+                    } else {
+                        controller.abort();
+                        reject(new Error(`Unexpected response: ${response.status}`));
+                    }
+                },
+                onmessage(event) {
+                    const data: unknown = JSON.parse(event.data);
+                    const validated = PackagesGenerationProgressUpdateSchema.parse(data);
+
+                    if (validated.step === GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES) {
+                        onProgress(validated);
+                        controller.abort();
+                        resolve(validated.packages);
+                    } else {
+                        onProgress?.(validated);
+                    }
+                },
+                onerror(err) {
+                    controller.abort();
+                    reject(err);
+                },
+                openWhenHidden: false,
+            });
+        });
     },
 
     async getById(packageId: string) {

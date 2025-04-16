@@ -1,0 +1,27 @@
+@use '../../../../../theme/theme' as *;
+
+.timelineMessage {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.stepCollapse {
+  background: transparent;
+
+  :global {
+    .ant-collapse-item {
+      border: none;
+    }
+
+    .ant-collapse-header {
+      padding: 0 !important;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .ant-collapse-content-box {
+      padding: 0.5rem 0 0;
+    }
+  }
+}

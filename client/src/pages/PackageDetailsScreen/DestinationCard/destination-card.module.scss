@@ -1,0 +1,67 @@
+@use '../../../theme/theme' as *;
+
+.destinationCard {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .destinationDates {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  .destinationDates {
+    font-size: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .destinationMatches {
+    font-size: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .calendarIcon {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.city {
+  @include dark-chip
+}
+
+.divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.25rem 0 0.75rem;
+  width: 100%;
+  border-radius: 1px;
+}
+
+
+.matchesSection {
+  display: flex;
+  flex-direction: column;
+  //@include card;
+  gap: 2rem;
+}

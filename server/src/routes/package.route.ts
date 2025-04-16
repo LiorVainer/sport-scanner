@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { packageController } from '../controllers/package.controller';
-import { authMiddleware } from '../middlewares/auth.middlware';
-import { ENV } from '../env/env.config';
+import {Router} from 'express';
+import {packageController} from '../controllers/package.controller';
+import {authMiddleware} from '../middlewares/auth.middlware';
+import {ENV} from '../env/env.config';
 
 const router = Router();
 
@@ -45,6 +45,7 @@ router.get('/:id', packageController.getById);
  *         description: Error generating package
  */
 router.post('/', packageController.createPackage);
-router.post('/generate', packageController.generatePackage);
+router.post('/generate', packageController.generatePackages);
+router.post('/generate/stream', packageController.streamPackageGeneration);
 
 export default router;

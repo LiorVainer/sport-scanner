@@ -1,15 +1,12 @@
-import {Package} from '../models/package.model';
-import {isBefore, parseISO} from 'date-fns';
+import { Package } from '../models/packages/package.model';
+import { isBefore, parseISO } from 'date-fns';
 
 type PartitionedPackages = {
     valid: Package[];
     invalid: Package[];
 };
 
-export const partitionPackagesByRules = (
-    packages: Package[],
-    originIataCode: string
-): PartitionedPackages => {
+export const partitionPackagesByRules = (packages: Package[], originIataCode: string): PartitionedPackages => {
     const valid: Package[] = [];
     const invalid: Package[] = [];
 
@@ -21,28 +18,36 @@ export const partitionPackagesByRules = (
         }
     }
 
-    return {valid, invalid};
+    return { valid, invalid };
 };
 
-const isPackageValidByRules = (
-    pkg: Package,
-    originIataCode: string
-): boolean => {
-    const sortedFlights = [...pkg.flights].sort(
+const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean => {
+    const flightItems = pkg.timeline.filter((item) => item.type === 'flight').map((item) => ({ ...item }));
+
+    const matchItems = pkg.timeline
+        .filter((item) => item.type === 'destination')
+        .flatMap((item) =>
+            item.matches.map((match) => ({
+                ...match,
+                destinationStartDate: item.startDate,
+                destinationEndDate: item.endDate,
+            }))
+        );
+
+    const sortedFlights = [...flightItems].sort(
         (flight, anotherFlight) =>
-            new Date(flight.departureDate).getTime() -
-            new Date(anotherFlight.departureDate).getTime()
+            new Date(flight.departureDate).getTime() - new Date(anotherFlight.departureDate).getTime()
     );
 
-    const sortedMatches = [...pkg.matches].sort(
-        (match, anotherMatch) =>
-            new Date(match.date).getTime() - new Date(anotherMatch.date).getTime()
+    const sortedMatches = [...matchItems].sort(
+        (match, anotherMatch) => new Date(match.date).getTime() - new Date(anotherMatch.date).getTime()
     );
 
     const firstFlight = sortedFlights[0];
     const lastFlight = sortedFlights[sortedFlights.length - 1];
 
     if (!firstFlight || firstFlight.origin.iataCode !== originIataCode) return false;
+
     if (!lastFlight || lastFlight.destination.iataCode !== originIataCode) return false;
 
     for (let i = 1; i < sortedFlights.length; i++) {
@@ -63,7 +68,10 @@ const isPackageValidByRules = (
         const hasInboundFlight = sortedFlights.some((flight) => {
             const arrivalDate = parseISO(flight.departureDate);
             const destCityIata = flight.destination.iataCode.toLowerCase();
-            return destCityIata.includes(matchCityIata) || matchCityIata.includes(destCityIata) && isBefore(arrivalDate, matchDate);
+            return (
+                (destCityIata.includes(matchCityIata) || matchCityIata.includes(destCityIata)) &&
+                isBefore(arrivalDate, matchDate)
+            );
         });
 
         if (!hasInboundFlight) return false;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ROUTES } from '@/constants/routes.const';
 import { UsersService } from '@/api/services/users.service';
 import { NoHistory } from './NoHistory';

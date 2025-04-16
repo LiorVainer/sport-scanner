@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { Package, CityInfo, Flight, Match, Team } from '../models/package.model';
+import { Package } from '../models/packages/package.model';
 import { PriceRange } from '../models/price-range.model';
 
 const PriceRangeSchema = new Schema<PriceRange>(
@@ -10,63 +10,29 @@ const PriceRangeSchema = new Schema<PriceRange>(
     { _id: false }
 );
 
-const CityInfoSchema = new Schema<CityInfo>(
-    {
-        name: { type: String, required: true },
-        iataCode: { type: String, required: true, length: 3 },
-    },
-    { _id: false }
-);
-
-const FlightSchema = new Schema<Flight>(
-    {
-        id: { type: Number, required: true },
-        origin: { type: CityInfoSchema, required: true },
-        destination: { type: CityInfoSchema, required: true },
-        price: { type: Number, required: true },
-        departureDate: { type: String, required: true },
-        searchFlightTicketsLink: { type: String, required: true },
-    },
-    { _id: false }
-);
-
-const TeamSchema = new Schema<Team>(
-    {
-        id: { type: Number, required: true },
-        name: { type: String, required: true },
-        logo: { type: String, required: true },
-    },
-    { _id: false }
-);
-
-const MatchSchema = new Schema<Match>(
-    {
-        id: { type: Number, required: true },
-        homeTeam: { type: TeamSchema, required: true },
-        awayTeam: { type: TeamSchema, required: true },
-        league: { type: String, required: true },
-        city: { type: String, required: true },
-        cityIataCode: { type: String, required: true },
-        stadium: { type: String, required: true },
-        date: { type: String, required: true },
-        price: { type: PriceRangeSchema, required: true },
-        searchMatchTicketsLink: { type: String, required: true },
-    },
-    { _id: false }
-);
-
-export const PackageSchema = new Schema<Omit<Package, 'id'>>(
+export const PackageSchema = new Schema<
+    Omit<Package, 'id' | 'timeline' | 'metadata'> & {
+        timeline: any;
+        metadata: any;
+    }
+>(
     {
         title: { type: String, required: true },
         description: { type: String, required: true },
-        fromDate: { type: String, required: true },
-        toDate: { type: String, required: true },
+        startDate: { type: String, required: true },
+        endDate: { type: String, required: true },
         location: { type: String, required: true },
         flightsPrice: { type: Number, required: true },
         matchesPrice: { type: PriceRangeSchema, required: true },
         totalPrice: { type: PriceRangeSchema, required: true },
-        flights: { type: [FlightSchema], required: true },
-        matches: { type: [MatchSchema], required: true },
+        timeline: {
+            type: [Schema.Types.Mixed],
+            required: true,
+        },
+        metadata: {
+            type: Schema.Types.Mixed,
+            required: true,
+        },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

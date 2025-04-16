@@ -1,16 +1,28 @@
-import {CoreMessage} from 'ai';
-import {ExtendedFixtureItem} from '../../models/fixture.model';
-import {message} from './message.utils';
-import {FlightOffer} from '../../models/flight-offer.model';
-import {Package} from '../../models/package.model';
-import {ENV} from "../../env/env.config";
+import { CoreMessage } from 'ai';
+import { ExtendedFixtureItem } from '../../models/soccer/fixture.model';
+import { message } from './message.utils';
+import { FlightOffer } from '../../models/flights/flight-offer.model';
+import { Package } from '../../models/packages/package.model';
+import { ENV } from '../../env/env.config';
 
 const introMessage = () =>
     message.system(
-        `You are a travel assistant. Create realistic travel packages that include: 
-- flights (with segments)
-- match info (with ticket price)
-- total cost breakdown`
+        `You are a travel assistant. Your job is to generate realistic and complete travel packages.
+
+Each package must include:
+- Title and description
+- From and to dates
+- Timeline: an ordered array of **flights** and **destinations**
+  - Flights are full route flights (with segments), not individual segments
+  - Destinations contain matches in that city with ticket info
+- Flights and match ticket prices
+- Price breakdown: total flight cost + total match ticket range
+
+You will receive:
+- A list of available flights (with their full route segments)
+- A list of football matches with their date, location, and price range
+
+Build travel packages using this information.`
     );
 
 const rulesMessage = (maxPackages: number) =>
@@ -18,43 +30,46 @@ const rulesMessage = (maxPackages: number) =>
         `Generate up to ${maxPackages} valid travel packages from the data above.
 
 Each package must include:
-- title, description, fromDate, toDate
-- list of flights (with segments, dates, prices)
-- list of matches (with location, date, ticket price)
-- total price breakdown (flightsPrice + matchesPrice)
+- title, description, startDate, endDate
+- a timeline array: consists of **full flights** and **destination blocks**
+- destinations include one or more matches with ticket prices
+- flights include origin, destination, departure date, purpose, price, and ticket link
+- a total price breakdown (flightsPrice + matchesPrice)
 
-⚠️ HARD RULES (DO NOT BREAK):
-- Packages must start with a flight from the user's origin (TLV)
-- Packages must end with a return flight to the user's origin (TLV)
-- No flights from or to unrelated cities (e.g. Rome unless there's a match there)
-- Every city visited must be part of a match
-- Each match must be reachable by a flight arriving **before** its kickoff
-- Flights must follow a chronological timeline (no time travel)
+📦 Timeline Structure:
+- Timeline is a **chronological array** of 'flight' and 'destination' items
+- ✈️ Each flight must represent a **complete flight offer** between cities (e.g. TLV → MUC)
+- ❌ DO NOT include individual segments like TLV → FCO and FCO → MUC
+- 🛬 Each destination includes matches and stay dates
+
+⚠️ HARD RULES (MUST follow):
+- Packages must start with a flight from the user's origin (e.g. TLV)
+- Packages must end with a return flight to the user's origin (e.g. TLV)
+- No flights to cities with no matches
+- Each city visited must be a match city
+- Every match must be reachable by a flight that arrives **before** kickoff
+- Flights must follow chronological order
 
 ✈️ Match Rules:
-- A package can include **1 or 2 matches maximum**
-- 1 match in any city → 2 flights: TLV → match city → TLV
-- 2 matches in **different cities** → 3 flights: TLV → match1 → match2 → TLV
-- 2 matches in the **same city** → still only 2 flights: TLV → city → TLV
+- 1 match (any city): TLV → match → TLV (2 flights + 1 destination)
+- 2 matches in same city: TLV → city → TLV (2 flights + 1 destination)
+- 2 matches in different cities: TLV → city1 → city2 → TLV (3 flights + 2 destinations)
 
-❌ Bad Example:
-- TLV → Munich → Leipzig → Munich → Rome → TLV
-⛔ Rome is not a match city → INVALID
-⛔ Too many flight hops → INVALID
+❌ Invalid Examples:
+- Flights from/to Rome if there's no match there
+- Segments shown as separate timeline items
 
-✅ Good Example:
-- TLV → Munich → Leipzig → TLV → VALID (if there's one match in each city)
+✅ Valid Examples:
+- TLV → MUC → LEJ → TLV (3 full flights + 2 destinations)
+- TLV → BCN → TLV (2 full flights + 1 destination with 2 matches)
 
-Return only fully valid packages.`
+Return only fully valid and complete packages that follow all structure and rules.`
     );
-
 
 const fixtureMessages = (fixtures: ExtendedFixtureItem[]): CoreMessage[] =>
     fixtures.map((fixture) => {
-        const {id, date, venue} = fixture.fixture;
-        const range = fixture.price
-            ? `${fixture.price.min} - ${fixture.price.max} (${ENV.CURRENCY_CODE})`
-            : `unknown`;
+        const { id, date, venue } = fixture.fixture;
+        const range = fixture.price ? `${fixture.price.min} - ${fixture.price.max} (${ENV.CURRENCY_CODE})` : `unknown`;
         return message.system(
             `Match ${id}: ${fixture.teams.home.name} (logo url: ${fixture.teams.home.logo}) vs ${fixture.teams.away.name} (logo url: ${fixture.teams.away.logo}) on ${date} at ${venue.name}, ${venue.city}. Price: ${range}.`
         );
@@ -82,7 +97,12 @@ const flightMessages = (
     return flights.map((flight) => {
         const segments = flight.itineraries.flatMap((itinerary, i) =>
             itinerary.segments.map((seg) => {
-                const purpose = getFlightPurpose(seg.departure.iataCode, seg.arrival.iataCode, originIataCode, matchCities);
+                const purpose = getFlightPurpose(
+                    seg.departure.iataCode,
+                    seg.arrival.iataCode,
+                    originIataCode,
+                    matchCities
+                );
                 return `  - ${seg.departure.iataCode} → ${seg.arrival.iataCode} on ${seg.departure.at} ${purpose}`;
             })
         );
