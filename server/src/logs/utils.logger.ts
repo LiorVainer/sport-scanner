@@ -1,4 +1,4 @@
-import {getRequestContext} from '../context';
+import { getRequestContext } from '../context';
 import winston from 'winston';
 
 export const injectRequestContextFormat = winston.format((info) => {

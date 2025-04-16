@@ -1,9 +1,9 @@
-import {logger} from './logger';
-import {LogLevels, ProcessTypes} from '../models/log.model';
-import {GeneratePackagesLogParams} from './generate-packages.logger';
-import {ENV} from '../env/env.config';
-import {CustomLogLevel} from "./levels.logger";
-import {GeneratePackagesStep} from "../models/packages/package-generate-params.model";
+import { logger } from './logger';
+import { LogLevels, ProcessTypes } from '../models/log.model';
+import { GeneratePackagesLogParams } from './generate-packages.logger';
+import { ENV } from '../env/env.config';
+import { CustomLogLevel } from './levels.logger';
+import { GeneratePackagesStep } from '../models/packages/packages-generate-steps.model';
 
 export const packagesLogger = {
     info: (message: string, meta?: Record<string, any>) => {
@@ -67,8 +67,8 @@ export const packagesLogger = {
 
         logger.local.log({
             level,
-            message
-        })
+            message,
+        });
 
         logger.remote.log({
             level: level.toLowerCase() as CustomLogLevel,
@@ -104,11 +104,7 @@ export const packagesLogger = {
             },
         });
     },
-    stepError: (
-        step: GeneratePackagesStep,
-        error: unknown,
-        meta?: Partial<GeneratePackagesLogParams>
-    ) => {
+    stepError: (step: GeneratePackagesStep, error: unknown, meta?: Partial<GeneratePackagesLogParams>) => {
         const errMsg = error instanceof Error ? error.message : String(error);
 
         packagesLogger.error(`❌ [${step}] ${errMsg}`);
@@ -119,5 +115,5 @@ export const packagesLogger = {
             step,
             ...meta,
         });
-    }
+    },
 };

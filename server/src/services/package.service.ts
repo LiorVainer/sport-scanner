@@ -27,6 +27,7 @@ import {
     GeneratePackagesTimingStep,
     GeneratePackagesTimingSteps,
 } from '../models/packages/packages-generate-timings.model';
+import { LogLevels } from '../models/log.model';
 
 class PackageService {
     generatePackage = async (
@@ -37,6 +38,7 @@ class PackageService {
         const timer = new Timer<GeneratePackagesTimingStep>();
         const flightSearchErrors: { params: FlightSearchParams; error: string }[] = [];
 
+        packagesLogger.info(`📦 Generating package with params: ${JSON.stringify(params)}`);
         emit?.({
             step: GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS,
             message: 'Creating fixture search params...',
@@ -55,8 +57,6 @@ class PackageService {
         if (!searchMeta) return [];
 
         const { flightSearchParamsArray, cityIataToCityMetadata } = searchMeta;
-
-        console.dir(cityIataToCityMetadata, { depth: Infinity });
 
         emit?.({
             step: GeneratePackagesSteps.SEARCH_FLIGHTS,
@@ -100,7 +100,7 @@ class PackageService {
             return [];
         }
 
-        const { result: generatedPackagesResult } = generatedPackagesResponse;
+        const { result: generatedPackagesResult, contextMessages } = generatedPackagesResponse;
 
         emit?.({
             step: GeneratePackagesSteps.AI_GENERATED_PACKAGES,
@@ -128,7 +128,7 @@ class PackageService {
             });
             return [];
         }
-        if (invalidPackages.length > 1) {
+        if (invalidPackages.length > 0) {
             packagesLogger.warn(`⚠️ ${invalidPackages.length} packages were filtered out`, {
                 invalidPackages,
                 logId: 'invalid_packages',
@@ -139,11 +139,39 @@ class PackageService {
             });
         }
 
+        if (flightSearchErrors.length) {
+            packagesLogger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed`, { flightSearchErrors });
+        }
+
         emit?.({
             step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
             message: `✅ Finished generating ${validPackages.length} valid packages.`,
             packages: validPackages,
             durationMs: timer.total(),
+        });
+
+        packagesLogger.structured({
+            message: `🎉 Generated ${validPackages.length} valid packages in ${timer.total()}ms`,
+            level: LogLevels.SUCCESS,
+            step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
+            executionTime: timer.total(),
+            timings: timer.timings(),
+            aiContextMessagesCount: contextMessages.length,
+            aiContextMessages: contextMessages,
+            flightsSearchRequestsParams: flightSearchParamsArray,
+            flightsSearchRequestsCount: flightSearchParamsArray.length,
+            fixturesCount: fixtures.length,
+            fixtures,
+            flightsCount: allFlightOffers.length,
+            packagesGeneratedCount: generatedPackagesResult.data.length,
+            packagesValidCount: validPackages.length,
+            requestParams: params,
+            errors: flightSearchErrors.length ? { flightSearchErrors } : undefined,
+            aiTokensUsage: {
+                packageGeneration: generatedPackagesResult.usage,
+            },
+            packagesGenerated: validPackages,
+            userId,
         });
 
         return validPackages;
@@ -330,20 +358,20 @@ class PackageService {
 
         if (!flightOffers.length) {
             packagesLogger.warn(
-                `❌ No flight offers found for ${params.origin} -> ${params.destination} on ${params.dateFrom}`,
+                `❌ No flight offers found for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
                 {
                     searchParams: params,
                 }
             );
+        } else {
+            packagesLogger.info(
+                `✈️ Found ${flightOffers.length} flight offers for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
+                {
+                    flightOffers,
+                    searchParams: params,
+                }
+            );
         }
-
-        packagesLogger.info(
-            `✈️ Found ${flightOffers.length} flight offers for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
-            {
-                flightOffers,
-                searchParams: params,
-            }
-        );
 
         return flightOffers;
     }
