@@ -27,9 +27,37 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 
 /**
  * @swagger
+ * security:
+ *   - BearerAuth: []  # This indicates that Bearer token is required for authorization
+ */
+
+/**
+ * @swagger
+ * /soccer/countries:
+ *   get:
+ *     summary: Get all countries
+ *     tags: [Soccer]
+ *     security:
+ *       - BearerAuth: []  # Require Bearer token for this endpoint
+ *     responses:
+ *       200:
+ *         description: A list of countries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       500:
+ *         description: Error fetching countries
+ */
+router.get('/countries', soccerController.getCountries);
+
+/**
+ * @swagger
  * /soccer/leagues:
  *   get:
- *     summary: Get all leagues in a specific country
+ *     summary: Get all leagues in a specific country (optionally filter by league name)
  *     tags: [Soccer]
  *     security:
  *       - BearerAuth: []  # Require Bearer token for this endpoint
@@ -40,6 +68,12 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *           type: string
  *         required: true
  *         description: The country for which leagues are being retrieved
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Optional league name to filter the results (case-insensitive)
  *     responses:
  *       200:
  *         description: A list of leagues
@@ -52,6 +86,7 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *       500:
  *         description: Error fetching leagues
  */
+
 router.get('/leagues', soccerController.getLeagues);
 
 /**
