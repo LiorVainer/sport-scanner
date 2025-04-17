@@ -56,6 +56,7 @@ const SearchBar = () => {
     const [originKeyword, setOriginKeyword] = React.useState('');
     const [countryNameSearch, setCountryNameSearch] = React.useState<string | undefined>(undefined);
     const [leagueNameSearch, setLeagueNameSearch] = React.useState<string | undefined>(undefined);
+    const [teamNameSearch, setTeamNameSearch] = React.useState<string | undefined>(undefined);
 
 
     const navigate = useNavigate();
@@ -109,16 +110,16 @@ const SearchBar = () => {
         enabled: !!watchCountry,
     });
 
-    const { data: teams = [] } = useQueryOnDefinedParam(
-        'teams',
-        watchLeague?.id && selectedDate
-            ? {
-                  leagueId: watchLeague.id,
-                  season: calculateCurrentSeason(new Date(selectedDate)),
-              }
-            : undefined,
-        ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
-    );
+    const { data: teams = [] } = useQuery({
+        queryKey: ['teams', watchLeague?.id, selectedDate, teamNameSearch],
+        queryFn: () =>
+          SoccerService.getTeams(
+            watchLeague?.id!,
+            calculateCurrentSeason(new Date(selectedDate)),
+            teamNameSearch
+          ),
+        enabled: !!watchLeague?.id && !!selectedDate,
+      });
 
     const onSubmit = (values: PackagesGenerationParams) => {
         const { country, ...formValues } = values;
@@ -297,29 +298,35 @@ const SearchBar = () => {
                         <Controller
                             name="team"
                             control={control}
-                            render={({ field }) => {
-                                const selectedTeam = field.value;
-                                return (
-                                    <Select
-                                        placeholder="Select Team (Optional)"
-                                        allowClear
-                                        disabled={!watchLeague || !selectedDate}
-                                        value={selectedTeam?.id}
-                                        onChange={(val, option: any) =>
-                                            field.onChange({ id: val, name: option.children })
-                                        }
-                                        suffixIcon={<TeamOutlined />}
-                                    >
-                                        {teams.map((option) => (
-                                            <Option key={option.team.id} value={option.team.id}>
-                                                {option.team.name}
-                                            </Option>
-                                        ))}
-                                    </Select>
+                            render={({ field }) => (
+                            <AutoComplete
+                                {...field}
+                                value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
+                                allowClear
+                                disabled={!watchLeague || !selectedDate}
+                                className={classes.selectTeam}
+                                placeholder="Select Team"
+                                onSearch={(value) => setTeamNameSearch(value)}
+                                onChange={(text) => {
+                                field.onChange(text);
+                                setTeamNameSearch(text);
+                                }}
+                                onSelect={(value: string) => {
+                                setTeamNameSearch(undefined);
+                                const selected = teams.find((t) => t.team.name === value);
+                                field.onChange(
+                                    selected
+                                    ? { id: selected.team.id, name: selected.team.name }
+                                    : { id: '', name: value }
                                 );
-                            }}
+                                }}
+                                options={teams.map((t) => ({ value: t.team.name }))}
+                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                suffixIcon={<TeamOutlined />}
+                            />
+                            )}
                         />
-                    </Form.Item>
+                        </Form.Item>
                 </div>
 
                 <div className={classes.buttonGroup}>

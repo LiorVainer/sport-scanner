@@ -37,11 +37,10 @@ export const SoccerService = {
         }
     },
 
-    async getTeams({ leagueId, season }: { leagueId: number | undefined; season: number }) {        
+    async getTeams(leagueId: number | undefined, season: number, name?: string ) {        
         try {
-            console.log({leagueId});
             const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
-                params: { league: leagueId, season },
+                params: { league: leagueId, season, name },
             });
             return data;
         } catch (error) {
