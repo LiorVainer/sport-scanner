@@ -2,13 +2,9 @@ import { PackagesGenerationParams } from '../models/packages/package-generate-pa
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
-import { FixtureItem, FixtureItemWithPrice, FixturePriceRangeListSchema } from '../models/soccer/fixture.model';
+import { ExtendedFixtureItem, FixtureItem, FixturePriceRangeListSchema } from '../models/soccer/fixture.model';
 import { AIService } from '../ai/ai.service';
 import { AmadeusService } from './amadeus.service';
-import {
-    generateContextMessagesForPackageGeneration,
-    generateFilterInvalidPackagesMessages,
-} from '../ai/utils/packages-generate-context-messages';
 import { FlightOffer } from '../models/flights/flight-offer.model';
 import { Package, PackageArraySchema } from '../models/packages/package.model';
 import { ENV } from '../env/env.config';
@@ -18,7 +14,6 @@ import { Timer } from '../logs/timer';
 import { tryCatch } from '../utils/try-catch.utils';
 import { FlightSearchParams } from '../models/flights/flights-search-params.model';
 import { partitionPackagesByRules } from '../utils/package.utils';
-import { generateUserMessageForFixturePriceMap } from '../ai/utils/fixture-to-system-messages';
 import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
 import { packagesLogger } from '../logs/packages.logger';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
@@ -28,6 +23,8 @@ import {
     GeneratePackagesTimingSteps,
 } from '../models/packages/packages-generate-timings.model';
 import { LogLevels } from '../models/log.model';
+import { PackagesContextMessagesGenerator } from '../ai/messages/package.message';
+import { FixtureContextMessagesGenerator } from '../ai/messages/fixture.message';
 
 class PackageService {
     generatePackage = async (
@@ -260,7 +257,7 @@ class PackageService {
     }
 
     private async generateFlightSearchMeta(
-        fixtures: FixtureItemWithPrice[],
+        fixtures: ExtendedFixtureItem[],
         params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
         userId?: string
@@ -377,7 +374,7 @@ class PackageService {
     }
 
     private async callAiToGeneratePackages(
-        fixtures: FixtureItemWithPrice[],
+        fixtures: ExtendedFixtureItem[],
         flightOffers: FlightOffer[],
         params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
@@ -409,7 +406,7 @@ class PackageService {
 
         packagesLogger.info(`📊 Tokens used in request (prompt): ${result.usage.promptTokens}`);
         packagesLogger.info(`📊 Tokens used in response (completion): ${result.usage.completionTokens}`);
-        packagesLogger.info(`📦 AI returned ${result.data.length} packages`);
+        packagesLogger.info(`📦 AI returned ${result.data.length} packages`, { packages: result.data });
 
         return { result, contextMessages };
     }
@@ -419,7 +416,7 @@ class PackageService {
         params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>
     ) {
-        packagesLogger.info(`🧪 Validating ${packages.length} packages by hardcoded rules`);
+        packagesLogger.info(`🧪 Validating ${packages.length} packages by hardcoded rules`, { packages });
 
         timer.start(GeneratePackagesTimingSteps.FILTER_PACKAGES);
         const partitionPackages = partitionPackagesByRules(packages, params.originIATA);
@@ -431,11 +428,11 @@ class PackageService {
         return partitionPackages;
     }
 
-    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<FixtureItemWithPrice[]> => {
+    private getFixturesWithTicketPriceRange = async (fixtures: FixtureItem[]): Promise<ExtendedFixtureItem[]> => {
         const { data: priceRangeList } = await AIService.generateObject({
             schema: FixturePriceRangeListSchema,
             saveOutputToFile: true,
-            messages: generateUserMessageForFixturePriceMap(fixtures),
+            messages: FixtureContextMessagesGenerator.priceMapGenerationContext(fixtures),
         });
 
         const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
@@ -447,18 +444,20 @@ class PackageService {
     };
 
     private generatePackageCombinations = async (
-        fixtures: FixtureItemWithPrice[],
+        fixtures: ExtendedFixtureItem[],
         flightOffers: FlightOffer[],
         originIATACode: string
     ) => {
-        const contextMessages = generateContextMessagesForPackageGeneration(
+        const contextMessages = PackagesContextMessagesGenerator.create(
             fixtures,
             flightOffers,
             ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
             originIATACode
         );
 
-        packagesLogger.info(`💬 Prepared ${contextMessages.length} context messages for AI`);
+        packagesLogger.info(`💬 Prepared ${contextMessages.length} context messages for AI`, { contextMessages });
+
+        packagesLogger.info(`📦 Sending Context Messages to AI for Package Generation and waiting for response...`);
 
         const { data: result, error } = await tryCatch(
             AIService.generateObject({
@@ -472,30 +471,6 @@ class PackageService {
         if (!result || error) return { error };
 
         return { result, contextMessages };
-    };
-
-    private filterInvalidPackagesWithAI = async (packages: Package[]) => {
-        const contextMessages = generateFilterInvalidPackagesMessages(packages);
-
-        const { data: result, error } = await tryCatch(
-            AIService.generateObject({
-                schema: PackageArraySchema,
-                saveOutputToFile: true,
-                messages: contextMessages,
-                noTokensLimit: true,
-            })
-        );
-
-        if (!result || error) {
-            packagesLogger.error(`❌ Error filtering invalid packages: ${error.message}`);
-            return { error };
-        }
-
-        packagesLogger.info(
-            `🧠 AI used ${result.usage.completionTokens} tokens for ${result.data.length} valid packages`
-        );
-
-        return { result };
     };
 }
 

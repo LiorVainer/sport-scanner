@@ -1,7 +1,7 @@
-import {z} from 'zod';
-import {LeagueSchema, TeamSchema, VenueSchema} from './soccer.model';
-import {PriceRangeSchema} from '../price-range.model';
-import {ENV} from '../../env/env.config';
+import { z } from 'zod';
+import { LeagueSchema, TeamSchema, VenueSchema } from './soccer.model';
+import { PriceRangeSchema } from '../price-range.model';
+import { ENV } from '../../env/env.config';
 
 export const FixtureQueryParamsSchema = z.object({
     id: z.number().optional(),
@@ -32,44 +32,50 @@ export const FixtureQueryParamsSchema = z.object({
 
 export type FixtureQueryParams = z.infer<typeof FixtureQueryParamsSchema>;
 
-export const FixtureInfoSchema = z.object({
-    id: z.number(),
-    timezone: z.string(),
-    date: z.string(),
-    timestamp: z.number(),
-    venue: VenueSchema,
-});
+export const FixtureInfoSchema = z
+    .object({
+        id: z.number().describe('Unique fixture ID'),
+        timezone: z.string().describe('Timezone of the fixture start time'),
+        date: z.string().describe('Fixture start date and time (ISO string)'),
+        timestamp: z.number().describe('Unix timestamp of fixture date'),
+        venue: VenueSchema.describe('Venue where the fixture is played'),
+    })
+    .describe('Core fixture information');
 
-export const ExtendedFixtureInfoSchema = FixtureInfoSchema.extend({
-    venue: VenueSchema.extend({
-        countryCode: z.string().optional(),
-    }),
-});
+// TODO: Decide if we need to extend the FixtureInfoSchema with optional country code
+// export const ExtendedFixtureInfoSchema = FixtureInfoSchema.extend({
+//     venue: VenueSchema.extend({
+//         countryCode: z.string().optional().describe('ISO 2-letter country code of venue'),
+//     }),
+// }).describe('Extended fixture info including optional venue country code');
 
-export const TeamsSchema = z.object({
-    home: TeamSchema,
-    away: TeamSchema,
-});
+export const TeamsSchema = z
+    .object({
+        home: TeamSchema.describe('Home team information'),
+        away: TeamSchema.describe('Away team information'),
+    })
+    .describe('Information about both teams in a fixture');
 
 export const FixtureItemSchema = z
     .object({
         fixture: FixtureInfoSchema,
-        league: LeagueSchema,
+        league: LeagueSchema.describe('League associated with the fixture'),
         teams: TeamsSchema,
     })
-    .strip();
+    .strip()
+    .describe('Basic fixture structure combining fixture info, league, and teams');
+
+// TODO: Decide if we need to extend the FixtureItemSchema with optional price range
+// export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
+//     fixture: ExtendedFixtureInfoSchema,
+//     price: PriceRangeSchema.optional().describe(`Optional ticket price range for this fixture in ${ENV.CURRENCY_CODE}`),
+// }).describe('Fixture with extended venue info and optional ticket price');
 
 export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
-    fixture: ExtendedFixtureInfoSchema,
-    price: PriceRangeSchema.optional(),
-});
-
-export const FixtureItemWithPriceSchema = FixtureItemSchema.extend({
-    price: PriceRangeSchema.optional(),
-});
+    price: PriceRangeSchema.optional().describe(`Optional ticket price range in ${ENV.CURRENCY_CODE}`),
+}).describe('Fixture item with optional price info');
 
 export type FixtureItem = z.infer<typeof FixtureItemSchema>;
-export type FixtureItemWithPrice = z.infer<typeof FixtureItemWithPriceSchema>;
 export type ExtendedFixtureItem = z.infer<typeof ExtendedFixtureItemSchema>;
 
 export const FixtureResponseSchema = z.object({

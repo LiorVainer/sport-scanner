@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { PriceRangeSchema } from '../price-range.model';
+import { FixtureInfoSchema } from '../soccer/fixture.model';
+import { LeagueSchema, VenueSchema } from '../soccer/soccer.model.ts';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
@@ -19,7 +21,11 @@ export const FlightSchema = z.object({
     price: z.number(),
     departureDate: z.string(),
     purpose: FlightPurposeSchema,
-    searchFlightTicketsLink: z.string(),
+    searchFlightTicketsLink: z
+        .string()
+        .describe(
+            `Link to SkyScanner for searching tickets for this flight. it should include the relevant query parameters such as the origin, destination, date. For example: https://www.skyscanner.com/transport/flights/tlv/fco/2024-04-05/?adultsv2=1&cabinclass=economy&outboundaltsenabled=false&inboundaltsenabled=false&ref=home`
+        ),
 }).describe(`
   Represents a complete flight between two cities in the timeline.
   This may internally include segments (e.g. TLV → FCO → MUC), but
@@ -32,15 +38,28 @@ export const TeamSchema = z.object({
     logo: z.string().describe('URL of the team logo'),
 });
 
-export const MatchSchema = z.object({
-    id: z.number().describe('Unique identifier of the match'),
+// export const MatchSchema = z.object({
+//     id: z.number().describe('Unique identifier of the match'),
+//     homeTeam: TeamSchema.describe('Home team playing in the match'),
+//     awayTeam: TeamSchema.describe('Away team playing in the match'),
+//     league: z.string().describe('League in which the match is played'),
+//     city: z.string().describe('The city where the match takes place'),
+//     cityIataCode: z.string().describe('IATA code of the city where the match takes place'),
+//     stadium: z.string().describe('Stadium where the match takes place'),
+//     date: z.string().describe('Date of the match'),
+//     price: PriceRangeSchema.describe('Price range of the match tickets'),
+//     searchMatchTicketsLink: z
+//         .string()
+//         .describe(
+//             'URL to search for match tickets on StubHub. This should include relevant query parameters such as the home team, away team, date, or venue when applicable. For example: https://www.stubhub.com/search?q=FC%20Barcelona%20vs%20Real%20Betis%202025-04-05'
+//         ),
+// });
+
+export const MatchSchema = FixtureInfoSchema.extend({
+    league: LeagueSchema.describe('League associated with the fixture'),
     homeTeam: TeamSchema.describe('Home team playing in the match'),
     awayTeam: TeamSchema.describe('Away team playing in the match'),
-    league: z.string().describe('League in which the match is played'),
-    city: z.string().describe('The city where the match takes place'),
-    cityIataCode: z.string().describe('IATA code of the city where the match takes place'),
-    stadium: z.string().describe('Stadium where the match takes place'),
-    date: z.string().describe('Date of the match'),
+    stadium: VenueSchema.describe('Stadium where the match takes place'),
     price: PriceRangeSchema.describe('Price range of the match tickets'),
     searchMatchTicketsLink: z
         .string()

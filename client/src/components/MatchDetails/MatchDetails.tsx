@@ -31,10 +31,10 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                     </div>
                     <div className={styles.meta}>
                         <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
-                            {stadium}
+                            {stadium.name}
                         </Tag>
                         <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
-                            {league}
+                            {league.name}
                         </Tag>
                     </div>
                     <div className={styles.prices}>

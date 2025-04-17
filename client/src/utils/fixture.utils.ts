@@ -6,8 +6,7 @@ export const FixtureToFlattenedDetails = (fixture: FixtureItemWithPrice) => {
     const { home, away } = teams;
 
     return {
-        league: league.name,
-        leagueLogo: league.logo,
+        league,
         homeTeam: home,
         awayTeam: away,
         price,

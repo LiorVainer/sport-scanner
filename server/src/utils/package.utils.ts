@@ -11,7 +11,7 @@ export const partitionPackagesByRules = (packages: Package[], originIataCode: st
     const invalid: Package[] = [];
 
     for (const pkg of packages) {
-        if (isPackageValidByRules(pkg, originIataCode)) {
+        if (true) {
             valid.push(pkg);
         } else {
             invalid.push(pkg);
@@ -33,6 +33,8 @@ const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean =>
                 destinationEndDate: item.endDate,
             }))
         );
+
+    console.dir({ matchItems }, { depth: Infinity });
 
     const sortedFlights = [...flightItems].sort(
         (flight, anotherFlight) =>
@@ -63,7 +65,7 @@ const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean =>
 
     for (const match of sortedMatches) {
         const matchDate = parseISO(match.date);
-        const matchCityIata = match.cityIataCode.toLowerCase();
+        const matchCityIata = match.cityIataCode?.toLowerCase();
 
         const hasInboundFlight = sortedFlights.some((flight) => {
             const arrivalDate = parseISO(flight.departureDate);

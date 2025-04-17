@@ -16,8 +16,12 @@ export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {
     return (
         <div className={styles.infoBlock}>
             <div className={styles.fixtureList}>
-                {FixturesToFlattenedDetails(fixtures).map(({ homeTeam, awayTeam, date, price }) => (
+                {FixturesToFlattenedDetails(fixtures).map(({ homeTeam, awayTeam, date, price, league }) => (
                     <div className={styles.fixtureItem} key={date}>
+                        <div className={styles.league}>
+                            <img src={league.logo} alt={league.name} className={styles.leagueLogo} />
+                            <p>{league.name}</p>
+                        </div>
                         <div className={styles.fixtureTeams}>
                             <div className={styles.teamDetails}>
                                 <p className={styles.teamName}>{homeTeam.name}</p>

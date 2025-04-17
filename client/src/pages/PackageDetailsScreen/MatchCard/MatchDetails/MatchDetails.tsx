@@ -3,7 +3,6 @@ import { EnvironmentOutlined, ExportOutlined, TrophyOutlined } from '@ant-design
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { Match } from '@/models/packages/package.model.ts';
-import React from 'react';
 
 const { Text } = Typography;
 
@@ -32,10 +31,10 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                     </Text>
                     <div className={styles.matchMeta}>
                         <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
-                            {stadium}
+                            {stadium.name}
                         </Tag>
                         <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
-                            {league}
+                            {league.name}
                         </Tag>
                     </div>
                 </div>

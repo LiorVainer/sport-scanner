@@ -1,11 +1,11 @@
 import { AIService } from '../ai/ai.service';
-import { generateMessagesForGettingCitiesIATACodes } from '../ai/utils/cities-to-iata-messages';
 import {
     CityIataToCityMetadataCodeMap,
     CityNameToCityMetadataCodeMap,
     CityWithIATASchemaArray,
 } from '../models/flights/iata.model';
 import { AmadeusService } from './amadeus.service';
+import { CityIataContextMessagesGenerator } from '../ai/messages/city-iata.message';
 
 export const FlightsService = {
     getIATACodeByCity: async (city: string): Promise<string | null> => {
@@ -28,7 +28,7 @@ export const FlightsService = {
             const { data: iataCodes } = await AIService.generateObject({
                 schema: CityWithIATASchemaArray,
                 saveOutputToFile: true,
-                messages: generateMessagesForGettingCitiesIATACodes(cities),
+                messages: CityIataContextMessagesGenerator.create(cities),
             });
 
             const cityNameToCityMetadata = Object.fromEntries(cities.map((city, index) => [city, iataCodes[index]]));
