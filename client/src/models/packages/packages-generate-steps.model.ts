@@ -1,4 +1,4 @@
-import {ValueOf} from "../../types/general.types";
+import { ValueOf } from '@/types/common.types.ts';
 
 export const GeneratePackagesSteps = {
     GENERATE_SEARCH_FIXTURE_PARAMS: 'generate_search_fixture_params',

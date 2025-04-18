@@ -65,6 +65,8 @@ export const DestinationSchema = z.object({
     matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
 });
 
+export type Destination = z.infer<typeof DestinationSchema>;
+
 export const FlightItemSchema = FlightSchema.extend({
     type: z
         .literal(PackageTimelineItemType.FLIGHT)

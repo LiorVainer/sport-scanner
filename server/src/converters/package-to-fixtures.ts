@@ -2,12 +2,17 @@ import { PackagesGenerationParams } from '../models/packages/package-generate-pa
 import { FixtureQueryParams } from '../models/soccer/fixture.model';
 import { calculateCurrentSeason } from '../utils/soccer.utils';
 
-export const convertPackageGenerateParamsToFixtureQueryParams = (
+export const convertPackageGenerateParamsToFixturesSearchQueryParams = (
     params: PackagesGenerationParams
-): FixtureQueryParams => ({
-    from: params.date?.from ? new Date(params.date.from).toISOString().slice(0, 10) : undefined,
-    to: params.date?.to ? new Date(params.date.to).toISOString().slice(0, 10) : undefined,
-    // league: params.league ? params.league.id : undefined,
-    team: params.team ? params.team.id : undefined,
-    season: calculateCurrentSeason(new Date()),
-});
+): FixtureQueryParams[] => {
+    console.log({ params });
+    const from = params.date?.from?.toISOString().slice(0, 10);
+    const to = params.date?.to?.toISOString().slice(0, 10);
+    const season = calculateCurrentSeason(new Date());
+
+    return params.teams
+        ? params.teams?.map((team) => ({ from, to, team: team.id, season }))
+        : params.league
+          ? [{ from, to, league: params.league.id, season }]
+          : [];
+};

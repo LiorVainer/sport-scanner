@@ -1,7 +1,8 @@
 import { PackagesGenerationParams } from '../models/packages/package-generate-params.model';
+// @ts-ignore
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
-import { convertPackageGenerateParamsToFixtureQueryParams } from '../converters/package-to-fixtures';
+import { convertPackageGenerateParamsToFixturesSearchQueryParams } from '../converters/package-to-fixtures';
 import { ExtendedFixtureItem, FixtureItem, FixturePriceRangeListSchema } from '../models/soccer/fixture.model';
 import { AIService } from '../ai/ai.service';
 import { AmadeusService } from './amadeus.service';
@@ -29,7 +30,6 @@ import { FixtureContextMessagesGenerator } from '../ai/messages/fixture.message'
 class PackageService {
     generatePackage = async (
         params: PackagesGenerationParams,
-        userId?: string,
         emit?: (update: PackagesGenerationProgressUpdate) => void
     ): Promise<Package[]> => {
         const timer = new Timer<GeneratePackagesTimingStep>();
@@ -42,7 +42,7 @@ class PackageService {
             dateRange: params.date,
         });
 
-        const fixtures = await this.fetchFixturesWithPrice(params, timer, userId, emit);
+        const fixtures = await this.fetchFixturesWithPrice(params, timer, emit);
         if (!fixtures) return [];
 
         emit?.({
@@ -50,7 +50,7 @@ class PackageService {
             message: 'Generating flight search parameters...',
         });
 
-        const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer, userId);
+        const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer);
         if (!searchMeta) return [];
 
         const { flightSearchParamsArray, cityIataToCityMetadata } = searchMeta;
@@ -85,13 +85,7 @@ class PackageService {
             message: 'Generating packages...',
         });
 
-        const generatedPackagesResponse = await this.callAiToGeneratePackages(
-            fixtures,
-            allFlightOffers,
-            params,
-            timer,
-            userId
-        );
+        const generatedPackagesResponse = await this.callAiToGeneratePackages(fixtures, allFlightOffers, params, timer);
         if (!generatedPackagesResponse) {
             packagesLogger.error('❌ Error generating packages');
             return [];
@@ -168,7 +162,6 @@ class PackageService {
                 packageGeneration: generatedPackagesResult.usage,
             },
             packagesGenerated: validPackages,
-            userId,
         });
 
         return validPackages;
@@ -177,76 +170,77 @@ class PackageService {
     private async fetchFixturesWithPrice(
         params: PackagesGenerationParams,
         timer: Timer<GeneratePackagesTimingStep>,
-        userId?: string,
         emit?: (update: PackagesGenerationProgressUpdate) => void
-    ) {
+    ): Promise<ExtendedFixtureItem[] | null> {
         packagesLogger.info(`🔍 Starting fixture search with filters: ${JSON.stringify(params)}`);
 
         timer.start(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
-        const { data: queryParams, error: queryError } = await tryCatch(
-            Promise.resolve(convertPackageGenerateParamsToFixtureQueryParams(params))
+        const { data: fixturesSearchQueryParamsArray, error: conversionError } = await tryCatch(
+            Promise.resolve(convertPackageGenerateParamsToFixturesSearchQueryParams(params))
         );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS);
 
-        packagesLogger.info(
-            `⏱️ Query conversion took ${timer.stepDuration(GeneratePackagesTimingSteps.GENERATE_SEARCH_FIXTURE_PARAMS)}ms`
-        );
-
-        if (!queryParams || queryError) {
-            packagesLogger.stepError(GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS, queryError, {
+        if (!fixturesSearchQueryParamsArray || conversionError) {
+            packagesLogger.stepError(GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS, conversionError, {
                 requestParams: params,
                 timings: timer.timings(),
-                userId,
             });
             return null;
         }
 
-        packagesLogger.info(`📡 Fetching fixtures with query: ${JSON.stringify(queryParams)}`);
+        packagesLogger.info(`📡 Fetching fixtures with ${fixturesSearchQueryParamsArray.length} search queries`);
         emit?.({
             step: GeneratePackagesSteps.FETCH_FIXTURES,
             message: 'Fetching fixtures...',
+            fixturesSearchQueryParamsArray,
         });
 
         timer.start(GeneratePackagesTimingSteps.FETCH_FIXTURES);
-        const { data: fixtures, error: fixturesError } = await tryCatch(soccerService.getFixtures(queryParams));
-        timer.stop(GeneratePackagesTimingSteps.FETCH_FIXTURES);
 
-        packagesLogger.info(
-            `⏱️ Fetch fixtures took ${timer.stepDuration(GeneratePackagesTimingSteps.FETCH_FIXTURES)}ms`
+        const results = await Bluebird.map(
+            fixturesSearchQueryParamsArray,
+            async (queryParams) => {
+                const { data: fixtures, error } = await tryCatch(soccerService.getFixtures(queryParams));
+                if (error) {
+                    packagesLogger.warn(`⚠️ Error fetching fixtures with query: ${JSON.stringify(queryParams)}`, {
+                        error,
+                    });
+                    return [];
+                }
+                return fixtures ?? [];
+            },
+            { concurrency: ENV.FIXTURE_SEARCH_CONCURRENCY_LIMIT || 3 }
         );
 
-        if (!fixtures || fixturesError) {
-            packagesLogger.stepError(GeneratePackagesSteps.FETCH_FIXTURES, fixturesError, {
-                timings: timer.timings(),
-                userId,
-            });
-            return null;
-        }
+        timer.stop(GeneratePackagesTimingSteps.FETCH_FIXTURES);
 
-        packagesLogger.info(`📅 Found ${fixtures.length} fixtures`);
+        const allFixtures = results.flat();
+        const uniqueFixturesMap = new Map<number, FixtureItem>();
+        allFixtures.forEach((fixture) => uniqueFixturesMap.set(fixture.fixture.id, fixture));
+        const uniqueFixtures = Array.from(uniqueFixturesMap.values());
+
+        packagesLogger.info(`📅 Found ${uniqueFixtures.length} unique fixtures`);
         emit?.({
             step: GeneratePackagesSteps.FOUND_FIXTURES,
-            message: `Found ${fixtures.length} fixtures.`,
-            fixtures,
+            message: `Found ${uniqueFixtures.length} fixtures.`,
+            fixtures: uniqueFixtures,
         });
 
         timer.start(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
-        const { data: enriched, error: priceError } = await tryCatch(this.getFixturesWithTicketPriceRange(fixtures));
+        const { data: enriched, error: priceError } = await tryCatch(
+            this.getFixturesWithTicketPriceRange(uniqueFixtures)
+        );
         timer.stop(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES);
 
         if (!enriched || priceError) {
             packagesLogger.stepError(GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES, priceError, {
-                fixturesCount: fixtures.length,
+                fixturesCount: uniqueFixtures.length,
                 timings: timer.timings(),
-                userId,
             });
             return null;
         }
 
         packagesLogger.info(`💰 Fixtures enriched with price ranges`);
-        packagesLogger.info(
-            `⏱️ Price enrichment took ${timer.stepDuration(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES)}ms`
-        );
         emit?.({
             step: GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES,
             message: `Enriched fixtures with price ranges.`,
@@ -259,8 +253,7 @@ class PackageService {
     private async generateFlightSearchMeta(
         fixtures: ExtendedFixtureItem[],
         params: PackagesGenerationParams,
-        timer: Timer<GeneratePackagesTimingStep>,
-        userId?: string
+        timer: Timer<GeneratePackagesTimingStep>
     ) {
         timer.start(GeneratePackagesTimingSteps.GENERATE_SEARCH_PARAMS);
         const { data, error } = await tryCatch(generateFlightSearchParamsForFixtures(fixtures, params));
@@ -269,7 +262,6 @@ class PackageService {
         if (!data || error) {
             packagesLogger.stepError(GeneratePackagesSteps.GENERATE_SEARCH_PARAMS, error, {
                 timings: timer.timings(),
-                userId,
             });
             return null;
         }
@@ -377,8 +369,7 @@ class PackageService {
         fixtures: ExtendedFixtureItem[],
         flightOffers: FlightOffer[],
         params: PackagesGenerationParams,
-        timer: Timer<GeneratePackagesTimingStep>,
-        userId?: string
+        timer: Timer<GeneratePackagesTimingStep>
     ) {
         packagesLogger.info(`🧠 Generating packages from ${fixtures.length} fixtures & ${flightOffers.length} flights`);
 
@@ -399,7 +390,6 @@ class PackageService {
             packagesLogger.stepError(GeneratePackagesSteps.GENERATE_PACKAGES, error, {
                 flightsCount: flightOffers.length,
                 timings: timer.timings(),
-                userId,
             });
             return null;
         }

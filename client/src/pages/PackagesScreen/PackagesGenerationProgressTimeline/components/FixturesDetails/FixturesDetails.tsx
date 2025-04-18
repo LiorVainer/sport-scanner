@@ -2,10 +2,10 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './fixtures-details.module.scss';
 import { FixturesToFlattenedDetails } from '@/utils/fixture.utils.ts';
 import moment from 'moment';
-import { FixtureItem } from '@/models/soccer/fixture.model';
+import { ExtendedFixtureItem } from '@/models/soccer/fixture.model';
 
 interface FixtureDetailsProps {
-    fixtures: FixtureItem[];
+    fixtures: ExtendedFixtureItem[];
 }
 
 export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {

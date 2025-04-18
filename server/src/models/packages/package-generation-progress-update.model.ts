@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { PackageSchema } from './package.model';
 import { DateRangeSchema } from './package-generate-params.model';
-import { ExtendedFixtureItemSchema, FixtureItemSchema } from '../soccer/fixture.model';
+import { ExtendedFixtureItemSchema, FixtureItemSchema, FixtureQueryParamsSchema } from '../soccer/fixture.model';
 import { GeneratePackagesSteps } from './packages-generate-steps.model';
 import { FlightSearchParamsSchema } from '../flights/flights-search-params.model';
 import { CityIataToCityMetadataCodeMapSchema } from '../flights/iata.model';
@@ -17,6 +17,7 @@ const GenerateSearchFixtureParamsSchema = BaseUpdateSchema.extend({
 
 const FetchFixturesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FETCH_FIXTURES),
+    fixturesSearchQueryParamsArray: FixtureQueryParamsSchema.array(),
 });
 
 const FoundFixturesSchema = BaseUpdateSchema.extend({

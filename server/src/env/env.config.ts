@@ -55,6 +55,11 @@ export const EnvSchema = z.object({
         .int()
         .min(1, { message: 'FLIGHT_SEARCH_CONCURRENCY_LIMIT must be a positive integer' }),
 
+    FIXTURE_SEARCH_CONCURRENCY_LIMIT: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'FIXTURE_SEARCH_CONCURRENCY_LIMIT must be a positive integer' }),
+
     PAGE_DEFAULT: z.coerce.number().optional(),
     LIMIT_DEFAULT: z.coerce.number().optional(),
     TTL_FOR_HISTORY_DOCUMENTS: z.coerce.number().default(60 * 60 * 24 * 14),

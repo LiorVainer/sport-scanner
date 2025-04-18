@@ -1,5 +1,5 @@
 import { Button, Tag, Typography } from 'antd';
-import { EnvironmentOutlined, ExportOutlined, TrophyOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, ExportOutlined } from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { Match } from '@/models/packages/package.model.ts';
@@ -33,9 +33,10 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                         <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
                             {stadium.name}
                         </Tag>
-                        <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
-                            {league.name}
-                        </Tag>
+                        <div className={styles.leagueTag}>
+                            <img src={league.logo} alt={league.name} className={styles.leagueLogo} />
+                            <p>{league.name}</p>
+                        </div>
                     </div>
                 </div>
                 <img src={awayTeamImage} alt={awayTeam} className={styles.matchImage} />

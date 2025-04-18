@@ -6,8 +6,12 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const FixtureMessageParser = {
     basicDetails: (fixture: ExtendedFixtureItem): string => {
-        const { id, date, venue } = fixture.fixture;
-        return `Match ${id}: ${fixture.teams.home.name} (logo url: ${fixture.teams.home.logo}) vs ${fixture.teams.away.name} (logo url: ${fixture.teams.away.logo}) on ${date} at ${venue.name}, ${venue.city}`;
+        const { id, date } = fixture.fixture;
+        return `Match ${id}: ${fixture.teams.home.name} (logo url: ${fixture.teams.home.logo}) vs ${fixture.teams.away.name} (logo url: ${fixture.teams.away.logo}) on ${date}`;
+    },
+    venueDetails: (fixture: ExtendedFixtureItem): string => {
+        const { name, city, country, image, capacity } = fixture.fixture.venue;
+        return `Venue: ${name} (${city}, ${country}) (capacity: ${capacity}), image url: ${image}`;
     },
     leagueDetails: (fixture: ExtendedFixtureItem): string => {
         const { name, logo, round } = fixture.league;
@@ -22,10 +26,11 @@ const FixtureMessageParser = {
 export const FixtureContextMessagesGenerator = {
     create: (fixture: ExtendedFixtureItem): CoreMessage => {
         const basicDetails = FixtureMessageParser.basicDetails(fixture);
+        const venueDetails = FixtureMessageParser.venueDetails(fixture);
         const leagueDetails = FixtureMessageParser.leagueDetails(fixture);
         const priceRange = FixtureMessageParser.priceRange(fixture);
 
-        return message.system([basicDetails, leagueDetails, priceRange].join('\n'));
+        return message.system([basicDetails, venueDetails, leagueDetails, priceRange].join('\n'));
     },
     json: (fixture: ExtendedFixtureItem): CoreMessage => {
         return message.system(JSON.stringify(fixture, null, 2));

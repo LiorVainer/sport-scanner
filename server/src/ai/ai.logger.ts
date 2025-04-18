@@ -81,7 +81,6 @@ class AILoggerProvider {
         const fileName = `${AIServiceMethodToKebabCase[method]}-${formatDate(new Date(), DATE_AND_TIME_JSON_FORMAT)}.json`;
         const outputFullPath = `${outputFolderPath ?? BASE_OUTPUT_FOLDER_PATH}/${fileName}`;
 
-        console.log(output, outputFullPath);
         fs.writeFileSync(outputFullPath, JSON.stringify(output));
     }
 

@@ -11,30 +11,24 @@ export const partitionPackagesByRules = (packages: Package[], originIataCode: st
     const invalid: Package[] = [];
 
     for (const pkg of packages) {
-        if (true) {
-            valid.push(pkg);
-        } else {
-            invalid.push(pkg);
-        }
+        isPackageValidByRules(pkg, originIataCode) ? valid.push(pkg) : invalid.push(pkg);
     }
 
     return { valid, invalid };
 };
 
 const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean => {
-    const flightItems = pkg.timeline.filter((item) => item.type === 'flight').map((item) => ({ ...item }));
+    const flightItems = pkg.timeline.filter((item) => item.type === 'flight');
+    const destinationItems = pkg.timeline.filter((item) => item.type === 'destination');
 
-    const matchItems = pkg.timeline
-        .filter((item) => item.type === 'destination')
-        .flatMap((item) =>
-            item.matches.map((match) => ({
-                ...match,
-                destinationStartDate: item.startDate,
-                destinationEndDate: item.endDate,
-            }))
-        );
-
-    console.dir({ matchItems }, { depth: Infinity });
+    const matchItems = destinationItems.flatMap((destination) =>
+        destination.matches.map((match) => ({
+            ...match,
+            destinationStartDate: destination.startDate,
+            destinationEndDate: destination.endDate,
+            cityIataCode: destination.cityIataCode,
+        }))
+    );
 
     const sortedFlights = [...flightItems].sort(
         (flight, anotherFlight) =>
@@ -49,34 +43,38 @@ const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean =>
     const lastFlight = sortedFlights[sortedFlights.length - 1];
 
     if (!firstFlight || firstFlight.origin.iataCode !== originIataCode) return false;
-
     if (!lastFlight || lastFlight.destination.iataCode !== originIataCode) return false;
 
+    // Flight order must be chronological
     for (let i = 1; i < sortedFlights.length; i++) {
         const prev = parseISO(sortedFlights[i - 1].departureDate);
         const current = parseISO(sortedFlights[i].departureDate);
         if (isBefore(current, prev)) return false;
     }
 
-    const lastMatch = sortedMatches[sortedMatches.length - 1];
-    if (!lastMatch || isBefore(parseISO(lastFlight.departureDate), parseISO(lastMatch.date))) {
-        return false;
+    // Matches must be before return flight
+    if (sortedMatches.length > 0) {
+        const lastMatch = sortedMatches[sortedMatches.length - 1];
+        if (isBefore(parseISO(lastFlight.departureDate), parseISO(lastMatch.date))) return false;
     }
 
+    // Each match must have an inbound flight arriving before it
     for (const match of sortedMatches) {
         const matchDate = parseISO(match.date);
-        const matchCityIata = match.cityIataCode?.toLowerCase();
+        const matchCityIata = match.cityIataCode.toLowerCase();
 
         const hasInboundFlight = sortedFlights.some((flight) => {
             const arrivalDate = parseISO(flight.departureDate);
             const destCityIata = flight.destination.iataCode.toLowerCase();
-            return (
-                (destCityIata.includes(matchCityIata) || matchCityIata.includes(destCityIata)) &&
-                isBefore(arrivalDate, matchDate)
-            );
+            return destCityIata === matchCityIata && isBefore(arrivalDate, matchDate);
         });
 
         if (!hasInboundFlight) return false;
+    }
+
+    // Each destination must include at least one match
+    for (const destination of destinationItems) {
+        if (!destination.matches || destination.matches.length === 0) return false;
     }
 
     return true;

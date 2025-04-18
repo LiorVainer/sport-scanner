@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { PriceRangeSchema } from '../price-range.model';
 import { FixtureInfoSchema } from '../soccer/fixture.model';
-import { LeagueSchema, VenueSchema } from '../soccer/soccer.model.ts';
+import { LeagueSchema, VenueSchema } from '../soccer/soccer.model';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),

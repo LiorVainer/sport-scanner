@@ -7,41 +7,41 @@ export const RulesContextMessageGenerator = {
 
 Each package must include:
 - title, description, startDate, endDate
-- a timeline: chronological array of **flight** and **destination** items
-- flights include origin/destination, departureDate, purpose (departure, return, connecting), price, ticket link
-- destinations must match the city of each match
-- total price breakdown: flightsPrice + matchesPrice
+- a timeline array: consists of **full flights** and **destination blocks**
+- destinations include one or more matches with ticket prices
+- flights include origin, destination, departure date, purpose, price, and ticket link
+- a total price breakdown (flightsPrice + matchesPrice)
 
 📦 Timeline Structure:
-- Each **flight** represents a complete flight offer between two cities (e.g. TLV → MUC)
-- DO NOT include flight segments as separate timeline items
-- Each **destination** should list matches that occur in that specific city only
-- Timeline should alternate flights and destinations in order
+- Timeline is a **chronological array** of 'flight' and 'destination' items
+- ✈️ Each flight must represent a **complete flight offer** between cities (e.g. TLV → MUC)
+- ❌ DO NOT include individual segments like TLV → FCO and FCO → MUC
+- 🛬 Each destination must include at least one match with valid ticket data
+- Destinations must reflect actual cities where matches are played
 
-⚠️ HARD RULES (must follow):
-- Start with a flight from user's origin (e.g. TLV)
-- End with a return flight to the origin
-- Each visited city must have a match
-- Flights must arrive **before** any scheduled match kickoff
-- Never include matches from different cities in the same destination
-- Timeline must be chronological (no backward travel)
+⚠️ HARD RULES (MUST follow):
+- Packages must start with a flight from the user's origin (e.g. TLV)
+- Packages must end with a return flight to the user's origin (e.g. TLV)
+- No flights to cities with no matches
+- Each city visited must be a match city
+- Each destination in the timeline must contain one or more matches
+- Every match must be reachable by a flight that arrives **before** kickoff
+- Flights must follow chronological order
 
-✈️ Match Combination Rules:
-- 1 match → TLV → match city → TLV (2 flights + 1 destination)
-- 2 matches in same city → same as above
-- 2 matches in different cities → TLV → city1 → city2 → TLV (3 flights + 2 destinations)
+✈️ Match Rules:
+- 1 match (any city): TLV → match → TLV (2 flights + 1 destination)
+- 2 matches in same city: TLV → city → TLV (2 flights + 1 destination)
+- 2 matches in different cities: TLV → city1 → city2 → TLV (3 flights + 2 destinations)
 
 ❌ Invalid Examples:
-- TLV → Munich → Rome → TLV (if Rome has no match)
-- A destination labeled "Barcelona" containing a match from Seville
-- Showing TLV → FCO and FCO → MUC as separate flights
+- Flights from/to Rome if there's no match there
+- Destinations that do not contain any matches
+- Segments shown as separate timeline items
 
 ✅ Valid Examples:
-- TLV → Munich → Leipzig → TLV
-- TLV → Barcelona → TLV (with 2 matches in Barcelona)
-- TLV → Barcelona → Seville → TLV (if both cities host matches)
+- TLV → MUC → LEJ → TLV (3 full flights + 2 destinations)
+- TLV → BCN → TLV (2 full flights + 1 destination with 2 matches)
 
-Return only complete and rule-abiding packages.
-`
+Return only fully valid and complete packages that follow all structure and rules.`
         ),
 };
