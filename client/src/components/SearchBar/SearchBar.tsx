@@ -253,6 +253,7 @@ const SearchBar = () => {
                                     onSelect={(value) => {
                                         setCountryNameSearch(undefined);
                                         resetField('league');
+                                        setLeagueNameSearch(undefined);
                                         resetField('team');
                                         field.onChange(value);
                                     }}
@@ -311,37 +312,33 @@ const SearchBar = () => {
                             name="team"
                             control={control}
                             render={({ field }) => (
-                            <AutoComplete
-                                {...field}
-                                value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
+                            <Select
+                                mode="multiple"
+                                showSearch
                                 allowClear
+                                maxTagCount="responsive"
                                 className={classes.selectTeam}
-                                placeholder="Select Team"
+                                placeholder="Select up to 5 Teams"
+                                disabled={!watchLeague || !selectedDate}
                                 onSearch={(value) => setTeamNameSearch(value)}
-                                onChange={(text) => {
-                                field.onChange(text);
-                                setTeamNameSearch(text);
+                                onChange={(values: string[]) => {
+                                if (values.length > 5) return; // Prevent selecting more than 5
+                                const selected = values
+                                    .map((val) => teams.find((t) => t.team.name === val))
+                                    .filter(Boolean)
+                                    .map((t) => ({ id: t!.team.id, name: t!.team.name }));
+                                field.onChange(selected);
                                 }}
-                                onSelect={(value: string) => {
-                                setTeamNameSearch(undefined);
-                                const selected = teams.find((t) => t.team.name === value);
-                                field.onChange(
-                                    selected
-                                    ? { id: selected.team.id, name: selected.team.name }
-                                    : { id: '', name: value }
-                                );
-                                }}
-                                options={
-                                    !teamNameSearch && !watchLeague && !watchCountry
-                                        ? defaultTeams 
-                                        : teams.map((t) => ({ value: t.team.name }))
-                                }
+                                value={field.value?.map((team) => team.name) ?? []}
+                                options={teams.map((t) => ({ value: t.team.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
+                                filterOption={false} // disables default filtering, uses onSearch
                             />
                             )}
                         />
                         </Form.Item>
+
                 </div>
 
                 <div className={classes.buttonGroup}>

@@ -24,10 +24,13 @@ export const PackagesGenerationParamsSchema = z.object({
         })
         .optional(),
     team: z
-        .object({
+        .array(
+          z.object({
             id: z.number(),
             name: z.string(),
-        })
+          })
+        )
+        .max(5, 'You can select up to 5 teams')
         .optional(),
 });
 
