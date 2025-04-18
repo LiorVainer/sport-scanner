@@ -11,7 +11,6 @@ import {
     TrophyOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
 import { calculateCurrentSeason } from '@/utils/date.utils';
 import { Controller, useForm } from 'react-hook-form';
@@ -110,6 +109,11 @@ const SearchBar = () => {
         enabled: !!watchCountry,
     });
 
+    const topLeagues: string[] = ['La Liga', 'Premier League', 'Bundesliga', 'Serie A', 'Ligue 1'];
+    const defaultLeagues = topLeagues.map((league) => ({
+        value: league,
+    }));
+
     const { data: teams = [] } = useQuery({
         queryKey: ['teams', watchLeague?.id, selectedDate, teamNameSearch],
         queryFn: () =>
@@ -120,6 +124,11 @@ const SearchBar = () => {
           ),
         enabled: !!watchLeague?.id && !!selectedDate,
       });
+
+    const topTeams: string[] = ['Real Madrid', 'Barcelona', 'Arsenal', 'Napoli', 'Manchester City'];
+    const defaultTeams = topTeams.map((team) => ({
+        value: team,
+    }));
 
     const onSubmit = (values: PackagesGenerationParams) => {
         const { country, ...formValues } = values;
@@ -268,7 +277,6 @@ const SearchBar = () => {
                                 {...field}
                                 value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
                                 allowClear
-                                disabled={!watchCountry}
                                 className={classes.selectLeague}
                                 placeholder="Select League"
                                 onSearch={(value) => setLeagueNameSearch(value)}
@@ -286,7 +294,11 @@ const SearchBar = () => {
                                   );
                                   resetField('team');
                                 }}
-                                options={leagues.map((league) => ({ value: league.league.name }))}
+                                options={
+                                    !leagueNameSearch && !watchCountry
+                                        ? defaultLeagues 
+                                        : leagues.map((league) => ({ value: league.league.name }))
+                                }
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TrophyOutlined />}
                               />
@@ -303,7 +315,6 @@ const SearchBar = () => {
                                 {...field}
                                 value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
                                 allowClear
-                                disabled={!watchLeague || !selectedDate}
                                 className={classes.selectTeam}
                                 placeholder="Select Team"
                                 onSearch={(value) => setTeamNameSearch(value)}
@@ -320,7 +331,11 @@ const SearchBar = () => {
                                     : { id: '', name: value }
                                 );
                                 }}
-                                options={teams.map((t) => ({ value: t.team.name }))}
+                                options={
+                                    !teamNameSearch && !watchLeague && !watchCountry
+                                        ? defaultTeams 
+                                        : teams.map((t) => ({ value: t.team.name }))
+                                }
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
                             />
