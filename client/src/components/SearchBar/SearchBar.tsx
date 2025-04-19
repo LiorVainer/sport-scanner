@@ -70,7 +70,8 @@ const SearchBar = () => {
         control,
         handleSubmit,
         watch,
-        formState: { isValid, isDirty },
+        trigger,
+        formState: { isValid, isDirty, errors },
         reset,
         resetField,
     } = useForm<PackagesGenerationParams>({
@@ -78,14 +79,12 @@ const SearchBar = () => {
         defaultValues: storedSearchParams,
     });
 
+    console.log(errors);
+
     const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeam = watch('team');
-
-    console.log(watchLeague);
-    console.log(watchTeam);
-
 
     const selectedDate = watchDate?.from;
 
@@ -104,21 +103,11 @@ const SearchBar = () => {
         enabled: !!countryNameSearch,
     });
 
-    const topFootballCountries: string[] = ['Spain', 'England', 'Germany', 'Italy', 'France'];
-    const defaultCountryOptions = topFootballCountries.map((country) => ({
-        value: country,
-    }));
-
     const { data: leagues = [] } = useQuery({
         queryKey: ['leagues', watchCountry, leagueNameSearch],
         queryFn: () => SoccerService.getLeagues(watchCountry, leagueNameSearch),
         enabled: !!watchCountry,
     });
-
-    const topLeagues: string[] = ['La Liga', 'Premier League', 'Bundesliga', 'Serie A', 'Ligue 1'];
-    const defaultLeagues = topLeagues.map((league) => ({
-        value: league,
-    }));
 
     const { data: teams = [] } = useQuery({
         queryKey: ['teams', teamNameSearch],
@@ -133,7 +122,7 @@ const SearchBar = () => {
 
     const onSubmit = (values: PackagesGenerationParams) => {
         const { country, ...formValues } = values;
-        setStoredSearchParams(values);
+        setStoredSearchParams(defaultGenerateParamsRef.current);
         navigate(ROUTES.PACKAGES);
         fetchPackages(formValues);
     };
@@ -149,6 +138,8 @@ const SearchBar = () => {
         });
         return () => subscription.unsubscribe();
     }, [watch]);
+
+    console.log({ isValid, watchAll: watch() })
 
     return (
         <div className={classes.main}>
@@ -259,11 +250,7 @@ const SearchBar = () => {
                                         resetField('team');
                                         field.onChange(value);
                                     }}
-                                    options={
-                                        countryNameSearch
-                                            ? countries.map((country) => ({ value: country.name }))
-                                            : defaultCountryOptions
-                                    }
+                                    options={countries.map((country) => ({ value: country.name }))}
                                     notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                     suffixIcon={<EnvironmentOutlined />}
                                 />
@@ -282,11 +269,13 @@ const SearchBar = () => {
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
-                                disabled={!!watchTeam && watchTeam?.length !== 0}
+                                disabled={!watchCountry || !!watchTeam && watchTeam?.length !== 0}
                                 onSearch={(value) => setLeagueNameSearch(value)}
                                 onChange={(text) => {
-                                  field.onChange(text);
-                                  setLeagueNameSearch(text);
+                                    if(text !== "") {
+                                        field.onChange(text);
+                                        setLeagueNameSearch(text);
+                                    }
                                 }}
                                 onSelect={(value: string) => {
                                   setLeagueNameSearch(undefined);
@@ -298,11 +287,7 @@ const SearchBar = () => {
                                   );
                                   resetField('team');
                                 }}
-                                options={
-                                    !leagueNameSearch && !watchCountry
-                                        ? defaultLeagues 
-                                        : leagues.map((league) => ({ value: league.league.name }))
-                                }
+                                options={ leagues.map((league) => ({ value: league.league.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TrophyOutlined />}
                               />
