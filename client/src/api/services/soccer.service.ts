@@ -37,15 +37,15 @@ export const SoccerService = {
         }
     },
 
-    async getTeams(leagueId: number | undefined, season: number, name?: string ) {        
+    async getTeams(name: string) {
         try {
-            const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
-                params: { league: leagueId, season, name },
-            });
-            return data;
+          const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
+            params: { name },
+          });
+          return data;
         } catch (error) {
-            console.error('Error fetching teams:', (error as any).message);
-            throw error;
+          console.error('Error fetching teams:', (error as any).message);
+          throw error;
         }
     },
 } satisfies Record<string, (...args: any[]) => Promise<any>>;

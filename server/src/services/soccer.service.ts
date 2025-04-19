@@ -66,6 +66,16 @@ export const soccerService = {
         return data.response;
     },
 
+    getTeamsByName: async (name: string) => {
+        const { data } = await soccerApiClient.get<{
+            response: { team: Team; venue: Venue }[];
+            errors: string[];
+        }>('/teams', { params: { search: name } });
+    
+        if (data.errors.length) throw new Error('Error searching teams by name');
+        return data.response;
+    },
+
     getFixtures: async (params: FixtureQueryParams) => {
         const validatedApiParams = FixtureQueryParamsSchema.safeParse(params);
 

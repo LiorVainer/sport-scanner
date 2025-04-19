@@ -47,19 +47,16 @@ export const soccerController = {
 
     getTeams: async (req: Request, res: Response): Promise<any> => {
         try {
-            const league = req.query.league as string;
-            const season = req.query.season as string;
-            const name = req.query.name as string;
-            const teams = await soccerService.getTeamsByLeague(league as string, season as string);
-
-            if (name && name !== "") {
-                const regex = new RegExp(name, 'i');
-                const filteredTeams = teams.filter((team) => regex.test(team.team.name));
-                return res.status(200).json(filteredTeams);
+            const name = req.query.name as string | undefined;
+    
+            if (!name || name.length < 3) {
+                return res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
             }
+    
+            const teams = await soccerService.getTeamsByName(name);
             res.status(200).json(teams);
         } catch (e) {
-            res.status(500).json({message: 'Error fetching teams', error: e});
+            res.status(500).json({ message: 'Error fetching teams', error: e });
         }
     },
 };

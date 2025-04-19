@@ -81,6 +81,12 @@ const SearchBar = () => {
     const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
+    const watchTeam = watch('team');
+
+    console.log(watchLeague);
+    console.log(watchTeam);
+
+
     const selectedDate = watchDate?.from;
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
@@ -115,20 +121,15 @@ const SearchBar = () => {
     }));
 
     const { data: teams = [] } = useQuery({
-        queryKey: ['teams', watchLeague?.id, selectedDate, teamNameSearch],
-        queryFn: () =>
-          SoccerService.getTeams(
-            watchLeague?.id!,
-            calculateCurrentSeason(new Date(selectedDate)),
-            teamNameSearch
-          ),
-        enabled: !!watchLeague?.id && !!selectedDate,
+        queryKey: ['teams', teamNameSearch],
+        queryFn: () => {
+          if (!teamNameSearch || teamNameSearch.length < 3) return [];
+          return SoccerService.getTeams(teamNameSearch);
+        },
+        enabled: !!teamNameSearch && teamNameSearch.length >= 3,
       });
 
-    const topTeams: string[] = ['Real Madrid', 'Barcelona', 'Arsenal', 'Napoli', 'Manchester City'];
-    const defaultTeams = topTeams.map((team) => ({
-        value: team,
-    }));
+    
 
     const onSubmit = (values: PackagesGenerationParams) => {
         const { country, ...formValues } = values;
@@ -249,6 +250,7 @@ const SearchBar = () => {
                                     allowClear
                                     className={classes.selectCountry}
                                     placeholder="Select Country"
+                                    disabled={!!watchTeam && watchTeam?.length !== 0}
                                     onSearch={(value) => setCountryNameSearch(value)}
                                     onSelect={(value) => {
                                         setCountryNameSearch(undefined);
@@ -280,6 +282,7 @@ const SearchBar = () => {
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
+                                disabled={!!watchTeam && watchTeam?.length !== 0}
                                 onSearch={(value) => setLeagueNameSearch(value)}
                                 onChange={(text) => {
                                   field.onChange(text);
@@ -319,7 +322,7 @@ const SearchBar = () => {
                                 maxTagCount="responsive"
                                 className={classes.selectTeam}
                                 placeholder="Select up to 5 Teams"
-                                disabled={!watchLeague || !selectedDate}
+                                disabled={!!watchLeague || !!watchCountry}
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
                                 if (values.length > 5) return; // Prevent selecting more than 5
