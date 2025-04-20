@@ -41,13 +41,6 @@ export const FixtureInfoSchema = z
     })
     .describe('Core fixture information');
 
-// TODO: Decide if we need to extend the FixtureInfoSchema with optional country code
-// export const ExtendedFixtureInfoSchema = FixtureInfoSchema.extend({
-//     venue: VenueSchema.extend({
-//         countryCode: z.string().optional().describe('ISO 2-letter country code of venue'),
-//     }),
-// }).describe('Extended fixture info including optional venue country code');
-
 export const TeamsSchema = z
     .object({
         home: TeamSchema.describe('Home team information'),
@@ -63,12 +56,6 @@ export const FixtureItemSchema = z
     })
     .strip()
     .describe('Basic fixture structure combining fixture info, league, and teams');
-
-// TODO: Decide if we need to extend the FixtureItemSchema with optional price range
-// export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
-//     fixture: ExtendedFixtureInfoSchema,
-//     price: PriceRangeSchema.optional().describe(`Optional ticket price range for this fixture in ${ENV.CURRENCY_CODE}`),
-// }).describe('Fixture with extended venue info and optional ticket price');
 
 export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
     price: PriceRangeSchema.optional(),

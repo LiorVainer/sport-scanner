@@ -36,7 +36,6 @@ export const PackageService = {
                     if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
                     } else {
                         controller.abort();
-                        console.log(`Unexpected response: ${response.status}`);
                         reject(new Error(`Unexpected response: ${response.status}`));
                     }
                 },

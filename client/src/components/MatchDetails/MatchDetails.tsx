@@ -39,13 +39,6 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                         </div>
                     </div>
                     <div className={styles.prices}>
-                        {
-                            // TODO: Think of better way to show prices
-                            /* <Text className={styles.priceRange}>
-                            <TicketsPlane className={styles.icon} />
-                            {flightsPrice}$
-                        </Text> */
-                        }
                         <Text className={styles.priceRange}>
                             <img src="/stadium.svg" alt="stadium" className={styles.icon} />
                             {`${price.min}$ - ${price.max}$`}
