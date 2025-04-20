@@ -26,6 +26,7 @@ import {
     PackagesGenerationParams,
     PackagesGenerationParamsSchema,
 } from '@/models/packages/package-generate-params.model.ts';
+import { Team, Venue } from '@/types/soccer.types';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -56,6 +57,11 @@ const SearchBar = () => {
     const [countryNameSearch, setCountryNameSearch] = React.useState<string | undefined>(undefined);
     const [leagueNameSearch, setLeagueNameSearch] = React.useState<string | undefined>(undefined);
     const [teamNameSearch, setTeamNameSearch] = React.useState<string | undefined>(undefined);
+
+    const [defaultTeams, setDefaultTeams] = React.useState<{
+        team: Team;
+        venue: Venue;
+    }[]>([]);
 
 
     const navigate = useNavigate();
@@ -103,6 +109,11 @@ const SearchBar = () => {
         enabled: !!countryNameSearch,
     });
 
+    const topFootballCountries: string[] = ['Spain', 'England', 'Germany', 'Italy', 'France'];
+    const defaultCountryOptions = topFootballCountries.map((country) => ({
+        value: country,
+    }));
+
     const { data: leagues = [] } = useQuery({
         queryKey: ['leagues', watchCountry, leagueNameSearch],
         queryFn: () => SoccerService.getLeagues(watchCountry, leagueNameSearch),
@@ -118,8 +129,6 @@ const SearchBar = () => {
         enabled: !!teamNameSearch && teamNameSearch.length >= 3,
       });
 
-    
-
     const onSubmit = (values: PackagesGenerationParams) => {
         const { country, ...formValues } = values;
         setStoredSearchParams(defaultGenerateParamsRef.current);
@@ -131,6 +140,23 @@ const SearchBar = () => {
         reset(defaultGenerateParamsRef.current);
         setStoredSearchParams(defaultGenerateParamsRef.current);
     };
+
+    React.useEffect(() => {
+        const fetchDefaultTeams = async () => {
+          const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
+          const teamData = await Promise.all(
+            teamNames.map(async (name) => {
+              const teams = await SoccerService.getTeams(name);
+              const team = teams[0];
+              return team ?? null;
+            })
+          );
+          const validTeams = teamData.filter((team) => team !== null);
+          setDefaultTeams(validTeams);
+        };
+    
+        fetchDefaultTeams();
+      }, []);
 
     React.useEffect(() => {
         const subscription = watch((value) => {
@@ -250,7 +276,11 @@ const SearchBar = () => {
                                         resetField('team');
                                         field.onChange(value);
                                     }}
-                                    options={countries.map((country) => ({ value: country.name }))}
+                                    options={
+                                        countryNameSearch
+                                            ? countries.map((country) => ({ value: country.name }))
+                                            : defaultCountryOptions
+                                    }
                                     notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                     suffixIcon={<EnvironmentOutlined />}
                                 />
@@ -311,14 +341,15 @@ const SearchBar = () => {
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
                                 if (values.length > 5) return; // Prevent selecting more than 5
+                                const teamsArr = !teamNameSearch ? defaultTeams : teams;
                                 const selected = values
-                                    .map((val) => teams.find((t) => t.team.name === val))
+                                    .map((val) => teamsArr.find((t) => t.team.name === val))
                                     .filter(Boolean)
                                     .map((t) => ({ id: t!.team.id, name: t!.team.name }));
                                 field.onChange(selected);
                                 }}
                                 value={field.value?.map((team) => team.name) ?? []}
-                                options={teams.map((t) => ({ value: t.team.name }))}
+                                options={!teamNameSearch ? defaultTeams.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
                                 filterOption={false} // disables default filtering, uses onSearch
