@@ -65,12 +65,6 @@ export const FixtureItemSchema = z
     .strip()
     .describe('Basic fixture structure combining fixture info, league, and teams');
 
-// TODO: Decide if we need to extend the FixtureItemSchema with optional price range
-// export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
-//     fixture: ExtendedFixtureInfoSchema,
-//     price: PriceRangeSchema.optional().describe(`Optional ticket price range for this fixture in ${ENV.CURRENCY_CODE}`),
-// }).describe('Fixture with extended venue info and optional ticket price');
-
 export const ExtendedFixtureItemSchema = FixtureItemSchema.extend({
     price: PriceRangeSchema.optional().describe(`Optional ticket price range in ${ENV.CURRENCY_CODE}`),
 }).describe('Fixture item with optional price info');

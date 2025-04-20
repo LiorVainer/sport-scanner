@@ -53,7 +53,6 @@ export const PackageService = {
                     }
                 },
                 onerror(err) {
-                    console.log({ err });
                     controller.abort();
                     reject(err);
                 },
