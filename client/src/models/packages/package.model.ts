@@ -77,7 +77,7 @@ export const TimelineItemSchema = z
     .discriminatedUnion('type', [FlightItemSchema, DestinationSchema])
     .describe('Timeline item, either a flight or a destination');
 
-export const PackageMetadata = z
+export const PackageMetadataSchema = z
     .object({
         destinationsCount: z.number().describe('Number of different cities (destinations) included in this package'),
 
@@ -138,7 +138,7 @@ There can be multiple flights depending on the number of destinations.`
   Do NOT include each segment separately. 
   Destinations group the matches at a given city.
 `),
-        metadata: PackageMetadata,
+        metadata: PackageMetadataSchema,
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 

@@ -38,23 +38,6 @@ export const TeamSchema = z.object({
     logo: z.string().describe('URL of the team logo'),
 });
 
-// export const MatchSchema = z.object({
-//     id: z.number().describe('Unique identifier of the match'),
-//     homeTeam: TeamSchema.describe('Home team playing in the match'),
-//     awayTeam: TeamSchema.describe('Away team playing in the match'),
-//     league: z.string().describe('League in which the match is played'),
-//     city: z.string().describe('The city where the match takes place'),
-//     cityIataCode: z.string().describe('IATA code of the city where the match takes place'),
-//     stadium: z.string().describe('Stadium where the match takes place'),
-//     date: z.string().describe('Date of the match'),
-//     price: PriceRangeSchema.describe('Price range of the match tickets'),
-//     searchMatchTicketsLink: z
-//         .string()
-//         .describe(
-//             'URL to search for match tickets on StubHub. This should include relevant query parameters such as the home team, away team, date, or venue when applicable. For example: https://www.stubhub.com/search?q=FC%20Barcelona%20vs%20Real%20Betis%202025-04-05'
-//         ),
-// });
-
 export const MatchSchema = FixtureInfoSchema.extend({
     league: LeagueSchema.describe('League associated with the fixture'),
     homeTeam: TeamSchema.describe('Home team playing in the match'),
@@ -85,11 +68,15 @@ export const TimelineItemSchema = z
     .discriminatedUnion('type', [FlightItemSchema, DestinationSchema])
     .describe('Timeline item, either a flight or a destination');
 
-export const PackageMetadata = z
+export const PackageMetadataSchema = z
     .object({
         destinationsCount: z.number().describe('Number of different cities (destinations) included in this package'),
 
-        flightsCount: z.number().describe('Total number of flights included in the timeline of the package'),
+        flightsCount: z.number().describe(`
+Total number of flights in the timeline.
+Each "flight" item in the timeline represents one direction (e.g. TLV → BCN), regardless of its price or segments.
+Return flights must be included and counted even if price = 0.
+Do NOT deduplicate based on city names or flight IDs — every timeline flight item counts.`),
 
         matchesCount: z.number().describe('Total number of matches included in the package'),
 
@@ -140,23 +127,35 @@ There can be multiple flights depending on the number of destinations.`
             'Total price range of the package. This includes the flightsPrice and matchesPrice combined.'
         ),
         timeline: z.array(TimelineItemSchema).describe(`
-  The timeline contains full flights and destinations in chronological order.
-  Flights must represent full offers between cities (e.g. TLV → MUC) and not individual segments.
-  If a flight contains multiple legs (segments), it should still appear as a single item.
-  Do NOT include each segment separately. 
-  Destinations group the matches at a given city.
-`),
-        metadata: PackageMetadata,
+The timeline contains all the travel steps in chronological order, consisting of full flights and destinations.
+
+✈️ Flights:
+- Each flight represents a complete journey between cities (e.g., TLV → MUC), even if it includes multiple segments.
+- Each direction (departure and return) should appear as a separate flight object.
+- All flights, including zero-priced return or connecting flights, must be included and counted.
+
+📍 Destinations:
+- Each destination includes the city info and all matches taking place there.
+
+⚠️ You must NOT treat multiple segments as multiple timeline items — only full flights count.
+
+This array determines values such as flightsCount and trip duration.`),
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 
 export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
+
+export const PackageWithMetadataSchema = PackageSchema.extend({
+    metadata: PackageMetadataSchema,
+}).describe('Package with additional metadata for easier filtering and categorization');
 
 export type Match = z.infer<typeof MatchSchema>;
 export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
+export type PackageMetadata = z.infer<typeof PackageMetadataSchema>;
+export type PackageWithMetadata = z.infer<typeof PackageWithMetadataSchema>;
 
 export const PackageDocumentSchema = PackageSchema.extend({
     _id: z.string(),

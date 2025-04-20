@@ -5,7 +5,6 @@ import { calculateCurrentSeason } from '../utils/soccer.utils';
 export const convertPackageGenerateParamsToFixturesSearchQueryParams = (
     params: PackagesGenerationParams
 ): FixtureQueryParams[] => {
-    console.log({ params });
     const from = params.date?.from?.toISOString().slice(0, 10);
     const to = params.date?.to?.toISOString().slice(0, 10);
     const season = calculateCurrentSeason(new Date());

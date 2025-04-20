@@ -14,7 +14,7 @@ import { Timer } from '../logs/timer';
 
 import { tryCatch } from '../utils/try-catch.utils';
 import { FlightSearchParams } from '../models/flights/flights-search-params.model';
-import { partitionPackagesByRules } from '../utils/package.utils';
+import { packageToPackageWithMetadata, partitionPackagesByRules } from '../utils/package.utils';
 import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
 import { packagesLogger } from '../logs/packages.logger';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
@@ -66,10 +66,8 @@ class PackageService {
         if (!allFlightOffers.length) {
             packagesLogger.error('❌ No flight offers found');
             emit?.({
-                step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
+                step: 'error',
                 message: '❌ No flight offers found',
-                durationMs: timer.total(),
-                packages: [],
             });
             return [];
         }
@@ -88,6 +86,10 @@ class PackageService {
         const generatedPackagesResponse = await this.callAiToGeneratePackages(fixtures, allFlightOffers, params, timer);
         if (!generatedPackagesResponse) {
             packagesLogger.error('❌ Error generating packages');
+            emit?.({
+                step: 'error',
+                message: '❌ Error generating packages',
+            });
             return [];
         }
 
@@ -109,16 +111,16 @@ class PackageService {
             params,
             timer
         );
+
         if (!validPackages) {
-            packagesLogger.error(`❌ Error filtering packages:`, { invalidPackages });
+            packagesLogger.error(`❌ Error filtering packages`, { invalidPackages });
             emit?.({
-                step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
-                message: `✅ Finished generating 0 valid packages.`,
-                packages: [],
-                durationMs: timer.total(),
+                step: 'error',
+                message: '❌ Error filtering packages',
             });
             return [];
         }
+
         if (invalidPackages.length > 0) {
             packagesLogger.warn(`⚠️ ${invalidPackages.length} packages were filtered out`, {
                 invalidPackages,
@@ -130,14 +132,16 @@ class PackageService {
             });
         }
 
+        const validPackagesWithMetadata = await this.generateMetadataForGeneratedPackages(validPackages, timer, emit);
+
         if (flightSearchErrors.length) {
             packagesLogger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed`, { flightSearchErrors });
         }
 
         emit?.({
             step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
-            message: `✅ Finished generating ${validPackages.length} valid packages.`,
-            packages: validPackages,
+            message: `✅ Finished generating ${validPackagesWithMetadata.length} valid packages.`,
+            packages: validPackagesWithMetadata,
             durationMs: timer.total(),
         });
 
@@ -155,16 +159,39 @@ class PackageService {
             fixtures,
             flightsCount: allFlightOffers.length,
             packagesGeneratedCount: generatedPackagesResult.data.length,
-            packagesValidCount: validPackages.length,
+            packagesValidCount: validPackagesWithMetadata.length,
             requestParams: params,
             errors: flightSearchErrors.length ? { flightSearchErrors } : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
             },
-            packagesGenerated: validPackages,
+            packagesGenerated: validPackagesWithMetadata,
         });
 
         return validPackages;
+    };
+
+    private generateMetadataForGeneratedPackages = async (
+        packages: Package[],
+        timer: Timer<GeneratePackagesTimingStep>,
+        emit?: (update: PackagesGenerationProgressUpdate) => void
+    ) => {
+        packagesLogger.info(`📦 Generating metadata for ${packages.length} packages`, { packages });
+        timer.start(GeneratePackagesTimingSteps.GENERATING_PACKAGES_METADATA);
+        const packagesWithMetadata = packages.map(packageToPackageWithMetadata);
+        timer.stop(GeneratePackagesTimingSteps.GENERATING_PACKAGES_METADATA);
+
+        emit?.({
+            step: GeneratePackagesSteps.GENERATING_PACKAGES_METADATA,
+            message: `Generated metadata for ${packagesWithMetadata.length} packages.`,
+        });
+
+        packagesLogger.info(`📦 Generated metadata for ${packagesWithMetadata.length} packages`, {
+            packagesWithMetadata,
+            duration: timer.stepDuration(GeneratePackagesTimingSteps.GENERATING_PACKAGES_METADATA),
+        });
+
+        return packagesWithMetadata;
     };
 
     private async fetchFixturesWithPrice(

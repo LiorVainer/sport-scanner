@@ -19,7 +19,7 @@
     "test:coverage": "cp .env.test .env && jest --coverage --runInBand --coverageDirectory=coverage"
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.3",
+    "@ai-sdk/google": "^1.2.12",
     "@logtail/node": "^0.5.2",
     "@logtail/winston": "^0.5.2",
     "@types/body-parser": "^1.19.5",
