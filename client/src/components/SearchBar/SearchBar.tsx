@@ -175,7 +175,6 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                    {...field}
                                     allowClear
                                     className={classes.originAirport}
                                     placeholder="Select Origin Airport"
@@ -186,6 +185,7 @@ const SearchBar = () => {
                                         );
                                         field.onChange(selectedCity?.iataCode || '');
                                     }}
+                                    onClear={() => field.onChange('')}
                                     options={airportSuggestions.map((city) => ({
                                         value: `${city.name} (${city.iataCode})`,
                                     }))}
@@ -255,7 +255,6 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                    {...field}
                                     allowClear
                                     className={classes.selectCountry}
                                     placeholder="Select Country"
@@ -270,6 +269,7 @@ const SearchBar = () => {
                                         field.onChange(value);
                                     }}
                                     onClear={() => {
+                                        field.onChange('');
                                         setCountryNameSearch(undefined);
                                         resetField('league');
                                         setLeagueNameSearch(undefined);
@@ -294,7 +294,6 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                {...field}
                                 value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
                                 allowClear
                                 className={classes.selectLeague}
@@ -317,6 +316,8 @@ const SearchBar = () => {
                                   );
                                   resetField('team');
                                 }}
+                                // onClear={() => {
+                                // }}
                                 options={ leagues.map((league) => ({ value: league.league.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TrophyOutlined />}
