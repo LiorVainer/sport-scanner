@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Button, Spin, message } from 'antd';
+import { Select, Button, Spin, message, AutoComplete } from 'antd';
 import './preferences-body-model.scss';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@/api/hooks/service.query';
@@ -10,24 +10,24 @@ const { Option } = Select;
 
 const allTeams = ['FC Barcelona', 'FC Bayern Munich', 'Manchester United', 'Real Madrid'];
 const allLeagues = ['La Liga', 'Premier League', 'Serie A', 'League 1'];
-const allAirports = ['Tel Aviv (TLV)', 'JFK Airport, New York', 'London Heathrow (LHR)'];
+// const allAirports = ['Tel Aviv (TLV)', 'JFK Airport, New York', 'London Heathrow (LHR)'];
 
 const PreferencesBody: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
     const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
+    const [homeAirportInput, setHomeAirportInput] = useState<string>('');
     const [homeAirport, setHomeAirport] = useState<string>('');
 
     const MAX_ITEMS_PER_SELECT = 3;
-    console.log(homeAirport);
-    const { data: airportSuggestions = [] } = useQuery({
-        queryKey: ['originAirports', homeAirport],
+
+    const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
+        queryKey: ['originAirports', homeAirportInput],
         queryFn: async () => {
-            console.log(homeAirport);
-            if (homeAirport.length < MIN_KEYWORD_LEN || homeAirport.length > MAX_KEYWORD_LEN) return [];
-            return GeoService.getCities(homeAirport);
+            if (homeAirportInput.length < MIN_KEYWORD_LEN || homeAirportInput.length > MAX_KEYWORD_LEN) return [];
+            return GeoService.getCities(homeAirportInput);
         },
-        enabled: homeAirport.length >= MIN_KEYWORD_LEN && homeAirport.length <= MAX_KEYWORD_LEN,
+        enabled: homeAirportInput.length >= MIN_KEYWORD_LEN && homeAirportInput.length <= MAX_KEYWORD_LEN,
     });
 
     const handleTeamChange = (value: string[]) => {
@@ -137,19 +137,25 @@ const PreferencesBody: React.FC = () => {
                 <label>
                     🏠 Home City or Airport <span>(Choose your home city or the airport you usually travel from)</span>
                 </label>
-                <Select
-                    showSearch
+                <AutoComplete
+                    value={homeAirportInput}
+                    onSearch={setHomeAirportInput}
+                    onChange={(value) => setHomeAirportInput(value)}
+                    onSelect={(value) => {
+                        const selected = airportSuggestions.find(
+                            (airport) => `${airport.name} (${airport.iataCode})` === value
+                        );
+                        setHomeAirportInput(value);
+                        setHomeAirport(selected?.iataCode || '');
+                    }}
+                    options={airportSuggestions.map((airport) => ({
+                        value: `${airport.name} (${airport.iataCode})`,
+                    }))}
                     style={{ width: '100%' }}
-                    placeholder="Enter your city or airport"
-                    value={homeAirport}
-                    onChange={(value) => setHomeAirport(value)}
-                >
-                    {airportSuggestions.map((airport) => (
-                        <Option key={airport.iataCode} value={airport}>
-                            `${airport.name} (${airport.iataCode})`
-                        </Option>
-                    ))}
-                </Select>
+                    placeholder="Start typing your city or airport"
+                    notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                    allowClear
+                />
             </div>
 
             <div className="save-btn">
