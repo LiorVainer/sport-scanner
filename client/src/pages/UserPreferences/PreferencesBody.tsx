@@ -3,8 +3,8 @@ import { Select, Button, Spin, message } from 'antd';
 import './preferences-body-model.scss';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryOnDefinedParam } from '@/api/hooks/service.query';
+import { MAX_KEYWORD_LEN, MIN_KEYWORD_LEN } from '@/components/SearchBar';
 import { GeoService } from '@/api/services/geo.service';
-import { SoccerService } from '@/api/services/soccer.service';
 
 const { Option } = Select;
 
@@ -16,12 +16,19 @@ const PreferencesBody: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
     const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
-    const [homeAirport, setHomeAirport] = useState<string | undefined>();
-    const [teams, setTeams] = useState<String[]>([]);
-    const [leagues, setLeagues] = useState<String[]>([]);
-    const [airports, setAirports] = useState<String[]>([]);
+    const [homeAirport, setHomeAirport] = useState<string>('');
 
     const MAX_ITEMS_PER_SELECT = 3;
+    console.log(homeAirport);
+    const { data: airportSuggestions = [] } = useQuery({
+        queryKey: ['originAirports', homeAirport],
+        queryFn: async () => {
+            console.log(homeAirport);
+            if (homeAirport.length < MIN_KEYWORD_LEN || homeAirport.length > MAX_KEYWORD_LEN) return [];
+            return GeoService.getCities(homeAirport);
+        },
+        enabled: homeAirport.length >= MIN_KEYWORD_LEN && homeAirport.length <= MAX_KEYWORD_LEN,
+    });
 
     const handleTeamChange = (value: string[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
@@ -55,13 +62,6 @@ const PreferencesBody: React.FC = () => {
             }
         };
 
-        const fetchData = async () => {
-            const allTeams = await SoccerService.getTeams;
-            const allLeagues = await SoccerService.getLeagues;
-            const allAirports = await GeoService.getCities;
-        };
-
-        fetchData();
         fetchUserPreferences();
     }, []);
 
@@ -144,9 +144,9 @@ const PreferencesBody: React.FC = () => {
                     value={homeAirport}
                     onChange={(value) => setHomeAirport(value)}
                 >
-                    {allAirports.map((airport) => (
-                        <Option key={airport} value={airport}>
-                            {airport}
+                    {airportSuggestions.map((airport) => (
+                        <Option key={airport.iataCode} value={airport}>
+                            `${airport.name} (${airport.iataCode})`
                         </Option>
                     ))}
                 </Select>

@@ -31,8 +31,8 @@ import {
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const MIN_KEYWORD_LEN = 3;
-const MAX_KEYWORD_LEN = 50;
+export const MIN_KEYWORD_LEN = 3;
+export const MAX_KEYWORD_LEN = 50;
 
 const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
     const today = dayjs();

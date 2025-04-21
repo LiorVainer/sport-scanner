@@ -4,7 +4,7 @@ import { axiosInstance } from '../config/axios-instance';
 export const ROUTE_PREFIX = '/soccer';
 
 export const SoccerService = {
-    async getLeagues(country: string) {
+    async getLeagues(country?: string) {
         try {
             const { data } = await axiosInstance.get<{ league: League; country: Country }[]>(
                 `${ROUTE_PREFIX}/leagues`,
@@ -27,7 +27,7 @@ export const SoccerService = {
         }
     },
 
-    async getTeams({ leagueId, season }: { leagueId: number; season: number }) {
+    async getTeams({ leagueId, season }: { leagueId?: number; season?: number }) {
         try {
             const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
                 params: { league: leagueId, season },
