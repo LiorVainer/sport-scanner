@@ -7,12 +7,17 @@ import { faFutbol } from '@fortawesome/free-solid-svg-icons';
 import { EditProfileModal } from '../EditProfileModal';
 import { NavbarUserDropdown } from '../NavbarUserDropdown';
 import { ROUTES } from '@/constants/routes.const';
+import { Modal } from 'antd';
+import PreferencesBody from '@/pages/UserPreferences/PreferencesBody';
 
 export const Navbar = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState<boolean>(false);
 
     const showModal = () => setIsModalOpen(true);
+    const showPreferencesModal = () => setIsPreferencesModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
+    const handlePreferencesCancel = () => setIsPreferencesModalOpen(false);
 
     return (
         <nav className={classes.navbar}>
@@ -28,8 +33,22 @@ export const Navbar = () => {
                 <div className={classes.navLinks}>
                     <Link to={ROUTES.SAVED_PACKAGES}>Saved</Link>
                 </div>
-                <NavbarUserDropdown showModal={showModal} />
+
+                <NavbarUserDropdown showModal={showModal} showPreferencesModal={showPreferencesModal} />
+
                 <EditProfileModal isOpen={isModalOpen} handleCancel={handleCancel} />
+
+                <Modal
+                    open={isPreferencesModalOpen}
+                    onCancel={handlePreferencesCancel}
+                    footer={null}
+                    centered
+                    width={700}
+                    destroyOnClose
+                    title="Edit Preferences"
+                >
+                    <PreferencesBody />
+                </Modal>
             </div>
         </nav>
     );

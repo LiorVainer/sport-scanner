@@ -1,0 +1,39 @@
+.user-preferences {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+
+    .intro {
+        margin-bottom: 24px;
+        font-size: 16px;
+        color: #444;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+
+            span {
+                display: block;
+                font-weight: normal;
+                color: #888;
+                font-size: 14px;
+            }
+        }
+    }
+
+    .save-btn {
+        text-align: right;
+    }
+}
+
+.user-preferences-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0;
+}
