@@ -76,7 +76,6 @@ const SearchBar = () => {
         control,
         handleSubmit,
         watch,
-        trigger,
         formState: { isValid, isDirty, errors },
         reset,
         resetField,
@@ -85,14 +84,9 @@ const SearchBar = () => {
         defaultValues: storedSearchParams,
     });
 
-    console.log(errors);
-
-    const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeam = watch('team');
-
-    const selectedDate = watchDate?.from;
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
@@ -164,8 +158,6 @@ const SearchBar = () => {
         });
         return () => subscription.unsubscribe();
     }, [watch]);
-
-    console.log({ isValid, watchAll: watch() })
 
     return (
         <div className={classes.main}>
@@ -274,7 +266,15 @@ const SearchBar = () => {
                                         resetField('league');
                                         setLeagueNameSearch(undefined);
                                         resetField('team');
+                                        setTeamNameSearch(undefined);
                                         field.onChange(value);
+                                    }}
+                                    onClear={() => {
+                                        setCountryNameSearch(undefined);
+                                        resetField('league');
+                                        setLeagueNameSearch(undefined);
+                                        resetField('team');
+                                        setTeamNameSearch(undefined);
                                     }}
                                     options={
                                         countryNameSearch
@@ -340,7 +340,7 @@ const SearchBar = () => {
                                 disabled={!!watchLeague || !!watchCountry}
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
-                                if (values.length > 5) return; // Prevent selecting more than 5
+                                if (values.length > 5) return;
                                 const teamsArr = !teamNameSearch ? defaultTeams : teams;
                                 const selected = values
                                     .map((val) => teamsArr.find((t) => t.team.name === val))
@@ -352,7 +352,7 @@ const SearchBar = () => {
                                 options={!teamNameSearch ? defaultTeams.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
-                                filterOption={false} // disables default filtering, uses onSearch
+                                filterOption={false}
                             />
                             )}
                         />
