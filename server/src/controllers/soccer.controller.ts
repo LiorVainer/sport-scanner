@@ -1,9 +1,9 @@
-import {Request, Response} from 'express';
-import {soccerService} from '../services/soccer.service';
+import { Request, Response } from 'express';
+import { soccerService } from '../services/soccer.service';
 import { Country } from '../models/geo.model';
 
 export const soccerController = {
-     getCountries: async (req: Request, res: Response): Promise<any> => {
+    getCountries: async (req: Request, res: Response): Promise<any> => {
         try {
             const name = req.query.name as string;
             const countries = (await soccerService.getCountries()) ?? [];
@@ -20,18 +20,27 @@ export const soccerController = {
 
     getLeagues: async (req: Request, res: Response): Promise<any> => {
         try {
-            const country = req.query.country as string;
-            const name = req.query.name as string;
-            const leagues = await soccerService.getLeaguesByCountry(country);
+            const country = req.query.country as string | undefined;
+            const name = req.query.name as string | undefined;
 
-            if (name && name !== "") {
-                const regex = new RegExp(name, 'i');
-                const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
-                return res.status(200).json(filteredLeagues);
+            if (!country && name) {
+                const leagues = await soccerService.getLeaguesByName(name);
+                return res.status(200).json(leagues);
             }
-            res.status(200).json(leagues);
+
+            if (country) {
+                const leagues = await soccerService.getLeaguesByCountry(country);
+                if (name) {
+                    const regex = new RegExp(name, 'i');
+                    const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
+                    return res.status(200).json(filteredLeagues);
+                }
+                return res.status(200).json(leagues);
+            }
+
+            return res.status(400).json({ message: 'Missing required query: country or name' });
         } catch (e) {
-            res.status(500).json({message: 'Error fetching leagues', error: e});
+            res.status(500).json({ message: 'Error fetching leagues', error: e });
         }
     },
 
@@ -41,18 +50,20 @@ export const soccerController = {
             const venues = await soccerService.getVenuesByCountry(country);
             res.status(200).json(venues);
         } catch (e) {
-            res.status(500).json({message: 'Error fetching venues', error: e});
+            res.status(500).json({ message: 'Error fetching venues', error: e });
         }
     },
 
     getTeams: async (req: Request, res: Response): Promise<any> => {
         try {
             const name = req.query.name as string | undefined;
-    
+
             if (!name || name.length < 3) {
-                return res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
+                return res
+                    .status(400)
+                    .json({ message: 'Team name is required and must be at least 3 characters long.' });
             }
-    
+
             const teams = await soccerService.getTeamsByName(name);
             res.status(200).json(teams);
         } catch (e) {

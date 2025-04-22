@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Select, Button, Spin, message, AutoComplete } from 'antd';
 import './preferences-body-model.scss';
 import { useQuery } from '@tanstack/react-query';
-import { useQueryOnDefinedParam } from '@/api/hooks/service.query';
-import { MAX_KEYWORD_LEN, MIN_KEYWORD_LEN } from '@/components/SearchBar';
 import { GeoService } from '@/api/services/geo.service';
+import { SoccerService } from '@/api/services/soccer.service';
+import { MAX_KEYWORD_LEN, MIN_KEYWORD_LEN } from '@/components/SearchBar';
+import { Team, Venue } from '@/types/soccer.types';
 
 const { Option } = Select;
-
-const allTeams = ['FC Barcelona', 'FC Bayern Munich', 'Manchester United', 'Real Madrid'];
-const allLeagues = ['La Liga', 'Premier League', 'Serie A', 'League 1'];
-// const allAirports = ['Tel Aviv (TLV)', 'JFK Airport, New York', 'London Heathrow (LHR)'];
+const MAX_ITEMS_PER_SELECT = 3;
 
 const PreferencesBody: React.FC = () => {
     const [loading, setLoading] = useState(true);
@@ -18,8 +16,9 @@ const PreferencesBody: React.FC = () => {
     const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
     const [homeAirport, setHomeAirport] = useState<string>('');
-
-    const MAX_ITEMS_PER_SELECT = 3;
+    const [teamSearch, setTeamSearch] = useState('');
+    const [leagueSearch, setLeagueSearch] = useState('');
+    const [defaultTeams, setDefaultTeams] = useState<{ team: Team; venue: Venue }[]>([]);
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', homeAirportInput],
@@ -30,26 +29,37 @@ const PreferencesBody: React.FC = () => {
         enabled: homeAirportInput.length >= MIN_KEYWORD_LEN && homeAirportInput.length <= MAX_KEYWORD_LEN,
     });
 
-    const handleTeamChange = (value: string[]) => {
-        if (value.length <= MAX_ITEMS_PER_SELECT) {
-            setFavoriteTeams(value);
-        } else {
-            message.warning('You can select up to 3 teams only.');
-        }
-    };
+    const { data: searchedTeams = [] } = useQuery({
+        queryKey: ['teams', teamSearch],
+        queryFn: () => SoccerService.getTeams(teamSearch),
+        enabled: teamSearch.length >= 3,
+    });
 
-    const handleLeagueChange = (value: string[]) => {
-        if (value.length <= MAX_ITEMS_PER_SELECT) {
-            setPreferredLeagues(value);
-        } else {
-            message.warning('You can select up to 3 leagues only.');
-        }
-    };
+    const { data: searchedLeagues = [] } = useQuery({
+        queryKey: ['leagues', leagueSearch],
+        queryFn: () => SoccerService.getLeaguesByName(leagueSearch),
+        enabled: leagueSearch.length >= 3,
+    });
+
+    useEffect(() => {
+        const fetchDefaults = async () => {
+            const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
+            const fetched = await Promise.all(
+                teamNames.map(async (name) => {
+                    const teams = await SoccerService.getTeams(name);
+                    return teams[0] ?? null;
+                })
+            );
+            setDefaultTeams(fetched.filter(Boolean) as { team: Team; venue: Venue }[]);
+        };
+        fetchDefaults();
+    }, []);
 
     useEffect(() => {
         const fetchUserPreferences = async () => {
             try {
                 const res = await fetch('/api/user/preferences');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setFavoriteTeams(data.favoriteTeams || []);
                 setPreferredLeagues(data.preferredLeagues || []);
@@ -70,16 +80,28 @@ const PreferencesBody: React.FC = () => {
             await fetch('/api/user/preferences', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    favoriteTeams,
-                    preferredLeagues,
-                    homeAirport,
-                }),
+                body: JSON.stringify({ favoriteTeams, preferredLeagues, homeAirport }),
             });
             message.success('Preferences saved successfully!');
         } catch (error) {
             console.error('Failed to save preferences', error);
             message.error('Failed to save preferences');
+        }
+    };
+
+    const handleTeamChange = (value: string[]) => {
+        if (value.length <= MAX_ITEMS_PER_SELECT) {
+            setFavoriteTeams(value);
+        } else {
+            message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
+        }
+    };
+
+    const handleLeagueChange = (value: string[]) => {
+        if (value.length <= MAX_ITEMS_PER_SELECT) {
+            setPreferredLeagues(value);
+        } else {
+            message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
         }
     };
 
@@ -91,6 +113,13 @@ const PreferencesBody: React.FC = () => {
         );
     }
 
+    const teamOptions =
+        teamSearch.length < 3
+            ? defaultTeams.map((t) => ({ value: t.team.name }))
+            : searchedTeams.map((t) => ({ value: t.team.name }));
+
+    const leagueOptions = searchedLeagues.map((l) => ({ value: l.league.name }));
+
     return (
         <div className="user-preferences">
             <p className="intro">Update your preferences below:</p>
@@ -101,17 +130,15 @@ const PreferencesBody: React.FC = () => {
                 </label>
                 <Select
                     mode="multiple"
+                    showSearch
                     style={{ width: '100%' }}
-                    placeholder="Select teams"
+                    placeholder="Type to search teams (max 3)"
                     value={favoriteTeams}
+                    onSearch={setTeamSearch}
                     onChange={handleTeamChange}
-                >
-                    {allTeams.map((team) => (
-                        <Option key={team} value={team}>
-                            {team}
-                        </Option>
-                    ))}
-                </Select>
+                    options={teamOptions}
+                    filterOption={false}
+                />
             </div>
 
             <div className="form-group">
@@ -120,17 +147,15 @@ const PreferencesBody: React.FC = () => {
                 </label>
                 <Select
                     mode="multiple"
+                    showSearch
                     style={{ width: '100%' }}
-                    placeholder="Select leagues"
+                    placeholder="Type to search leagues (max 3)"
                     value={preferredLeagues}
+                    onSearch={setLeagueSearch}
                     onChange={handleLeagueChange}
-                >
-                    {allLeagues.map((league) => (
-                        <Option key={league} value={league}>
-                            {league}
-                        </Option>
-                    ))}
-                </Select>
+                    options={leagueOptions}
+                    filterOption={false}
+                />
             </div>
 
             <div className="form-group">
