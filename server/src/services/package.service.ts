@@ -1,5 +1,4 @@
 import { PackagesGenerationParams } from '../models/packages/package-generate-params.model';
-// @ts-ignore
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixturesSearchQueryParams } from '../converters/package-to-fixtures';
@@ -186,7 +185,7 @@ class PackageService {
             message: `Generated metadata for ${packagesWithMetadata.length} packages.`,
         });
 
-        packagesLogger.info(`📦 Generated metadata for ${packagesWithMetadata.length} packages`, {
+        packagesLogger.info(`✅ Finished Generating metadata for ${packagesWithMetadata.length} packages`, {
             packagesWithMetadata,
             duration: timer.stepDuration(GeneratePackagesTimingSteps.GENERATING_PACKAGES_METADATA),
         });
@@ -335,13 +334,13 @@ class PackageService {
 
         const uniqueOffers = Array.from(unique.values()).flat();
 
-        packagesLogger.info(`✈️ Flight search complete. Fetched ${uniqueOffers.length} unique offers`, {
+        packagesLogger.info(`✈️ Flight offers search complete. Fetched ${uniqueOffers.length} unique offers`, {
             allFlightOffers: allOffers,
             uniqueFlightOffers: uniqueOffers,
         });
 
         packagesLogger.info(
-            `⏱️ Flight search took ${timer.stepDuration(GeneratePackagesTimingSteps.SEARCH_FLIGHTS)}ms`
+            `⏱️ Flight offers search took ${timer.stepDuration(GeneratePackagesTimingSteps.SEARCH_FLIGHTS)}ms`
         );
 
         return uniqueOffers;
@@ -352,7 +351,7 @@ class PackageService {
         flightSearchErrors: { params: FlightSearchParams; error: any }[]
     ): Promise<FlightOffer[]> {
         packagesLogger.info(
-            `🔍 Searching flights for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
+            `🔍 Searching flights offers for ${params.origin} -> ${params.destination} from ${params.dateFrom} to ${params.dateTo} (Round Trip: ${params.isRoundTrip})`,
             { searchParams: params }
         );
 
@@ -362,7 +361,7 @@ class PackageService {
 
         if (error || !flightOffers) {
             packagesLogger.warn(
-                `❌ Error fetching flights for ${params.origin} → ${params.destination} on ${params.dateFrom}: ${error?.description?.[0]?.detail}`,
+                `❌ Error fetching flight offers for ${params.origin} → ${params.destination} on ${params.dateFrom}: ${error?.description?.[0]?.detail}`,
                 {
                     error: error?.description?.[0]?.detail,
                     searchParams: params,

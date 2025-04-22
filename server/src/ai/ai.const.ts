@@ -14,15 +14,8 @@ export const AIConfigParams = [
 
 export const GlobalConfig: AIGlobalConfig = {
     model,
-    // maxTokens: ENV.AI_MAX_TOKENS ?? 1000,
+    maxTokens: ENV.AI_MAX_TOKENS ?? 1000,
     temperature: ENV.AI_TEMPERATURE ?? 0.5,
-    providerOptions: {
-        google: {
-            thinkingConfig: {
-                thinkingBudget: 0,
-            },
-        },
-    },
 };
 
 export const AIConfig: AIServiceMethodsConfig = {

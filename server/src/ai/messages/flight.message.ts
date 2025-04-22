@@ -1,5 +1,3 @@
-// ai/messages/flight.message.ts
-
 import { FlightOffer } from '../../models/flights/flight-offer.model';
 import { CoreMessage } from 'ai';
 import { message } from './utils/message.utils';

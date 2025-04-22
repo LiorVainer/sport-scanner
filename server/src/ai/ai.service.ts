@@ -1,12 +1,12 @@
-import {CoreMessage, CoreSystemMessage, generateObject, generateText, streamObject, streamText} from 'ai';
-import {AIConfig} from './ai.const';
-import {AIServiceProviderInterface, ObjectMethodConfig, TextMethodConfig} from './ai.types';
-import {AILogger} from './ai.logger';
+import { CoreMessage, CoreSystemMessage, generateObject, generateText, streamObject, streamText } from 'ai';
+import { AIConfig } from './ai.const';
+import { AIServiceProviderInterface, ObjectMethodConfig, TextMethodConfig } from './ai.types';
+import { AILogger } from './ai.logger';
 
 class AIServiceProvider implements AIServiceProviderInterface {
     async generateText(
         prompt: string,
-        {saveOutputToFile, systemMessages}: TextMethodConfig = {
+        { saveOutputToFile, systemMessages }: TextMethodConfig = {
             systemMessages: [],
             saveOutputToFile: false,
         }
@@ -14,12 +14,12 @@ class AIServiceProvider implements AIServiceProviderInterface {
         try {
             const start = new Date().getTime();
             const configMessages = (AIConfig.generateText.messages ?? []) as CoreMessage[];
-            const userMessage: CoreMessage = {role: 'user', content: prompt};
+            const userMessage: CoreMessage = { role: 'user', content: prompt };
             const messages: CoreMessage[] = systemMessages
                 ? [...configMessages, ...systemMessages, userMessage]
                 : [...configMessages, userMessage];
 
-            const {text, finishReason} = await generateText({
+            const { text, finishReason } = await generateText({
                 ...AIConfig.generateText,
                 messages,
             });
@@ -32,7 +32,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
                     messages,
                     prompt,
                     finishReason,
-                    execution: {start, end},
+                    execution: { start, end },
                 });
             }
 
@@ -45,7 +45,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
 
     async streamText(
         prompt: string,
-        {saveOutputToFile, systemMessages}: TextMethodConfig = {
+        { saveOutputToFile, systemMessages }: TextMethodConfig = {
             systemMessages: [],
             saveOutputToFile: false,
         }
@@ -54,12 +54,12 @@ class AIServiceProvider implements AIServiceProviderInterface {
             const start = new Date().getTime();
 
             const configMessages = (AIConfig.generateText.messages ?? []) as CoreMessage[];
-            const userMessage: CoreMessage = {role: 'user', content: prompt};
+            const userMessage: CoreMessage = { role: 'user', content: prompt };
             const messages: CoreMessage[] = systemMessages
                 ? [...configMessages, ...systemMessages, userMessage]
                 : [...configMessages, userMessage];
 
-            const {text, finishReason} = streamText({
+            const { text, finishReason } = streamText({
                 ...AIConfig.generateText,
                 messages,
             });
@@ -71,7 +71,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
                     messages,
                     prompt,
                     finishReason: await finishReason,
-                    execution: {start, end},
+                    execution: { start, end },
                 });
             }
 
@@ -97,21 +97,23 @@ class AIServiceProvider implements AIServiceProviderInterface {
             const start = new Date().getTime();
             const configMessages = (AIConfig.generateObject.messages ?? []) as CoreMessage[];
 
-            const userMessage: CoreMessage | undefined = !!prompt ? {role: 'user', content: prompt} : undefined;
+            const userMessage: CoreMessage | undefined = !!prompt ? { role: 'user', content: prompt } : undefined;
             const messages: CoreMessage[] = userMessage
                 ? [...configMessages, ...inputMessages, userMessage]
                 : [...configMessages, ...inputMessages];
 
-            const {maxTokens: globalConfigMaxTokens, ...globalConfig} = AIConfig.generateObject;
+            const { maxTokens: globalConfigMaxTokens, ...globalConfig } = AIConfig.generateObject;
 
-            const {object, finishReason, usage} = await generateObject({
-                maxTokens: noTokensLimit ? undefined : globalConfigMaxTokens,
+            const config = {
                 ...globalConfig,
+                ...(!noTokensLimit && { maxTokens: globalConfigMaxTokens }),
                 ...restConfig,
                 schema,
                 schemaDescription: schemaDescription ?? schema._def.description,
                 messages,
-            });
+            };
+
+            const { object, finishReason, usage } = await generateObject(config);
 
             const end = new Date().getTime();
 
@@ -122,11 +124,11 @@ class AIServiceProvider implements AIServiceProviderInterface {
                     prompt,
                     object,
                     finishReason,
-                    execution: {start, end},
+                    execution: { start, end },
                 });
             }
 
-            return {data: object, usage};
+            return { data: object, usage };
         } catch (error) {
             console.log('Error Trying To Generate Text From AI Model', error);
             throw error;
@@ -134,7 +136,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
     }
 
     async streamObject<T>(
-        {schema, schemaName, schemaDescription, saveOutputToFile = false}: ObjectMethodConfig<T>,
+        { schema, schemaName, schemaDescription, saveOutputToFile = false }: ObjectMethodConfig<T>,
         prompt: string,
         systemMessages: CoreSystemMessage[] = []
     ) {
@@ -142,11 +144,11 @@ class AIServiceProvider implements AIServiceProviderInterface {
             const start = new Date().getTime();
 
             const configMessages = (AIConfig.generateObject.messages ?? []) as CoreMessage[];
-            const userMessage: CoreMessage = {role: 'user', content: prompt};
+            const userMessage: CoreMessage = { role: 'user', content: prompt };
 
             const messages: CoreMessage[] = [...configMessages, ...systemMessages, userMessage];
 
-            const {object} = streamObject({
+            const { object } = streamObject({
                 ...AIConfig.streamObject,
                 schema,
                 schemaName: schemaName ?? schema._def.description,
@@ -161,7 +163,7 @@ class AIServiceProvider implements AIServiceProviderInterface {
                     prompt,
                     schema,
                     object: await object,
-                    execution: {start, end},
+                    execution: { start, end },
                 });
             }
 
