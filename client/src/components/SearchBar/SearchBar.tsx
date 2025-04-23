@@ -290,7 +290,7 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                value={typeof field.value === 'object' ? field.value?.name : field.value ?? ''}
+                                value={leagueNameSearch ?? ''}
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
@@ -340,17 +340,24 @@ const SearchBar = () => {
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
                                     if (values.length > MAX_TEAMS_LIMIT) return;
+                                
+                                    const teamsArr = (!teamNameSearch)
+                                        ? defaultTeams
+                                        : teams;
+                                
                                     const newSelections = values
-                                        .map((val) => teams.find((t) => t.team.name === val))
+                                        .map((val) => teamsArr.find((t) => t.team.name === val))
                                         .filter(Boolean)
                                         .map((t) => ({ id: t!.team.id, name: t!.team.name }));
+                                
                                     const prevSelections = field.value ?? [];
                                     const merged = [
-                                        ...prevSelections.filter((team) => values.includes(team.name)), 
+                                        ...prevSelections.filter((team) => values.includes(team.name)),
                                         ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
                                     ];
+                                
                                     field.onChange(merged);
-                                }}
+                                }}                                
                                 onClear={() => {
                                     resetField('teams');
                                     setTeamNameSearch(undefined);
