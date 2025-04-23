@@ -27,7 +27,7 @@ import {
     PackagesGenerationParamsSchema,
 } from '@/models/packages/package-generate-params.model.ts';
 import { Team, Venue } from '@/types/soccer.types';
-import { MAX_KEYWORD_LEN, MAX_TEAMS_LIMIT, MIN_KEYWORD_LEN, teamNames, topFootballCountries } from './search-bar.const';
+import { DEFAULT_TEAMS, MAX_KEYWORD_LEN, MAX_TEAMS_LIMIT, MIN_KEYWORD_LEN, teamNames, topFootballCountries } from './search-bar.const';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -55,12 +55,6 @@ const SearchBar = () => {
     const [countryNameSearch, setCountryNameSearch] = React.useState<string | undefined>(undefined);
     const [leagueNameSearch, setLeagueNameSearch] = React.useState<string | undefined>(undefined);
     const [teamNameSearch, setTeamNameSearch] = React.useState<string | undefined>(undefined);
-
-    const [defaultTeams, setDefaultTeams] = React.useState<{
-        team: Team;
-        venue: Venue;
-    }[]>([]);
-
 
     const navigate = useNavigate();
     const { fetchPackages } = usePackages();
@@ -131,22 +125,6 @@ const SearchBar = () => {
         reset(defaultGenerateParamsRef.current);
         setStoredSearchParams(defaultGenerateParamsRef.current);
     };
-
-    React.useEffect(() => {
-        const fetchDefaultTeams = async () => {
-          const teamData = await Promise.all(
-            teamNames.map(async (name) => {
-              const teams = await SoccerService.getTeams(name);
-              const team = teams[0];
-              return team ?? null;
-            })
-          );
-          const validTeams = teamData.filter((team) => team !== null);
-          setDefaultTeams(validTeams);
-        };
-    
-        fetchDefaultTeams();
-      }, []);
 
     React.useEffect(() => {
         const subscription = watch((value) => {
@@ -342,7 +320,7 @@ const SearchBar = () => {
                                     if (values.length > MAX_TEAMS_LIMIT) return;
                                 
                                     const teamsArr = (!teamNameSearch)
-                                        ? defaultTeams
+                                        ? DEFAULT_TEAMS
                                         : teams;
                                 
                                     const newSelections = values
@@ -363,7 +341,7 @@ const SearchBar = () => {
                                     setTeamNameSearch(undefined);
                                 }}
                                 value={field.value?.map((team) => team.name) ?? []}
-                                options={!teamNameSearch ? defaultTeams.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
+                                options={!teamNameSearch ? DEFAULT_TEAMS.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
                                 filterOption={false}
