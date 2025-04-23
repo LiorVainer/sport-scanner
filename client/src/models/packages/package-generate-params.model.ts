@@ -24,7 +24,7 @@ export const PackagesGenerationParamsSchema = z
         name: z.string(),
       })
       .optional(),
-    team: z
+    teams: z
       .array(
         z.object({
           id: z.number(),
@@ -36,10 +36,10 @@ export const PackagesGenerationParamsSchema = z
   })
   .refine(
     (data) =>
-      (!!data.league && !data.team?.length) || (!data.league && !!data.team?.length),
+      (!!data.league && !data.teams?.length) || (!data.league && !!data.teams?.length),
     {
       message: 'You must select either a league or one or more teams (not both)',
-      path: ['league'], // points the error to "league"
+      path: ['league'],
     }
   );
 

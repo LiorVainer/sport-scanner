@@ -46,7 +46,7 @@ const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
         },
         price: { min: MIN_PRICE, max: MAX_PRICE },
         league: undefined,
-        team: undefined,
+        teams: undefined,
         country: undefined,
     };
 };
@@ -86,7 +86,7 @@ const SearchBar = () => {
 
     const watchCountry = watch('country');
     const watchLeague = watch('league');
-    const watchTeam = watch('team');
+    const watchTeam = watch('teams');
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
@@ -264,7 +264,7 @@ const SearchBar = () => {
                                         setCountryNameSearch(undefined);
                                         resetField('league');
                                         setLeagueNameSearch(undefined);
-                                        resetField('team');
+                                        resetField('teams');
                                         setTeamNameSearch(undefined);
                                         field.onChange(value);
                                     }}
@@ -273,7 +273,7 @@ const SearchBar = () => {
                                         setCountryNameSearch(undefined);
                                         resetField('league');
                                         setLeagueNameSearch(undefined);
-                                        resetField('team');
+                                        resetField('teams');
                                         setTeamNameSearch(undefined);
                                     }}
                                     options={
@@ -314,7 +314,7 @@ const SearchBar = () => {
                                       ? { id: selected.league.id, name: selected.league.name }
                                       : { id: '', name: value }
                                   );
-                                  resetField('team');
+                                  resetField('teams');
                                 }}
                                 // onClear={() => {
                                 // }}
@@ -328,7 +328,7 @@ const SearchBar = () => {
 
                     <Form.Item className={classes.selectTeam}>
                         <Controller
-                            name="team"
+                            name="teams"
                             control={control}
                             render={({ field }) => (
                             <Select
@@ -341,13 +341,17 @@ const SearchBar = () => {
                                 disabled={!!watchLeague || !!watchCountry}
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
-                                if (values.length > 5) return;
-                                const teamsArr = !teamNameSearch ? defaultTeams : teams;
-                                const selected = values
-                                    .map((val) => teamsArr.find((t) => t.team.name === val))
-                                    .filter(Boolean)
-                                    .map((t) => ({ id: t!.team.id, name: t!.team.name }));
-                                field.onChange(selected);
+                                    if (values.length > 5) return;
+                                    const newSelections = values
+                                        .map((val) => teams.find((t) => t.team.name === val))
+                                        .filter(Boolean)
+                                        .map((t) => ({ id: t!.team.id, name: t!.team.name }));
+                                    const prevSelections = field.value ?? [];
+                                    const merged = [
+                                        ...prevSelections.filter((team) => values.includes(team.name)), 
+                                        ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                    ];
+                                    field.onChange(merged);
                                 }}
                                 value={field.value?.map((team) => team.name) ?? []}
                                 options={!teamNameSearch ? defaultTeams.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
