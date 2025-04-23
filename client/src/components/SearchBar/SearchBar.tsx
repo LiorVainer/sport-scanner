@@ -254,7 +254,7 @@ const SearchBar = () => {
                                     allowClear
                                     className={classes.selectCountry}
                                     placeholder="Select Country"
-                                    disabled={!!watchTeam && watchTeam?.length !== 0}
+                                    disabled={!!watchTeam && !!watchTeam?.length}
                                     onSearch={(value) => setCountryNameSearch(value)}
                                     onSelect={(value) => {
                                         setCountryNameSearch(undefined);
@@ -294,7 +294,7 @@ const SearchBar = () => {
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
-                                disabled={!watchCountry || !!watchTeam && watchTeam?.length !== 0}
+                                disabled={!watchCountry || !!watchTeam && !!watchTeam?.length}
                                 onSearch={(value) => setLeagueNameSearch(value)}
                                 onChange={(text) => {
                                     if(text !== "") {
