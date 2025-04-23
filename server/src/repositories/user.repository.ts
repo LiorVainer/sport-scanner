@@ -1,6 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { User } from '../models/user.model';
 
+const CityInfoMongooseSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        iataCode: { type: String, required: true },
+    },
+    { _id: false }
+);
+
 const UserMongoSchema = new Schema(
     {
         username: { type: String, required: true },
@@ -9,6 +17,9 @@ const UserMongoSchema = new Schema(
         picture: { type: String, required: true },
         googleId: { type: String },
         refreshTokens: { type: [String], default: [] },
+        favoriteTeams: { type: [String], default: [] },
+        homeAirport: { type: CityInfoMongooseSchema },
+        preferredLeagues: { type: [String], default: [] },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

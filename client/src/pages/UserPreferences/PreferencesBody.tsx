@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Select, Button, Spin, message, AutoComplete } from 'antd';
 import './preferences-body-model.scss';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GeoService } from '@/api/services/geo.service';
 import { SoccerService } from '@/api/services/soccer.service';
 import { MAX_KEYWORD_LEN, MIN_KEYWORD_LEN } from '@/components/SearchBar';
 import { Team, Venue } from '@/types/soccer.types';
+import { QUERY_KEYS } from '@/api/constants/query-keys.const';
+import { UsersService } from '@/api/services/users.service';
+import { UserPreferencesPayload } from '@/models/user.model';
+import { useAuth } from '@/context/AuthContext';
+import { CityInfo } from '@/models/packages/package.model';
 
-const { Option } = Select;
+// const { Option } = Select;
 const MAX_ITEMS_PER_SELECT = 3;
 
 const PreferencesBody: React.FC = () => {
-    const [loading, setLoading] = useState(true);
+    const { loggedInUser } = useAuth();
+
     const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
     const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
-    const [homeAirport, setHomeAirport] = useState<string>('');
+    const [homeAirport, setHomeAirport] = useState<CityInfo>({ name: '', iataCode: '' });
     const [teamSearch, setTeamSearch] = useState('');
     const [leagueSearch, setLeagueSearch] = useState('');
     const [defaultTeams, setDefaultTeams] = useState<{ team: Team; venue: Venue }[]>([]);
+    const queryClient = useQueryClient();
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', homeAirportInput],
@@ -56,38 +63,29 @@ const PreferencesBody: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const fetchUserPreferences = async () => {
-            try {
-                const res = await fetch('/api/user/preferences');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
-                setFavoriteTeams(data.favoriteTeams || []);
-                setPreferredLeagues(data.preferredLeagues || []);
-                setHomeAirport(data.homeAirport || '');
-            } catch (error) {
-                console.error('Failed to fetch preferences', error);
-                message.error('Failed to load preferences');
-            } finally {
-                setLoading(false);
-            }
-        };
+        setFavoriteTeams(loggedInUser!.favoriteTeams || []);
+        setPreferredLeagues(loggedInUser!.preferredLeagues || []);
 
-        fetchUserPreferences();
+        if (loggedInUser!.homeAirport) {
+            setHomeAirport(loggedInUser!.homeAirport);
+            setHomeAirportInput(`${loggedInUser!.homeAirport.name} (${loggedInUser!.homeAirport.iataCode})`);
+        }
     }, []);
 
-    const handleSave = async () => {
-        try {
-            await fetch('/api/user/preferences', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ favoriteTeams, preferredLeagues, homeAirport }),
-            });
+    const { mutateAsync } = useMutation({
+        mutationKey: [QUERY_KEYS.UPDATE_USER],
+        mutationFn: async () => {
+            return await UsersService.updateUser(loggedInUser!._id, {
+                favoriteTeams,
+                preferredLeagues,
+                homeAirport,
+            } as UserPreferencesPayload);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LOGGED_IN_USER] });
             message.success('Preferences saved successfully!');
-        } catch (error) {
-            console.error('Failed to save preferences', error);
-            message.error('Failed to save preferences');
-        }
-    };
+        },
+    });
 
     const handleTeamChange = (value: string[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
@@ -105,13 +103,13 @@ const PreferencesBody: React.FC = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="user-preferences-loading">
-                <Spin size="large" />
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="user-preferences-loading">
+    //             <Spin size="large" />
+    //         </div>
+    //     );
+    // }
 
     const teamOptions =
         teamSearch.length < 3
@@ -171,7 +169,14 @@ const PreferencesBody: React.FC = () => {
                             (airport) => `${airport.name} (${airport.iataCode})` === value
                         );
                         setHomeAirportInput(value);
-                        setHomeAirport(selected?.iataCode || '');
+                        if (selected) {
+                            setHomeAirport({
+                                name: selected.name,
+                                iataCode: selected.iataCode || '',
+                            });
+                        } else {
+                            setHomeAirport({ name: '', iataCode: '' }); // fallback in case no match found
+                        }
                     }}
                     options={airportSuggestions.map((airport) => ({
                         value: `${airport.name} (${airport.iataCode})`,
@@ -184,7 +189,7 @@ const PreferencesBody: React.FC = () => {
             </div>
 
             <div className="save-btn">
-                <Button type="primary" onClick={handleSave}>
+                <Button type="primary" onClick={async () => await mutateAsync()}>
                     Save
                 </Button>
             </div>

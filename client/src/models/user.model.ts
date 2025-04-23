@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { zodDate } from '@/utils/zod.utils.ts';
+import { CityInfoSchema } from './packages/package.model';
 
 export const UserSchema = z.object({
     username: z.string(),
@@ -10,6 +11,9 @@ export const UserSchema = z.object({
     createdAt: zodDate,
     updatedAt: zodDate,
     refreshTokens: z.string().array().optional(),
+    favoriteTeams: z.string().array().optional(),
+    homeAirport: CityInfoSchema.optional(),
+    preferredLeagues: z.string().array().optional(),
 });
 
 export const RegisterPayload = UserSchema.omit({ createdAt: true, updatedAt: true });
@@ -20,6 +24,13 @@ export type LoginPayload = z.infer<typeof LoginPayload>;
 
 export const UserUpdatePayload = UserSchema.pick({ picture: true, username: true }).partial();
 export type UserUpdatePayload = z.infer<typeof UserUpdatePayload>;
+
+export const UserPreferencesPayload = UserSchema.pick({
+    favoriteTeams: true,
+    homeAirport: true,
+    preferredLeagues: true,
+}).partial();
+export type UserPreferencesPayload = z.infer<typeof UserPreferencesPayload>;
 
 export type User = z.infer<typeof UserSchema>;
 
