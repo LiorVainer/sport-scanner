@@ -316,8 +316,10 @@ const SearchBar = () => {
                                   );
                                   resetField('teams');
                                 }}
-                                // onClear={() => {
-                                // }}
+                                onClear={() => {
+                                    resetField('league');
+                                    setLeagueNameSearch(undefined);
+                                }}
                                 options={ leagues.map((league) => ({ value: league.league.name }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TrophyOutlined />}
