@@ -4,13 +4,11 @@ import { MatchDetails } from './MatchDetails';
 
 interface MatchCardProps {
     match: Match;
-    itemIndex: number;
 }
 
-export const MatchCard = ({ match, itemIndex }: MatchCardProps) => {
+export const MatchCard = ({ match }: MatchCardProps) => {
     return (
         <div className={styles.matchCardContainer}>
-            {/*<MatchLabel label={`Match ${romanize(itemIndex + 1)}`} />*/}
             <MatchDetails match={match} />
         </div>
     );

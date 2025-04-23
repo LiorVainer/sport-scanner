@@ -1,81 +1,168 @@
-import { Package } from '../models/packages/package.model';
+import { Package, PackageMetadata, PackageWithMetadata } from '../models/packages/package.model';
 import { isBefore, parseISO } from 'date-fns';
+
+type InvalidPackage = {
+    reason: string;
+    params: Record<string, any>;
+    package: Package;
+};
 
 type PartitionedPackages = {
     valid: Package[];
-    invalid: Package[];
+    invalid: InvalidPackage[];
 };
 
 export const partitionPackagesByRules = (packages: Package[], originIataCode: string): PartitionedPackages => {
     const valid: Package[] = [];
-    const invalid: Package[] = [];
+    const invalid: InvalidPackage[] = [];
 
     for (const pkg of packages) {
-        if (isPackageValidByRules(pkg, originIataCode)) {
-            valid.push(pkg);
+        const error = getInvalidReason(pkg, originIataCode);
+        if (error) {
+            invalid.push({ ...error, package: pkg });
         } else {
-            invalid.push(pkg);
+            valid.push(pkg);
         }
     }
 
     return { valid, invalid };
 };
 
-const isPackageValidByRules = (pkg: Package, originIataCode: string): boolean => {
-    const flightItems = pkg.timeline.filter((item) => item.type === 'flight').map((item) => ({ ...item }));
+const getInvalidReason = (
+    pkg: Package,
+    originIataCode: string
+): { reason: string; params: Record<string, any> } | null => {
+    const flightItems = pkg.timeline.filter((item) => item.type === 'flight');
+    const destinationItems = pkg.timeline.filter((item) => item.type === 'destination');
 
-    const matchItems = pkg.timeline
-        .filter((item) => item.type === 'destination')
-        .flatMap((item) =>
-            item.matches.map((match) => ({
-                ...match,
-                destinationStartDate: item.startDate,
-                destinationEndDate: item.endDate,
-            }))
-        );
-
-    const sortedFlights = [...flightItems].sort(
-        (flight, anotherFlight) =>
-            new Date(flight.departureDate).getTime() - new Date(anotherFlight.departureDate).getTime()
+    const allMatches = destinationItems.flatMap((destination) =>
+        destination.matches.map((match) => ({
+            ...match,
+            destinationStartDate: destination.startDate,
+            destinationEndDate: destination.endDate,
+            cityIataCode: destination.cityIataCode,
+        }))
     );
 
-    const sortedMatches = [...matchItems].sort(
-        (match, anotherMatch) => new Date(match.date).getTime() - new Date(anotherMatch.date).getTime()
+    const flightsSortedByDate = [...flightItems].sort(
+        (flightA, flightB) => new Date(flightA.departureDate).getTime() - new Date(flightB.departureDate).getTime()
     );
 
-    const firstFlight = sortedFlights[0];
-    const lastFlight = sortedFlights[sortedFlights.length - 1];
+    const matchesSortedByDate = [...allMatches].sort(
+        (matchA, matchB) => new Date(matchA.date).getTime() - new Date(matchB.date).getTime()
+    );
 
-    if (!firstFlight || firstFlight.origin.iataCode !== originIataCode) return false;
+    const firstFlight = flightsSortedByDate[0];
+    const lastFlight = flightsSortedByDate[flightsSortedByDate.length - 1];
 
-    if (!lastFlight || lastFlight.destination.iataCode !== originIataCode) return false;
-
-    for (let i = 1; i < sortedFlights.length; i++) {
-        const prev = parseISO(sortedFlights[i - 1].departureDate);
-        const current = parseISO(sortedFlights[i].departureDate);
-        if (isBefore(current, prev)) return false;
+    if (!firstFlight || firstFlight.origin.iataCode !== originIataCode) {
+        return {
+            reason: 'First flight must depart from origin airport',
+            params: {
+                originExpected: originIataCode,
+                originActual: firstFlight?.origin.iataCode,
+            },
+        };
     }
 
-    const lastMatch = sortedMatches[sortedMatches.length - 1];
-    if (!lastMatch || isBefore(parseISO(lastFlight.departureDate), parseISO(lastMatch.date))) {
-        return false;
+    if (!lastFlight || lastFlight.destination.iataCode !== originIataCode) {
+        return {
+            reason: 'Last flight must return to origin airport',
+            params: {
+                expectedReturn: originIataCode,
+                actualReturn: lastFlight?.destination.iataCode,
+            },
+        };
     }
 
-    for (const match of sortedMatches) {
+    for (let index = 1; index < flightsSortedByDate.length; index++) {
+        const prevDate = parseISO(flightsSortedByDate[index - 1].departureDate);
+        const currDate = parseISO(flightsSortedByDate[index].departureDate);
+        if (isBefore(currDate, prevDate)) {
+            return {
+                reason: 'Flights are not in chronological order',
+                params: {
+                    previous: prevDate.toISOString(),
+                    current: currDate.toISOString(),
+                    index,
+                },
+            };
+        }
+    }
+
+    if (matchesSortedByDate.length > 0) {
+        const lastMatch = matchesSortedByDate[matchesSortedByDate.length - 1];
+        if (isBefore(parseISO(lastFlight.departureDate), parseISO(lastMatch.date))) {
+            return {
+                reason: 'Last match occurs after return flight',
+                params: {
+                    lastMatchDate: lastMatch.date,
+                    lastFlightDate: lastFlight.departureDate,
+                },
+            };
+        }
+    }
+
+    for (const match of matchesSortedByDate) {
         const matchDate = parseISO(match.date);
         const matchCityIata = match.cityIataCode.toLowerCase();
 
-        const hasInboundFlight = sortedFlights.some((flight) => {
+        const hasInbound = flightsSortedByDate.some((flight) => {
             const arrivalDate = parseISO(flight.departureDate);
-            const destCityIata = flight.destination.iataCode.toLowerCase();
-            return (
-                (destCityIata.includes(matchCityIata) || matchCityIata.includes(destCityIata)) &&
-                isBefore(arrivalDate, matchDate)
-            );
+            const destinationIata = flight.destination.iataCode.toLowerCase();
+            return destinationIata === matchCityIata && isBefore(arrivalDate, matchDate);
         });
 
-        if (!hasInboundFlight) return false;
+        if (!hasInbound) {
+            return {
+                reason: `No inbound flight to match city (${match.cityIataCode}) before match`,
+                params: { matchDate: match.date },
+            };
+        }
     }
 
-    return true;
+    for (const destination of destinationItems) {
+        if (!destination.matches || destination.matches.length === 0) {
+            return {
+                reason: `Destination ${destination.city} has no matches`,
+                params: { city: destination.city },
+            };
+        }
+    }
+
+    return null;
+};
+
+export const calculateMetadata = (pkg: Package): PackageMetadata => {
+    const destinationBlocks = pkg.timeline.filter((item) => item.type === 'destination');
+    const flightItems = pkg.timeline.filter((item) => item.type === 'flight');
+
+    const destinationSummaries = destinationBlocks.map((destination) => ({
+        cityName: destination.city,
+        cityIata: destination.cityIataCode,
+        days: Math.max(1, new Date(destination.endDate).getDate() - new Date(destination.startDate).getDate()),
+        matchesCount: destination.matches.length,
+    }));
+
+    const allMatches = destinationBlocks.flatMap((destination) => destination.matches);
+    const averageTicketPrice =
+        allMatches.length > 0
+            ? allMatches.reduce((total, match) => total + (match.price.min + match.price.max) / 2, 0) /
+              allMatches.length
+            : 0;
+
+    return {
+        destinationsCount: destinationBlocks.length,
+        flightsCount: flightItems.length,
+        matchesCount: allMatches.length,
+        citiesVisited: destinationBlocks.map((destination) => destination.city),
+        durationDays: Math.max(1, new Date(pkg.endDate).getDate() - new Date(pkg.startDate).getDate()),
+        destinations: destinationSummaries,
+        averageMatchTicketPrice: Number(averageTicketPrice.toFixed(2)),
+    };
+};
+
+export const packageToPackageWithMetadata = (pkg: Package): PackageWithMetadata => {
+    const metadata = calculateMetadata(pkg);
+    return { ...pkg, metadata };
 };

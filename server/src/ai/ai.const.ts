@@ -1,14 +1,20 @@
-import {google} from '@ai-sdk/google';
-import {ENV} from '../env/env.config';
-import {AIGlobalConfig, AIMethodConfigKeys, AIServiceMethod, AIServiceMethodsConfig} from './ai.types';
+import { google } from '@ai-sdk/google';
+import { ENV } from '../env/env.config';
+import { AIGlobalConfig, AIMethodConfigKeys, AIServiceMethod, AIServiceMethodsConfig } from './ai.types';
 
 const model = google(ENV.AI_MODEL ?? 'gemini-2.0-flash-exp');
 
-export const AIConfigParams = ['model', 'maxTokens', 'messages', 'temperature'] satisfies AIMethodConfigKeys[];
+export const AIConfigParams = [
+    'model',
+    'maxTokens',
+    'messages',
+    'temperature',
+    'providerOptions',
+] satisfies AIMethodConfigKeys[];
 
 export const GlobalConfig: AIGlobalConfig = {
     model,
-    // maxTokens: ENV.AI_MAX_TOKENS ?? 1000,
+    maxTokens: ENV.AI_MAX_TOKENS ?? 1000,
     temperature: ENV.AI_TEMPERATURE ?? 0.5,
 };
 

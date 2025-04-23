@@ -56,8 +56,7 @@ export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) 
                 <div className={styles.rangeContainer}>
                     <CircleDollarSignIcon className={styles.icon} />
                     <Text strong className={styles.range}>
-                        {totalPrice.min}$ <ArrowRightOutlined className={styles.arrowIcon} />
-                        {totalPrice.max}$
+                        {totalPrice.min}$ - {totalPrice.max}$
                     </Text>
                 </div>
             </div>

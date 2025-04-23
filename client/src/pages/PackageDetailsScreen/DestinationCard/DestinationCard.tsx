@@ -6,7 +6,7 @@ import { formattedDate } from '@/utils/date.utils.ts';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Tag, Typography } from 'antd';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface DestinationCardProps {
     destination: Destination;
@@ -29,8 +29,8 @@ export const DestinationCard = ({ destination }: DestinationCardProps) => (
         </div>
         <div className={styles.divider} />
         <div className={styles.matchesSection}>
-            {destination.matches.map((match, index) => (
-                <MatchCard match={match} itemIndex={index} />
+            {destination.matches.map((match) => (
+                <MatchCard match={match} />
             ))}
         </div>
     </div>

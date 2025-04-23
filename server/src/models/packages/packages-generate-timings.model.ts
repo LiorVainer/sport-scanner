@@ -1,5 +1,5 @@
-import {ValueOf} from "../../types/general.types";
-import {GeneratePackagesStepKey} from "./packages-generate-steps.model";
+import { ValueOf } from '../../types/general.types';
+import { GeneratePackagesStepKey } from './packages-generate-steps.model';
 
 export const GeneratePackagesTimingSteps = {
     GENERATE_SEARCH_FIXTURE_PARAMS: 'generateSearchFixtureParamsMs',
@@ -10,6 +10,7 @@ export const GeneratePackagesTimingSteps = {
     GENERATE_PACKAGES: 'generatePackagesMs',
     FINISHED_GENERATING_PACKAGES: 'finishedGeneratingPackagesMs',
     FILTER_PACKAGES: 'filterPackagesMs',
+    GENERATING_PACKAGES_METADATA: 'generatingPackagesMetadataMs',
     TOTAL: 'totalMs',
 } satisfies Partial<Record<GeneratePackagesStepKey, string>> & Record<string, string>;
 

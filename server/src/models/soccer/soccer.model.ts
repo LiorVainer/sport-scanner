@@ -4,7 +4,7 @@ export const LeagueSchema = z.object({
     id: z.number(),
     name: z.string(),
     type: z.string().optional(), // optional for flexibility
-    logo: z.string().url(),
+    logo: z.string(),
     country: z.string().optional(),
     flag: z.string().nullable().optional(),
     season: z.number().optional(),
@@ -20,7 +20,7 @@ export const VenueSchema = z.object({
     country: z.string().optional(),
     capacity: z.number().optional(),
     surface: z.string().optional(),
-    image: z.string().url().optional(),
+    image: z.string().optional(),
 });
 export type Venue = z.infer<typeof VenueSchema>;
 
@@ -31,7 +31,7 @@ export const TeamSchema = z.object({
     country: z.string().optional(),
     founded: z.number().optional(),
     national: z.boolean().optional(),
-    logo: z.string().url(),
+    logo: z.string(),
     winner: z.boolean().nullable().optional(),
 });
 

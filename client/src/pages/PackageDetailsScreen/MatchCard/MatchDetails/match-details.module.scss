@@ -37,29 +37,49 @@
 .stadiumTag {
   font-size: 12px;
   font-weight: 600;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   border-radius: 30px;
   background-color: #2f4f6f;
   color: white;
+
+  & > * > svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .leagueTag {
   font-size: 12px;
   font-weight: 600;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 1rem;
   border-radius: 30px;
   border: none;
-  color: #2f4f6f;
+  color: $accent;
   background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .leagueLogo {
+    width: 30px;
+    aspect-ratio: 1;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    object-fit: contain;
+  }
 }
 
 .matchTeams {
-  color: #2f4f6f;
+  color: $accent;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 26px;
   line-height: 30px;
   letter-spacing: -1.5px;
   vertical-align: middle;
+  display: flex;
 }
 
 .matchMeta {

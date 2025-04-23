@@ -22,6 +22,7 @@ export const VenueSchema = z.object({
     surface: z.string().optional(),
     image: z.string().url().optional(),
 });
+
 export type Venue = z.infer<typeof VenueSchema>;
 
 export const TeamSchema = z.object({
