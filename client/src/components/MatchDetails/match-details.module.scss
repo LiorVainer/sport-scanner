@@ -49,7 +49,7 @@
 }
 
 .matchTitle {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: #2f4f6f;
 }
@@ -68,20 +68,33 @@
 .stadiumTag {
   background-color: #2f4f6f;
   color: white;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
 }
 
 .leagueTag {
-  background-color: #f0f2f5;
-  color: #2f4f6f;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 30px;
   border: none;
+  color: #2f4f6f;
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .leagueLogo {
+    width: 22px;
+    aspect-ratio: 1;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    object-fit: contain;
+  }
 }
 
 .prices {

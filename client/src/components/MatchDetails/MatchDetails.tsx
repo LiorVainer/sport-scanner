@@ -1,5 +1,5 @@
 import { Tag, Typography } from 'antd';
-import { EnvironmentOutlined, TrophyOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined } from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { Match } from '@/models/packages/package.model.ts';
@@ -31,20 +31,14 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                     </div>
                     <div className={styles.meta}>
                         <Tag icon={<EnvironmentOutlined />} className={styles.stadiumTag}>
-                            {stadium}
+                            {stadium.name}
                         </Tag>
-                        <Tag icon={<TrophyOutlined />} className={styles.leagueTag}>
-                            {league}
-                        </Tag>
+                        <div className={styles.leagueTag}>
+                            <img src={league.logo} alt={league.name} className={styles.leagueLogo} />
+                            <p>{league.name}</p>
+                        </div>
                     </div>
                     <div className={styles.prices}>
-                        {
-                            // TODO: Think of better way to show prices
-                            /* <Text className={styles.priceRange}>
-                            <TicketsPlane className={styles.icon} />
-                            {flightsPrice}$
-                        </Text> */
-                        }
                         <Text className={styles.priceRange}>
                             <img src="/stadium.svg" alt="stadium" className={styles.icon} />
                             {`${price.min}$ - ${price.max}$`}

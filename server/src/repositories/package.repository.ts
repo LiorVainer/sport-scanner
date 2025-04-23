@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { Package } from '../models/packages/package.model';
+import { PackageWithMetadata } from '../models/packages/package.model';
 import { PriceRange } from '../models/price-range.model';
 
 const PriceRangeSchema = new Schema<PriceRange>(
@@ -11,7 +11,7 @@ const PriceRangeSchema = new Schema<PriceRange>(
 );
 
 export const PackageSchema = new Schema<
-    Omit<Package, 'id' | 'timeline' | 'metadata'> & {
+    Omit<PackageWithMetadata, 'id' | 'timeline' | 'metadata'> & {
         timeline: any;
         metadata: any;
     }
@@ -39,6 +39,6 @@ export const PackageSchema = new Schema<
     }
 );
 
-export const PackageRepository = mongoose.model<Omit<Package, 'id'>>('packages', PackageSchema);
+export const PackageRepository = mongoose.model<Omit<PackageWithMetadata, 'id'>>('packages', PackageSchema);
 
-export type PackageDocument = Document<unknown, {}, Omit<Package, 'id'>>;
+export type PackageDocument = Document<unknown, {}, Omit<PackageWithMetadata, 'id'>>;

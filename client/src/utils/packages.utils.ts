@@ -33,6 +33,9 @@ export const getProgressStepMessage = (progressUpdate: PackagesGenerationProgres
         case GeneratePackagesSteps.FILTER_PACKAGES:
             return '🧪 Filtering packages by quality and rules...';
 
+        case GeneratePackagesSteps.GENERATING_PACKAGES_METADATA:
+            return '🗂️ Adding metadata to packages...';
+
         case GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES:
             return `✅ Found ${progressUpdate.packages.length} great packages for your trip! (took ${(progressUpdate.durationMs / 1000).toFixed(2)} seconds)`;
 

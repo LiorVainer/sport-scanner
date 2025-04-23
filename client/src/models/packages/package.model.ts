@@ -1,9 +1,7 @@
 import { z } from 'zod';
-
-export const PriceRangeSchema = z.object({
-    min: z.number(),
-    max: z.number(),
-});
+import { PriceRangeSchema } from '../price-range.model';
+import { FixtureInfoSchema } from '../soccer/fixture.model';
+import { LeagueSchema, VenueSchema } from '@/models/soccer/soccer.model.ts';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
@@ -12,24 +10,25 @@ export const CityInfoSchema = z.object({
 
 export const FlightPurposeSchema = z
     .enum(['departure', 'return', 'connecting'])
-    .describe('Purpose of the flight, either departure or return');
-export const FlightPurposeEnum = FlightPurposeSchema.Enum;
+    .describe(
+        'Purpose of the flight, either "departure", "return" or "connecting" ("connecting" is used for flights that are between packages destinations).'
+    );
+
+export const FlightPurposeEnum = FlightPurposeSchema.enum;
 
 export const FlightSchema = z.object({
-    id: z.number().describe('Unique identifier of the flight'),
-    origin: CityInfoSchema.describe('Origin city information'),
-    destination: CityInfoSchema.describe('Destination city information'),
+    id: z.number(),
+    origin: CityInfoSchema,
+    destination: CityInfoSchema,
     price: z.number(),
-    departureDate: z.string().describe('Flight departure date'),
-    purpose: z
-        .enum(['departure', 'return', 'connecting'])
-        .describe('Purpose of the flight, either departure or return'),
-    searchFlightTicketsLink: z
-        .string()
-        .describe(
-            'Real link to search for the flight on skyscanner website, use the flight details to generate the link, insert the IATA codes and dates in the link, based on the skyscanner link format'
-        ),
-});
+    departureDate: z.string(),
+    purpose: FlightPurposeSchema,
+    searchFlightTicketsLink: z.string(),
+}).describe(`
+  Represents a complete flight between two cities in the timeline.
+  This may internally include segments (e.g. TLV → FCO → MUC), but
+  only the full flight should be included here — NOT individual segments.
+`);
 
 export const TeamSchema = z.object({
     id: z.number().describe('Unique identifier of the team'),
@@ -37,25 +36,23 @@ export const TeamSchema = z.object({
     logo: z.string().describe('URL of the team logo'),
 });
 
-export const MatchSchema = z.object({
-    id: z.number().describe('Unique identifier of the match'),
-    homeTeam: TeamSchema.describe('Home team playing in the match'),
-    awayTeam: TeamSchema.describe('Away team playing in the match'),
-    league: z.string().describe('League in which the match is played'),
-    stadium: z.string().describe('Stadium where the match takes place'),
-    date: z.string().describe('Date of the match'),
-    price: PriceRangeSchema.describe('Price range of the match tickets'),
-    searchMatchTicketsLink: z
-        .string()
-        .describe(
-            'Real link to search for match tickets on SeatGeek website. Use the match details to generate the link, inserting the home team, away team, and date as query parameters based on SeatGeek’s search format (e.g., https://seatgeek.com/search?performers[home_team]=FC%20Barcelona&performers[away_team]=Real%20Betis&datetime_utc=2025-04-05)'
-        ),
-});
-
 export const PackageTimelineItemType = {
     FLIGHT: 'flight',
     DESTINATION: 'destination',
 } as const;
+
+export const MatchSchema = FixtureInfoSchema.omit({ venue: true }).extend({
+    league: LeagueSchema.describe('League associated with the fixture'),
+    homeTeam: TeamSchema.describe('Home team playing in the match'),
+    awayTeam: TeamSchema.describe('Away team playing in the match'),
+    stadium: VenueSchema.describe('Stadium where the match takes place'),
+    price: PriceRangeSchema.describe('Price range of the match tickets'),
+    searchMatchTicketsLink: z
+        .string()
+        .describe(
+            'URL to search for match tickets on StubHub. This should include relevant query parameters such as the home team, away team, date, or venue when applicable. For example: https://www.stubhub.com/search?q=FC%20Barcelona%20vs%20Real%20Betis%202025-04-05'
+        ),
+});
 
 export const DestinationSchema = z.object({
     type: z
@@ -68,6 +65,8 @@ export const DestinationSchema = z.object({
     matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
 });
 
+export type Destination = z.infer<typeof DestinationSchema>;
+
 export const FlightItemSchema = FlightSchema.extend({
     type: z
         .literal(PackageTimelineItemType.FLIGHT)
@@ -78,7 +77,7 @@ export const TimelineItemSchema = z
     .discriminatedUnion('type', [FlightItemSchema, DestinationSchema])
     .describe('Timeline item, either a flight or a destination');
 
-export const PackageMetadata = z
+export const PackageMetadataSchema = z
     .object({
         destinationsCount: z.number().describe('Number of different cities (destinations) included in this package'),
 
@@ -132,23 +131,24 @@ There can be multiple flights depending on the number of destinations.`
         totalPrice: PriceRangeSchema.describe(
             'Total price range of the package. This includes the flightsPrice and matchesPrice combined.'
         ),
-        timeline: z.array(TimelineItemSchema).describe(
-            `Ordered timeline of the package that mixes flight and destination events.
-There can be multiple destinations and flights in a single package, each with one or more matches.`
-        ),
-        metadata: PackageMetadata,
+        timeline: z.array(TimelineItemSchema).describe(`
+  The timeline contains full flights and destinations in chronological order.
+  Flights must represent full offers between cities (e.g. TLV → MUC) and not individual segments.
+  If a flight contains multiple legs (segments), it should still appear as a single item.
+  Do NOT include each segment separately. 
+  Destinations group the matches at a given city.
+`),
+        metadata: PackageMetadataSchema,
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 
-export type PriceRange = z.infer<typeof PriceRangeSchema>;
+export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
+
 export type Match = z.infer<typeof MatchSchema>;
 export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
-export type TimelineItem = z.infer<typeof TimelineItemSchema>;
-export type FlightItem = z.infer<typeof FlightItemSchema>;
-export type Destination = z.infer<typeof DestinationSchema>;
 
 export const PackageDocumentSchema = PackageSchema.extend({
     _id: z.string(),

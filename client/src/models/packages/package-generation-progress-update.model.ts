@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { PackageSchema } from './package.model.ts';
-import { DateRangeSchema } from './package-generate-params.model.ts';
-import { FixtureItemSchema, FixtureItemWithPriceSchema } from '@/models/soccer/fixture.model.ts';
-import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
-import { FlightSearchParamsSchema } from '@/models/flights/flights-search-params.model.ts';
-import { CityIataToCityMetadataCodeMapSchema } from '../flights/iata.model.ts';
+import { PackageSchema } from './package.model';
+import { DateRangeSchema } from './package-generate-params.model';
+import { ExtendedFixtureItemSchema, FixtureItemSchema, FixtureQueryParamsSchema } from '../soccer/fixture.model';
+import { GeneratePackagesSteps } from './packages-generate-steps.model';
+import { FlightSearchParamsSchema } from '../flights/flights-search-params.model';
+import { CityIataToCityMetadataCodeMapSchema } from '../flights/iata.model';
 
 const BaseUpdateSchema = z.object({
     message: z.string(),
@@ -17,6 +17,7 @@ const GenerateSearchFixtureParamsSchema = BaseUpdateSchema.extend({
 
 const FetchFixturesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FETCH_FIXTURES),
+    fixturesSearchQueryParamsArray: FixtureQueryParamsSchema.array(),
 });
 
 const FoundFixturesSchema = BaseUpdateSchema.extend({
@@ -26,7 +27,7 @@ const FoundFixturesSchema = BaseUpdateSchema.extend({
 
 const AddPriceRangeToFixturesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES),
-    fixtures: FixtureItemWithPriceSchema.array(),
+    fixtures: ExtendedFixtureItemSchema.array(),
 });
 
 const GenerateSearchParamsSchema = BaseUpdateSchema.extend({
@@ -57,6 +58,10 @@ const FilterPackagesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FILTER_PACKAGES),
 });
 
+const GeneratePackagesMetadataSchema = BaseUpdateSchema.extend({
+    step: z.literal(GeneratePackagesSteps.GENERATING_PACKAGES_METADATA),
+});
+
 const FinishedGeneratingPackagesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES),
     packages: PackageSchema.array(),
@@ -80,6 +85,7 @@ export const PackagesGenerationProgressUpdateSchema = z.discriminatedUnion('step
     FilterPackagesSchema,
     FinishedGeneratingPackagesSchema,
     ErrorProgressSchema,
+    GeneratePackagesMetadataSchema,
 ]);
 
 export type PackagesGenerationProgressUpdate = z.infer<typeof PackagesGenerationProgressUpdateSchema>;
