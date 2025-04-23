@@ -290,7 +290,7 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                value={leagueNameSearch ?? ''}
+                                value={watchLeague ? watchLeague.name : leagueNameSearch}
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
