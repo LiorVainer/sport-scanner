@@ -15,7 +15,11 @@ import { CityInfo } from '@/models/packages/package.model';
 // const { Option } = Select;
 const MAX_ITEMS_PER_SELECT = 3;
 
-const PreferencesBody: React.FC = () => {
+interface PreferencesBodyProps {
+    handlePreferencesCancel: () => void;
+}
+
+const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
 
     const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
@@ -79,11 +83,13 @@ const PreferencesBody: React.FC = () => {
                 favoriteTeams,
                 preferredLeagues,
                 homeAirport,
+                isFirstVisit: false,
             } as UserPreferencesPayload);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LOGGED_IN_USER] });
             message.success('Preferences saved successfully!');
+            handlePreferencesCancel();
         },
     });
 

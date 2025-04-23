@@ -14,6 +14,7 @@ export const UserSchema = z.object({
     favoriteTeams: z.string().array().optional(),
     homeAirport: CityInfoSchema.optional(),
     preferredLeagues: z.string().array().optional(),
+    isFirstVisit: z.boolean().optional(),
 });
 
 export const RegisterPayload = UserSchema.omit({ createdAt: true, updatedAt: true });
@@ -29,6 +30,7 @@ export const UserPreferencesPayload = UserSchema.pick({
     favoriteTeams: true,
     homeAirport: true,
     preferredLeagues: true,
+    isFirstVisit: true,
 }).partial();
 export type UserPreferencesPayload = z.infer<typeof UserPreferencesPayload>;
 

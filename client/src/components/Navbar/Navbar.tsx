@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import classes from './navbar.module.scss';
 import { Link } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,8 +9,10 @@ import { NavbarUserDropdown } from '../NavbarUserDropdown';
 import { ROUTES } from '@/constants/routes.const';
 import { Modal } from 'antd';
 import PreferencesBody from '@/pages/UserPreferences/PreferencesBody';
+import { useAuth } from '@/context/AuthContext';
 
 export const Navbar = () => {
+    const { loggedInUser } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState<boolean>(false);
 
@@ -18,6 +20,14 @@ export const Navbar = () => {
     const showPreferencesModal = () => setIsPreferencesModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
     const handlePreferencesCancel = () => setIsPreferencesModalOpen(false);
+
+    useEffect(() => {
+        console.log('homo');
+        console.log(loggedInUser?.isFirstVisit);
+        if (loggedInUser?.isFirstVisit) {
+            showPreferencesModal();
+        }
+    }, []);
 
     return (
         <nav className={classes.navbar}>
@@ -47,7 +57,7 @@ export const Navbar = () => {
                     destroyOnClose
                     title="Edit Preferences"
                 >
-                    <PreferencesBody />
+                    <PreferencesBody handlePreferencesCancel={handlePreferencesCancel}/>
                 </Modal>
             </div>
         </nav>

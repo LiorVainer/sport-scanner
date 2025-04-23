@@ -20,6 +20,7 @@ const UserMongoSchema = new Schema(
         favoriteTeams: { type: [String], default: [] },
         homeAirport: { type: CityInfoMongooseSchema },
         preferredLeagues: { type: [String], default: [] },
+        isFirstVisit: { type: Boolean, default: true },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

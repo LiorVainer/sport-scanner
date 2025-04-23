@@ -14,6 +14,7 @@ export const UserSchema = z.object({
     favoriteTeams: z.string().array().optional(),
     homeAirport: CityInfoSchema.optional(),
     preferredLeagues: z.string().array().optional(),
+    isFirstVisit: z.boolean().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

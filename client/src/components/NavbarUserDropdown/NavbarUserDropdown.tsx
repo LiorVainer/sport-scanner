@@ -6,7 +6,7 @@ import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
 
 export interface NavbarUserDropdownProps {
   showModal: () => void;
-  showPreferencesModal: () => void; // 🔹 NEW
+  showPreferencesModal: () => void;
 }
 
 const { Text } = Typography;
