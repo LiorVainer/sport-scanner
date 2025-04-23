@@ -27,7 +27,8 @@ export const soccerController = {
             if (name && name !== "") {
                 const regex = new RegExp(name, 'i');
                 const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
-                return res.status(200).json(filteredLeagues);
+                res.status(200).json(filteredLeagues);
+                return;
             }
             res.status(200).json(leagues);
         } catch (e) {
@@ -50,7 +51,8 @@ export const soccerController = {
             const name = req.query.name as string | undefined;
     
             if (!name || name.length < 3) {
-                return res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
+                res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
+                return;
             }
     
             const teams = await soccerService.getTeamsByName(name);

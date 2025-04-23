@@ -27,12 +27,10 @@ import {
     PackagesGenerationParamsSchema,
 } from '@/models/packages/package-generate-params.model.ts';
 import { Team, Venue } from '@/types/soccer.types';
+import { MAX_KEYWORD_LEN, MAX_TEAMS_LIMIT, MIN_KEYWORD_LEN, teamNames, topFootballCountries } from './search-bar.const';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-
-const MIN_KEYWORD_LEN = 3;
-const MAX_KEYWORD_LEN = 50;
 
 const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
     const today = dayjs();
@@ -103,7 +101,6 @@ const SearchBar = () => {
         enabled: !!countryNameSearch,
     });
 
-    const topFootballCountries: string[] = ['Spain', 'England', 'Germany', 'Italy', 'France'];
     const defaultCountryOptions = topFootballCountries.map((country) => ({
         value: country,
     }));
@@ -117,10 +114,10 @@ const SearchBar = () => {
     const { data: teams = [] } = useQuery({
         queryKey: ['teams', teamNameSearch],
         queryFn: () => {
-          if (!teamNameSearch || teamNameSearch.length < 3) return [];
+          if (!teamNameSearch || teamNameSearch.length < MIN_KEYWORD_LEN) return [];
           return SoccerService.getTeams(teamNameSearch);
         },
-        enabled: !!teamNameSearch && teamNameSearch.length >= 3,
+        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_KEYWORD_LEN,
       });
 
     const onSubmit = (values: PackagesGenerationParams) => {
@@ -137,7 +134,6 @@ const SearchBar = () => {
 
     React.useEffect(() => {
         const fetchDefaultTeams = async () => {
-          const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
           const teamData = await Promise.all(
             teamNames.map(async (name) => {
               const teams = await SoccerService.getTeams(name);
@@ -339,11 +335,11 @@ const SearchBar = () => {
                                 allowClear
                                 maxTagCount="responsive"
                                 className={classes.selectTeam}
-                                placeholder="Select up to 5 Teams"
+                                placeholder="Select Teams"
                                 disabled={!!watchLeague || !!watchCountry}
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(values: string[]) => {
-                                    if (values.length > 5) return;
+                                    if (values.length > MAX_TEAMS_LIMIT) return;
                                     const newSelections = values
                                         .map((val) => teams.find((t) => t.team.name === val))
                                         .filter(Boolean)
@@ -354,6 +350,10 @@ const SearchBar = () => {
                                         ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
                                     ];
                                     field.onChange(merged);
+                                }}
+                                onClear={() => {
+                                    resetField('teams');
+                                    setTeamNameSearch(undefined);
                                 }}
                                 value={field.value?.map((team) => team.name) ?? []}
                                 options={!teamNameSearch ? defaultTeams.map((t) => ({ value: t.team.name })) : teams.map((t) => ({ value: t.team.name }))}
