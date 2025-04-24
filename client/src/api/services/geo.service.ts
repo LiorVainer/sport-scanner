@@ -1,4 +1,3 @@
-import { Country } from '@/types/soccer.types';
 import { axiosInstance } from '../config/axios-instance';
 import { z } from 'zod';
 
@@ -32,5 +31,5 @@ export const GeoService = {
             console.error('Error fetching cities:', (error as any).message);
             throw error;
         }
-    }
+    },
 };

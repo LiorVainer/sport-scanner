@@ -90,7 +90,12 @@
   width: fit-content;
 
   :global {
-    .ant-select-single .ant-select-selector {
+    .ant-select-single {
+      border-radius: $system-border-radius;
+      background-color: #f5f5f5;
+    }
+
+    .ant-select-selector {
       border-radius: $system-border-radius;
       background-color: #f5f5f5;
     }
@@ -139,6 +144,17 @@
   width: 180px;
 }
 
-.selectTeam {
-  width: 150px;
+.selectTeams {
+  width: 200px;
+}
+
+.teamItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  & > img {
+    width: 18px;
+    height: 18px;
+  }
 }

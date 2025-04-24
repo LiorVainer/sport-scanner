@@ -18,3 +18,11 @@ export const FixturesToFlattenedDetails = (fixtures: ExtendedFixtureItem[]) =>
     fixtures.map((fixture) => {
         return FixtureToFlattenedDetails(fixture);
     });
+
+export const sortFixturesByDate = (fixtures: ExtendedFixtureItem[]) => {
+    return fixtures.sort((itemA, itemB) => {
+        const dateA = new Date(itemA.fixture.date).getTime();
+        const dateB = new Date(itemB.fixture.date).getTime();
+        return dateA - dateB;
+    });
+};

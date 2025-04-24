@@ -1,4 +1,3 @@
-import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './fixtures-details.module.scss';
 import { FixturesToFlattenedDetails } from '@/utils/fixture.utils.ts';
 import moment from 'moment';
@@ -35,11 +34,7 @@ export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {
                         </div>
                         <div className={styles.metadata}>
                             {price ? (
-                                <p className={styles.fixturePrice}>
-                                    <span>{`${price?.min}$`}</span>
-                                    <ArrowRightOutlined />
-                                    <span>{`${price?.max}$`}</span>
-                                </p>
+                                <p className={styles.fixturePrice}>{`${price?.min}$ - ${price?.max}$`}</p>
                             ) : (
                                 <p className={styles.fixtureDate}>{moment(new Date(date)).format('DD/MM')}</p>
                             )}

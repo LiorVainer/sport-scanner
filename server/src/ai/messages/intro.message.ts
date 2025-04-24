@@ -20,6 +20,7 @@ You'll receive:
 You are encouraged to combine **multiple matches** into one package if they are:
 - **Close enough in time** (e.g. 2–6 days apart)
 - **Geographically reachable** (e.g. nearby cities or major European hubs)
+- **Can Be Reached by a flight mentioned in the following messages** that arrives before the match starts at the destination city
 
 ✅ Example:
 If there's a match in **Barcelona on April 19** and another in **Seville on April 26**, you can generate a package that visits both cities, using available flights or connections in between.

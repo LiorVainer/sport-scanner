@@ -71,7 +71,8 @@ export const FixtureContextMessagesGenerator = {
 
         return [
             message.user(
-                `Estimate the ticket price range (in ${ENV.CURRENCY_CODE}) for the following soccer fixtures:\n`
+                `Estimate the ticket price range (in ${ENV.CURRENCY_CODE}) for all of the following soccer fixtures:\n
+                No skipping or ignoring any of the fixtures.`
             ),
             ...lines,
         ];
