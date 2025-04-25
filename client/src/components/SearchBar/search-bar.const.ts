@@ -45,8 +45,10 @@ export const DEFAULT_TEAMS: DefaultTeam[] = [
     },
 ];
 
-export const MIN_KEYWORD_LEN = 3;
-export const MAX_KEYWORD_LEN = 50;
+export const MIN_AIRPORT_SEARCH_KEYWORD_LEN = 3;
+export const MAX_AIRPORT_SEARCH_KEYWORD_LEN = 50;
+
+export const MIN_COUNTRY_SEARCH_KEYWORD_LEN = 3;
 
 export const TopFootballCountries: string[] = ['Spain', 'England', 'Germany', 'Italy', 'France'];
 

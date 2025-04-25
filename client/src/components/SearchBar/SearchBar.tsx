@@ -27,9 +27,10 @@ import {
 } from '@/models/packages/package-generate-params.model.ts';
 import {
     DEFAULT_TEAMS,
-    MAX_KEYWORD_LEN,
+    MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     MAX_TEAMS_LIMIT,
-    MIN_KEYWORD_LEN,
+    MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+    MIN_COUNTRY_SEARCH_KEYWORD_LEN,
     TopFootballCountries,
 } from './search-bar.const';
 
@@ -93,16 +94,17 @@ const SearchBar = () => {
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
         queryFn: async () => {
-            if (originKeyword.length < MIN_KEYWORD_LEN || originKeyword.length > MAX_KEYWORD_LEN) return [];
             return GeoService.getCities(originKeyword);
         },
-        enabled: originKeyword.length >= MIN_KEYWORD_LEN && originKeyword.length <= MAX_KEYWORD_LEN,
+        enabled:
+            originKeyword.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN &&
+            originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: countries = [] } = useQuery({
         queryKey: ['countries', countryNameSearch],
         queryFn: () => SoccerService.getCountries(countryNameSearch),
-        enabled: !!countryNameSearch,
+        enabled: !!countryNameSearch && countryNameSearch.length >= MIN_COUNTRY_SEARCH_KEYWORD_LEN,
     });
 
     const { data: leagues = [] } = useQuery({
@@ -113,12 +115,8 @@ const SearchBar = () => {
 
     const { data: teams = [] } = useQuery({
         queryKey: ['teams', teamNameSearch],
-        queryFn: async () => {
-            if (!teamNameSearch || teamNameSearch.length < MIN_KEYWORD_LEN) return [];
-            const teamsFound = await SoccerService.getTeams(teamNameSearch);
-            return teamsFound.map((item) => item.team);
-        },
-        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_KEYWORD_LEN,
+        queryFn: async () => await SoccerService.getTeams(teamNameSearch!),
+        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const onSubmit = (values: PackagesGenerationFormValues) => {
@@ -151,8 +149,6 @@ const SearchBar = () => {
         return () => subscription.unsubscribe();
     }, [watch]);
 
-    console.log('SearchBar - watch', watch());
-
     return (
         <div className={classes.main}>
             <div className={classes.overlay} />
@@ -178,7 +174,7 @@ const SearchBar = () => {
                                         );
                                         field.onChange(selectedCity?.iataCode || '');
                                     }}
-                                    value={originKeyword || field.value || ''}
+                                    value={originKeyword || field.value}
                                     onChange={(value) => setOriginKeyword(value)}
                                     onClear={() => field.onChange('')}
                                     options={airportSuggestions.map((city) => ({
@@ -295,10 +291,10 @@ const SearchBar = () => {
                                     disabled={!watchCountry || (!!watchTeams && !!watchTeams?.length)}
                                     onSearch={(value) => setLeagueNameSearch(value)}
                                     onChange={(text) => {
-                                        if (text !== '') {
-                                            field.onChange(text);
-                                            setLeagueNameSearch(text);
-                                        }
+                                        if (text === '') return;
+
+                                        field.onChange(text);
+                                        setLeagueNameSearch(text);
                                     }}
                                     onSelect={(value: string) => {
                                         setLeagueNameSearch(undefined);
