@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const CountrySchema = z.object({
+    code: z.string(),
+    name: z.string(),
+    flag: z.string(),
+});
+
+export type Country = z.infer<typeof CountrySchema>;
+
 export const LeagueSchema = z.object({
     id: z.number(),
     name: z.string(),

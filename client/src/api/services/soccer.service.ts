@@ -1,14 +1,24 @@
-import { Country, League, Team, Venue } from '@/types/soccer.types';
 import { axiosInstance } from '../config/axios-instance';
+import { Country, League, Team, Venue } from '@/models/soccer/soccer.model.ts';
 
 export const ROUTE_PREFIX = '/soccer';
 
 export const SoccerService = {
-    async getLeagues(country: string) {
+    async getCountries(name?: string) {
+        try {
+            const { data } = await axiosInstance.get<Country[]>(`${ROUTE_PREFIX}/countries`, { params: { name } });
+            return data;
+        } catch (error) {
+            console.error('Error fetching countries:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async getLeagues(country?: string, name?: string) {
         try {
             const { data } = await axiosInstance.get<{ league: League; country: Country }[]>(
                 `${ROUTE_PREFIX}/leagues`,
-                { params: { country } }
+                { params: { country, name } }
             );
             return data;
         } catch (error) {
@@ -27,14 +37,28 @@ export const SoccerService = {
         }
     },
 
-    async getTeams({ leagueId, season }: { leagueId: number; season: number }) {
+    async getTeams(name: string) {
         try {
-            const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
-                params: { league: leagueId, season },
+            const { data } = await axiosInstance.get<Team[]>(`${ROUTE_PREFIX}/teams`, {
+                params: { name },
             });
+
             return data;
         } catch (error) {
             console.error('Error fetching teams:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async getTeamsWithVenue(name: string) {
+        try {
+            const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
+                params: { name, include: 'venue' },
+            });
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching teams with venue:', (error as any).message);
             throw error;
         }
     },

@@ -4,20 +4,6 @@ import { CityLocationSchema, CitySearchParams, CitySearchParamsSchema, Country }
 import { soccerService } from '../services/soccer.service';
 
 export const geoController = {
-    getCountries: async (req: Request, res: Response): Promise<any> => {
-        try {
-            const name = req.query.name as string;
-            const countries = (await soccerService.getCountries()) ?? [];
-            if (name) {
-                const regex = new RegExp(name, 'i');
-                const filteredCountries = countries.filter((country: Country) => regex.test(country.name));
-                return res.status(200).json(filteredCountries);
-            }
-            return res.status(200).json(countries);
-        } catch (e) {
-            return res.status(500).json({ message: 'Error fetching countries', error: e });
-        }
-    },
     getCities: async (req: Request<any, any, CitySearchParams>, res: Response) => {
         const { data: parsedParams, error } = CitySearchParamsSchema.safeParse(req.query);
         if (error) {

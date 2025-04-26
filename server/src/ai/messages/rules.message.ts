@@ -28,6 +28,10 @@ Each package must include:
 - Every match must be reachable by a flight that arrives **before** kickoff
 - Flights must follow chronological order
 
+🎯 Package Variety Rule:
+- Each generated package in the array must be **distinct** from the others by **at least one unique match** — either a different match or a different city.
+- Avoid returning duplicate packages with only cosmetic changes.
+
 ✈️ Match Rules:
 - 1 match (any city): TLV → match → TLV (2 flights + 1 destination)
 - 2 matches in same city: TLV → city → TLV (2 flights + 1 destination)
@@ -37,11 +41,13 @@ Each package must include:
 - Flights from/to Rome if there's no match there
 - Destinations that do not contain any matches
 - Segments shown as separate timeline items
+- Duplicate packages with same structure and matches
 
 ✅ Valid Examples:
 - TLV → MUC → LEJ → TLV (3 full flights + 2 destinations)
 - TLV → BCN → TLV (2 full flights + 1 destination with 2 matches)
+- TLV → MAD → BIO → TLV (3 flights + different match cities than others)
 
-Return only fully valid and complete packages that follow all structure and rules.`
+Return only fully valid, structured, and **unique** packages that follow all rules above.`
         ),
 };

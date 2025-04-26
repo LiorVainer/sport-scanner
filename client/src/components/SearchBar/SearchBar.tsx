@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AutoComplete, Button, DatePicker, Form, Select, Slider } from 'antd';
 import dayjs from 'dayjs';
 import {
@@ -11,9 +11,7 @@ import {
     TrophyOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { useQueryOnDefinedParam } from '@api/hooks/service.query.ts';
 import { SoccerService } from '@/api/services/soccer.service';
-import { calculateCurrentSeason } from '@/utils/date.utils';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MAX_PRICE, MIN_PRICE } from './SearchBarLogic';
@@ -24,17 +22,22 @@ import { GeoService } from '@/api/services/geo.service';
 import { usePackages } from '@/context/PackagesContext';
 import { useLocalStorage } from '@/hooks/useLocalStorage.hooks';
 import {
-    PackagesGenerationParams,
-    PackagesGenerationParamsSchema,
+    PackagesGenerationFormValues,
+    PackagesGenerationFormValuesSchema,
 } from '@/models/packages/package-generate-params.model.ts';
+import {
+    DEFAULT_TEAMS,
+    MAX_AIRPORT_SEARCH_KEYWORD_LEN,
+    MAX_TEAMS_LIMIT,
+    MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+    MIN_COUNTRY_SEARCH_KEYWORD_LEN,
+    TopFootballCountries,
+} from './search-bar.const';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const MIN_KEYWORD_LEN = 3;
-const MAX_KEYWORD_LEN = 50;
-
-const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
+const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () => {
     const today = dayjs();
     const inTwoWeeks = today.add(2, 'weeks');
 
@@ -46,22 +49,30 @@ const calcDefaultGenerateParams: () => PackagesGenerationParams = () => {
         },
         price: { min: MIN_PRICE, max: MAX_PRICE },
         league: undefined,
-        team: undefined,
+        teams: undefined,
         country: undefined,
     };
 };
 
+const DefaultCountryOptions = TopFootballCountries.map((country) => ({
+    value: country,
+}));
+
 const SearchBar = () => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
-    const [originKeyword, setOriginKeyword] = React.useState('');
-    const [countryNameSearch, setCountryNameSearch] = React.useState<string | undefined>(undefined);
+    const [countryNameSearch, setCountryNameSearch] = useState<string>();
+    const [leagueNameSearch, setLeagueNameSearch] = useState<string>();
+    const [teamNameSearch, setTeamNameSearch] = useState<string>();
+
     const navigate = useNavigate();
     const { fetchPackages } = usePackages();
 
-    const [storedSearchParams, setStoredSearchParams] = useLocalStorage<PackagesGenerationParams>(
+    const [storedSearchParams, setStoredSearchParams] = useLocalStorage<PackagesGenerationFormValues>(
         'searchParams',
         defaultGenerateParamsRef.current
     );
+
+    const [originKeyword, setOriginKeyword] = useState(storedSearchParams.originIATA);
 
     const {
         control,
@@ -70,53 +81,60 @@ const SearchBar = () => {
         formState: { isValid, isDirty },
         reset,
         resetField,
-    } = useForm<PackagesGenerationParams>({
-        resolver: zodResolver(PackagesGenerationParamsSchema),
+        setValue,
+    } = useForm<PackagesGenerationFormValues>({
+        resolver: zodResolver(PackagesGenerationFormValuesSchema),
         defaultValues: storedSearchParams,
     });
 
-    const watchDate = watch('date');
     const watchCountry = watch('country');
     const watchLeague = watch('league');
-    const selectedDate = watchDate?.from;
+    const watchTeams = watch('teams');
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
         queryFn: async () => {
-            if (originKeyword.length < MIN_KEYWORD_LEN || originKeyword.length > MAX_KEYWORD_LEN) return [];
             return GeoService.getCities(originKeyword);
         },
-        enabled: originKeyword.length >= MIN_KEYWORD_LEN && originKeyword.length <= MAX_KEYWORD_LEN,
+        enabled:
+            originKeyword.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN &&
+            originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: countries = [] } = useQuery({
         queryKey: ['countries', countryNameSearch],
-        queryFn: () => GeoService.getCountries(countryNameSearch),
-        enabled: !!countryNameSearch,
+        queryFn: () => SoccerService.getCountries(countryNameSearch),
+        enabled: !!countryNameSearch && countryNameSearch.length >= MIN_COUNTRY_SEARCH_KEYWORD_LEN,
     });
 
-    const { data: leagues = [] } = useQueryOnDefinedParam(
-        'leagues',
-        watchCountry && !countryNameSearch ? watchCountry : undefined,
-        SoccerService.getLeagues
-    );
+    const { data: leagues = [] } = useQuery({
+        queryKey: ['leagues', watchCountry, leagueNameSearch],
+        queryFn: () => SoccerService.getLeagues(watchCountry, leagueNameSearch),
+        enabled: !!watchCountry,
+    });
 
-    const { data: teams = [] } = useQueryOnDefinedParam(
-        'teams',
-        watchLeague?.id && selectedDate
-            ? {
-                  leagueId: watchLeague.id,
-                  season: calculateCurrentSeason(new Date(selectedDate)),
-              }
-            : undefined,
-        ({ leagueId, season }) => SoccerService.getTeams({ leagueId, season })
-    );
+    const { data: teams = [] } = useQuery({
+        queryKey: ['teams', teamNameSearch],
+        queryFn: async () => await SoccerService.getTeams(teamNameSearch!),
+        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+    });
 
-    const onSubmit = (values: PackagesGenerationParams) => {
+    const onSubmit = (values: PackagesGenerationFormValues) => {
         const { country, ...formValues } = values;
-        setStoredSearchParams(values);
         navigate(ROUTES.PACKAGES);
-        fetchPackages(formValues);
+        const { teams, ...rest } = formValues;
+
+        const minimizedTeams = teams?.map((team) => ({
+            id: team.id,
+            name: team.name,
+        }));
+
+        const params = {
+            ...rest,
+            teams: minimizedTeams,
+        };
+
+        fetchPackages(params);
     };
 
     const onClear = () => {
@@ -124,9 +142,9 @@ const SearchBar = () => {
         setStoredSearchParams(defaultGenerateParamsRef.current);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         const subscription = watch((value) => {
-            setStoredSearchParams(value as PackagesGenerationParams);
+            setStoredSearchParams(value as PackagesGenerationFormValues);
         });
         return () => subscription.unsubscribe();
     }, [watch]);
@@ -147,17 +165,18 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                    {...field}
                                     allowClear
                                     className={classes.originAirport}
                                     placeholder="Select Origin Airport"
-                                    onSearch={(value) => setOriginKeyword(value)}
                                     onSelect={(value) => {
                                         const selectedCity = airportSuggestions.find(
                                             (city) => `${city.name} (${city.iataCode})` === value
                                         );
                                         field.onChange(selectedCity?.iataCode || '');
                                     }}
+                                    value={originKeyword || field.value}
+                                    onChange={(value) => setOriginKeyword(value)}
+                                    onClear={() => field.onChange('')}
                                     options={airportSuggestions.map((city) => ({
                                         value: `${city.name} (${city.iataCode})`,
                                     }))}
@@ -227,20 +246,31 @@ const SearchBar = () => {
                             control={control}
                             render={({ field }) => (
                                 <AutoComplete
-                                    {...field}
                                     allowClear
                                     className={classes.selectCountry}
                                     placeholder="Select Country"
-                                    onSearch={(value) => setCountryNameSearch(value)}
+                                    disabled={!!watchTeams && !!watchTeams?.length}
+                                    onChange={(text) => setCountryNameSearch(text)}
                                     onSelect={(value) => {
                                         setCountryNameSearch(undefined);
-                                        resetField('league');
-                                        resetField('team');
+                                        setValue('league', undefined);
+                                        setLeagueNameSearch(undefined);
+                                        setValue('teams', undefined);
+                                        setTeamNameSearch(undefined);
                                         field.onChange(value);
                                     }}
-                                    options={countries.map((country) => ({
-                                        value: country.name,
-                                    }))}
+                                    onClear={() => {
+                                        field.onChange(undefined);
+                                        setCountryNameSearch(undefined);
+                                        setValue('league', undefined);
+                                        setLeagueNameSearch(undefined);
+                                    }}
+                                    options={
+                                        countryNameSearch
+                                            ? countries.map((country) => ({ value: country.name }))
+                                            : DefaultCountryOptions
+                                    }
+                                    value={countryNameSearch || field.value || ''}
                                     notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                     suffixIcon={<EnvironmentOutlined />}
                                 />
@@ -252,55 +282,106 @@ const SearchBar = () => {
                         <Controller
                             name="league"
                             control={control}
-                            render={({ field }) => {
-                                const selectedLeague = field.value;
-                                return (
-                                    <Select
-                                        placeholder="Select League"
-                                        disabled={!Boolean(watchCountry && !countryNameSearch)}
-                                        value={selectedLeague?.id}
-                                        onChange={(val, option: any) => {
-                                            field.onChange({ id: val, name: option.children });
-                                            resetField('team');
-                                        }}
-                                        suffixIcon={<TrophyOutlined />}
-                                    >
-                                        {leagues.map((option) => (
-                                            <Option key={option.league.id} value={option.league.id}>
-                                                {option.league.name}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                );
-                            }}
+                            render={({ field }) => (
+                                <AutoComplete
+                                    value={watchLeague ? watchLeague.name : leagueNameSearch}
+                                    allowClear
+                                    className={classes.selectLeague}
+                                    placeholder="Select League"
+                                    disabled={!watchCountry || (!!watchTeams && !!watchTeams?.length)}
+                                    onSearch={(value) => setLeagueNameSearch(value)}
+                                    onChange={(text) => {
+                                        if (text === '') return;
+
+                                        field.onChange(text);
+                                        setLeagueNameSearch(text);
+                                    }}
+                                    onSelect={(value: string) => {
+                                        setLeagueNameSearch(undefined);
+                                        const selected = leagues.find((l) => l.league.name === value);
+                                        field.onChange(
+                                            selected
+                                                ? { id: selected.league.id, name: selected.league.name }
+                                                : { id: '', name: value }
+                                        );
+                                        setValue('teams', undefined);
+                                    }}
+                                    onClear={() => {
+                                        setValue('league', undefined);
+                                        setLeagueNameSearch(undefined);
+                                    }}
+                                    options={leagues.map((league) => ({ value: league.league.name }))}
+                                    notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                    suffixIcon={<TrophyOutlined />}
+                                />
+                            )}
                         />
                     </Form.Item>
 
-                    <Form.Item className={classes.selectTeam}>
+                    <Form.Item className={classes.selectTeams}>
                         <Controller
-                            name="team"
+                            name="teams"
                             control={control}
-                            render={({ field }) => {
-                                const selectedTeam = field.value;
-                                return (
-                                    <Select
-                                        placeholder="Select Team (Optional)"
-                                        allowClear
-                                        disabled={!watchLeague || !selectedDate}
-                                        value={selectedTeam?.id}
-                                        onChange={(val, option: any) =>
-                                            field.onChange({ id: val, name: option.children })
-                                        }
-                                        suffixIcon={<TeamOutlined />}
-                                    >
-                                        {teams.map((option) => (
-                                            <Option key={option.team.id} value={option.team.id}>
-                                                {option.team.name}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                );
-                            }}
+                            render={({ field }) => (
+                                <Select
+                                    mode="multiple"
+                                    showSearch
+                                    allowClear
+                                    maxTagCount="responsive"
+                                    className={classes.selectTeams}
+                                    placeholder="Select Teams"
+                                    disabled={!!watchLeague || !!watchCountry}
+                                    labelInValue
+                                    onSearch={(value) => setTeamNameSearch(value)}
+                                    onChange={(selectedOptions) => {
+                                        if (selectedOptions.length > MAX_TEAMS_LIMIT) return;
+
+                                        const selectedNames = selectedOptions.map((opt) => opt.value);
+
+                                        const teamsArr = !teamNameSearch ? DEFAULT_TEAMS : teams;
+
+                                        const newSelections = selectedNames
+                                            .map((val) => teamsArr.find((t) => t.name === val))
+                                            .filter(Boolean)
+                                            .map((team) => ({ id: team!.id, name: team!.name, logo: team!.logo }));
+
+                                        const prevSelections = field.value ?? [];
+                                        const merged = [
+                                            ...prevSelections.filter((team) => selectedNames.includes(team.name)),
+                                            ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                        ];
+
+                                        field.onChange(merged);
+                                    }}
+                                    onClear={() => {
+                                        resetField('teams');
+                                        setTeamNameSearch(undefined);
+                                    }}
+                                    value={
+                                        field.value?.map((team) => ({
+                                            value: team.name,
+                                            label: (
+                                                <div className={classes.teamItem}>
+                                                    <img src={team.logo} alt={team.name} />
+                                                    {field.value && field.value?.length <= 1 && team.name}
+                                                </div>
+                                            ),
+                                        })) ?? []
+                                    }
+                                    options={(!teamNameSearch ? DEFAULT_TEAMS : teams).map((team) => ({
+                                        value: team.name,
+                                        label: (
+                                            <div className={classes.teamItem}>
+                                                <img src={team.logo} alt={team.name} />
+                                                {team.name}
+                                            </div>
+                                        ),
+                                    }))}
+                                    notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                    suffixIcon={<TeamOutlined />}
+                                    filterOption={false}
+                                />
+                            )}
                         />
                     </Form.Item>
                 </div>

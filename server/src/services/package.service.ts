@@ -266,7 +266,10 @@ class PackageService {
             return null;
         }
 
-        packagesLogger.info(`💰 Fixtures enriched with price ranges`);
+        packagesLogger.info(`💰 Fixtures enriched with price ranges`, {
+            fixturesWithPriceRange: enriched,
+            duration: timer.stepDuration(GeneratePackagesTimingSteps.ADD_PRICE_RANGE_TO_FIXTURES),
+        });
         emit?.({
             step: GeneratePackagesSteps.ADD_PRICE_RANGE_TO_FIXTURES,
             message: `Enriched fixtures with price ranges.`,
@@ -449,6 +452,7 @@ class PackageService {
             schema: FixturePriceRangeListSchema,
             saveOutputToFile: true,
             messages: FixtureContextMessagesGenerator.priceMapGenerationContext(fixtures),
+            noTokensLimit: true,
         });
 
         const priceMap = Object.fromEntries(priceRangeList.map(({ id, ...rest }) => [id, rest]));
