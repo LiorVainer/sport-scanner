@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Button, Spin, message, AutoComplete } from 'antd';
+import { Select, Button, message, AutoComplete } from 'antd';
 import './preferences-body-model.scss';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GeoService } from '@/api/services/geo.service';
@@ -12,7 +12,6 @@ import { UserPreferencesPayload } from '@/models/user.model';
 import { useAuth } from '@/context/AuthContext';
 import { CityInfo } from '@/models/packages/package.model';
 
-// const { Option } = Select;
 const MAX_ITEMS_PER_SELECT = 3;
 
 interface PreferencesBodyProps {
@@ -25,7 +24,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
     const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
-    const [homeAirport, setHomeAirport] = useState<CityInfo>({ name: '', iataCode: '' });
+    const [homeAirport, setHomeAirport] = useState<CityInfo>();
     const [teamSearch, setTeamSearch] = useState('');
     const [leagueSearch, setLeagueSearch] = useState('');
     const [defaultTeams, setDefaultTeams] = useState<{ team: Team; venue: Venue }[]>([]);
@@ -109,13 +108,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         }
     };
 
-    // if (loading) {
-    //     return (
-    //         <div className="user-preferences-loading">
-    //             <Spin size="large" />
-    //         </div>
-    //     );
-    // }
+    const isHomeAirportValid = homeAirport?.iataCode && homeAirport?.name;
 
     const teamOptions =
         teamSearch.length < 3
@@ -169,7 +162,13 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                 <AutoComplete
                     value={homeAirportInput}
                     onSearch={setHomeAirportInput}
-                    onChange={(value) => setHomeAirportInput(value)}
+                    onChange={(value) => {
+                        setHomeAirportInput(value);
+                    
+                        if (!value) {
+                            setHomeAirport(undefined);
+                        }
+                    }}
                     onSelect={(value) => {
                         const selected = airportSuggestions.find(
                             (airport) => `${airport.name} (${airport.iataCode})` === value
@@ -181,7 +180,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                                 iataCode: selected.iataCode || '',
                             });
                         } else {
-                            setHomeAirport({ name: '', iataCode: '' }); // fallback in case no match found
+                            setHomeAirport({ name: '', iataCode: '' });
                         }
                     }}
                     options={airportSuggestions.map((airport) => ({
@@ -195,7 +194,16 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
             </div>
 
             <div className="save-btn">
-                <Button type="primary" onClick={async () => await mutateAsync()}>
+                <Button
+                    type="primary"
+                    onClick={async () => {
+                        if (!isHomeAirportValid) {
+                            message.error('Please select a valid home city or airport from the suggestions.');
+                            return;
+                        }
+                        await mutateAsync();
+                    }}
+                >
                     Save
                 </Button>
             </div>
