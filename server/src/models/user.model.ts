@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ObjectIdToString, zodDate } from '../utils/zod.utils';
-import { CityInfoSchema } from './packages/package.model';
+import { CityInfoSchema, TeamSchema } from './packages/package.model';
 
 export const UserSchema = z.object({
     username: z.string(),
@@ -11,9 +11,9 @@ export const UserSchema = z.object({
     createdAt: zodDate,
     updatedAt: zodDate,
     refreshTokens: z.string().array().optional(),
-    favoriteTeams: z.string().array().optional(),
+    favoriteTeams: TeamSchema.array().optional(),
     homeAirport: CityInfoSchema.optional(),
-    preferredLeagues: z.string().array().optional(),
+    favoriteLeagues: z.string().array().optional(),
     isFirstVisit: z.boolean().optional(),
 });
 

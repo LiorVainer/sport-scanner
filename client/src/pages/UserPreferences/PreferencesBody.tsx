@@ -10,7 +10,7 @@ import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { UsersService } from '@/api/services/users.service';
 import { UserPreferencesPayload } from '@/models/user.model';
 import { useAuth } from '@/context/AuthContext';
-import { CityInfo } from '@/models/packages/package.model';
+import { CityInfo, TeamNoLogo } from '@/models/packages/package.model';
 
 const MAX_ITEMS_PER_SELECT = 3;
 
@@ -21,8 +21,8 @@ interface PreferencesBodyProps {
 const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
 
-    const [favoriteTeams, setFavoriteTeams] = useState<string[]>([]);
-    const [preferredLeagues, setPreferredLeagues] = useState<string[]>([]);
+    const [favoriteTeams, setFavoriteTeams] = useState<TeamNoLogo[]>([]);
+    const [favoriteLeagues, setFavoriteLeagues] = useState<string[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
     const [homeAirport, setHomeAirport] = useState<CityInfo>();
     const [teamSearch, setTeamSearch] = useState('');
@@ -51,23 +51,23 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         enabled: leagueSearch.length >= 3,
     });
 
-    useEffect(() => {
-        const fetchDefaults = async () => {
-            const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
-            const fetched = await Promise.all(
-                teamNames.map(async (name) => {
-                    const teams = await SoccerService.getTeams(name);
-                    return teams[0] ?? null;
-                })
-            );
-            setDefaultTeams(fetched.filter(Boolean) as { team: Team; venue: Venue }[]);
-        };
-        fetchDefaults();
-    }, []);
+    // useEffect(() => {
+    // const fetchDefaults = async () => {
+    //     const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
+    //     const fetched = await Promise.all(
+    //         teamNames.map(async (name) => {
+    //             const teams = await SoccerService.getTeams(name);
+    //             return teams[0] ?? null;
+    //         })
+    //     );
+    //     setDefaultTeams(fetched.filter(Boolean) as { team: Team; venue: Venue }[]);
+    // };
+    // fetchDefaults();
+    // }, []);
 
     useEffect(() => {
         setFavoriteTeams(loggedInUser!.favoriteTeams || []);
-        setPreferredLeagues(loggedInUser!.preferredLeagues || []);
+        setFavoriteLeagues(loggedInUser!.favoriteLeagues|| []);
 
         if (loggedInUser!.homeAirport) {
             setHomeAirport(loggedInUser!.homeAirport);
@@ -80,7 +80,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         mutationFn: async () => {
             return await UsersService.updateUser(loggedInUser!._id, {
                 favoriteTeams,
-                preferredLeagues,
+                favoriteLeagues,
                 homeAirport,
                 isFirstVisit: false,
             } as UserPreferencesPayload);
@@ -92,7 +92,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         },
     });
 
-    const handleTeamChange = (value: string[]) => {
+    const handleTeamChange = (value: TeamNoLogo[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
             setFavoriteTeams(value);
         } else {
@@ -102,7 +102,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
 
     const handleLeagueChange = (value: string[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
-            setPreferredLeagues(value);
+            setFavoriteLeagues(value);
         } else {
             message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
         }
@@ -147,7 +147,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                     showSearch
                     style={{ width: '100%' }}
                     placeholder="Type to search leagues (max 3)"
-                    value={preferredLeagues}
+                    value={favoriteLeagues}
                     onSearch={setLeagueSearch}
                     onChange={handleLeagueChange}
                     options={leagueOptions}
@@ -164,7 +164,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                     onSearch={setHomeAirportInput}
                     onChange={(value) => {
                         setHomeAirportInput(value);
-                    
+
                         if (!value) {
                             setHomeAirport(undefined);
                         }

@@ -10,6 +10,11 @@ export const CityInfoSchema = z.object({
     iataCode: z.string().length(3).describe('IATA code of the airport'),
 });
 
+export const TeamInfoMongooseSchema = z.object({
+    name: z.string().describe('Team name'),
+    id: z.number().describe('Unique identifier of the team'),
+});
+
 export const FlightPurposeSchema = z
     .enum(['departure', 'return', 'connecting'])
     .describe('Purpose of the flight, either departure or return');
@@ -149,6 +154,7 @@ export type Package = z.infer<typeof PackageSchema>;
 export type TimelineItem = z.infer<typeof TimelineItemSchema>;
 export type FlightItem = z.infer<typeof FlightItemSchema>;
 export type Destination = z.infer<typeof DestinationSchema>;
+export type TeamNoLogo = z.infer<typeof TeamInfoMongooseSchema>;
 
 export const PackageDocumentSchema = PackageSchema.extend({
     _id: z.string(),

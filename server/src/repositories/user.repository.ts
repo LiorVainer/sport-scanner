@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { User } from '../models/user.model';
+import { number } from 'zod';
 
 const CityInfoMongooseSchema = new mongoose.Schema(
     {
@@ -9,6 +10,11 @@ const CityInfoMongooseSchema = new mongoose.Schema(
     { _id: false }
 );
 
+const TeamInfoMongooseSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    id: { type: Number, required: true },
+});
+
 const UserMongoSchema = new Schema(
     {
         username: { type: String, required: true },
@@ -17,9 +23,9 @@ const UserMongoSchema = new Schema(
         picture: { type: String, required: true },
         googleId: { type: String },
         refreshTokens: { type: [String], default: [] },
-        favoriteTeams: { type: [String], default: [] },
+        favoriteTeams: { type: [TeamInfoMongooseSchema], default: [] },
         homeAirport: { type: CityInfoMongooseSchema },
-        preferredLeagues: { type: [String], default: [] },
+        favoriteLeagues: { type: [String], default: [] },
         isFirstVisit: { type: Boolean, default: true },
     },
     {
