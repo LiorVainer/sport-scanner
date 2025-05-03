@@ -32,6 +32,11 @@ export const TeamSchema = z.object({
     logo: z.string().describe('URL of the team logo'),
 });
 
+export const TeamNoLogoSchema = z.object({
+    id: z.number().describe('Unique identifier of the team'),
+    name: z.string().describe('Name of the team'),
+});
+
 export const MatchSchema = z.object({
     id: z.number().describe('Unique identifier of the match'),
     homeTeam: TeamSchema.describe('Home team playing in the match'),

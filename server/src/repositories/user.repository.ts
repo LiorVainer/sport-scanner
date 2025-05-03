@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { User } from '../models/user.model';
-import { number } from 'zod';
 
 const CityInfoMongooseSchema = new mongoose.Schema(
     {
@@ -10,7 +9,7 @@ const CityInfoMongooseSchema = new mongoose.Schema(
     { _id: false }
 );
 
-const TeamInfoMongooseSchema = new mongoose.Schema({
+const TeamNoLogoMongooseSchema = new mongoose.Schema({
     name: { type: String, required: true },
     id: { type: Number, required: true },
 });
@@ -23,7 +22,14 @@ const UserMongoSchema = new Schema(
         picture: { type: String, required: true },
         googleId: { type: String },
         refreshTokens: { type: [String], default: [] },
-        favoriteTeams: { type: [TeamInfoMongooseSchema], default: [] },
+        favoriteTeams: {
+            type: [TeamNoLogoMongooseSchema],
+            default: [],
+            set: (teams: any[]) =>
+                Array.isArray(teams)
+                    ? teams.filter((team) => team && typeof team.id === 'number' && typeof team.name === 'string')
+                    : [],
+        },
         homeAirport: { type: CityInfoMongooseSchema },
         favoriteLeagues: { type: [String], default: [] },
         isFirstVisit: { type: Boolean, default: true },
