@@ -22,8 +22,6 @@ export const Navbar = () => {
     const handlePreferencesCancel = () => setIsPreferencesModalOpen(false);
 
     useEffect(() => {
-        console.log('homo');
-        console.log(loggedInUser?.isFirstVisit);
         if (loggedInUser?.isFirstVisit) {
             showPreferencesModal();
         }
@@ -57,7 +55,7 @@ export const Navbar = () => {
                     destroyOnClose
                     title="Edit Preferences"
                 >
-                    <PreferencesBody handlePreferencesCancel={handlePreferencesCancel}/>
+                    <PreferencesBody handlePreferencesCancel={handlePreferencesCancel} />
                 </Modal>
             </div>
         </nav>

@@ -29,8 +29,8 @@ import {
     DEFAULT_TEAMS,
     MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     MAX_TEAMS_LIMIT,
-    MIN_AIRPORT_SEARCH_KEYWORD_LEN,
     MIN_COUNTRY_SEARCH_KEYWORD_LEN,
+    MIN_SEARCH_KEYWORD_LEN,
     TopFootballCountries,
 } from './search-bar.const';
 
@@ -97,8 +97,7 @@ const SearchBar = () => {
             return GeoService.getCities(originKeyword);
         },
         enabled:
-            originKeyword.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN &&
-            originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
+            originKeyword.length >= MIN_SEARCH_KEYWORD_LEN && originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: countries = [] } = useQuery({
@@ -116,7 +115,7 @@ const SearchBar = () => {
     const { data: teams = [] } = useQuery({
         queryKey: ['teams', teamNameSearch],
         queryFn: async () => await SoccerService.getTeams(teamNameSearch!),
-        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+        enabled: !!teamNameSearch && teamNameSearch.length >= MIN_SEARCH_KEYWORD_LEN,
     });
 
     const onSubmit = (values: PackagesGenerationFormValues) => {
@@ -197,9 +196,9 @@ const SearchBar = () => {
                                         field.onChange(
                                             dates && dates[0] && dates[1]
                                                 ? {
-                                                    from: dates[0].format('YYYY-MM-DD'),
-                                                    to: dates[1].format('YYYY-MM-DD'),
-                                                }
+                                                      from: dates[0].format('YYYY-MM-DD'),
+                                                      to: dates[1].format('YYYY-MM-DD'),
+                                                  }
                                                 : undefined
                                         );
                                     }}

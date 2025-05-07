@@ -11,11 +11,13 @@ export const CityInfoSchema = z.object({
 export const FavoriteTeamSchema = z.object({
     name: z.string().describe('Team name'),
     id: z.number().describe('Unique identifier of the team'),
+    logo: z.string().describe('URL of the team logo'),
 });
 
 export const FavoriteLeagueSchema = z.object({
     name: z.string().describe('League name'),
     id: z.number().describe('Unique identifier of the league'),
+    logo: z.string().describe('URL of the league logo'),
 });
 
 export const FlightPurposeSchema = z
@@ -74,7 +76,6 @@ export const DestinationSchema = z.object({
     endDate: z.string().describe('End date of the stay in the destination'),
     matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
 });
-
 
 export const FlightItemSchema = FlightSchema.extend({
     type: z

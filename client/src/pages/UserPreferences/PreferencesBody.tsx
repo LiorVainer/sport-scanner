@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AutoComplete, Button, message, Select } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,9 +7,9 @@ import { SoccerService } from '@/api/services/soccer.service';
 import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { UsersService } from '@/api/services/users.service';
 import { useAuth } from '@/context/AuthContext';
-import { FavoriteLeague, FavoriteTeam } from '@/models/packages/package.model';
-import { DEFAULT_TEAMS, MIN_AIRPORT_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
+import { DEFAULT_TEAMS, MIN_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
 import './preferences-body-model.scss';
+import classes from '@components/SearchBar/search-bar.module.scss';
 
 const MAX_ITEMS_PER_SELECT = 3;
 
@@ -21,11 +21,11 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
     const queryClient = useQueryClient();
 
-    const [homeAirportInput, setHomeAirportInput] = useState<string>('');
+    const [homeAirportInput, setHomeAirportInput] = useState<string>();
     const [teamSearch, setTeamSearch] = useState('');
     const [leagueSearch, setLeagueSearch] = useState('');
 
-    const { control, handleSubmit, setValue } = useForm({
+    const { control, handleSubmit, watch, resetField, setValue } = useForm({
         defaultValues: {
             favoriteTeams: loggedInUser?.favoriteTeams ?? [],
             favoriteLeagues: loggedInUser?.favoriteLeagues ?? [],
@@ -35,20 +35,22 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', homeAirportInput],
-        queryFn: () => GeoService.getCities(homeAirportInput),
-        enabled: homeAirportInput.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+        queryFn: () => GeoService.getCities(homeAirportInput!),
+        enabled: !!homeAirportInput && homeAirportInput.length >= MIN_SEARCH_KEYWORD_LEN,
     });
 
-    const { data: searchedTeams = [] } = useQuery({
+    console.log({ homeAirportInput, watch: watch().homeAirport });
+
+    const { data: searchedTeamsResults = [] } = useQuery({
         queryKey: ['teams', teamSearch],
         queryFn: () => SoccerService.getTeams(teamSearch),
-        enabled: teamSearch.length >= 3,
+        enabled: teamSearch.length >= MIN_SEARCH_KEYWORD_LEN,
     });
 
-    const { data: searchedLeagues = [] } = useQuery({
+    const { data: searchedLeaguesResults = [] } = useQuery({
         queryKey: ['leagues', leagueSearch],
         queryFn: () => SoccerService.getLeaguesByName(leagueSearch),
-        enabled: leagueSearch.length >= 3,
+        enabled: leagueSearch.length >= MIN_SEARCH_KEYWORD_LEN,
     });
 
     const { mutateAsync: updateUser } = useMutation({
@@ -87,39 +89,61 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                         <Select
                             mode="multiple"
                             showSearch
-                            style={{ width: '100%' }}
+                            labelInValue
                             placeholder={`Type to search teams (max ${MAX_ITEMS_PER_SELECT})`}
+                            style={{ width: '100%' }}
                             maxTagCount={3}
                             onSearch={setTeamSearch}
-                            options={
-                                teamSearch.length >= 3
-                                    ? searchedTeams.map((team) => ({
-                                          label: (
-                                              <div className="team-item">
-                                                  <img src={team.logo} alt={team.name} />
-                                                  {team.name}
-                                              </div>
-                                          ),
-                                          value: JSON.stringify({ id: team.id, name: team.name }),
-                                      }))
-                                    : DEFAULT_TEAMS.map((team) => ({
-                                          label: (
-                                              <div className="team-item">
-                                                  <img src={team.logo} alt={team.name} />
-                                                  {team.name}
-                                              </div>
-                                          ),
-                                          value: JSON.stringify({ id: team.id, name: team.name }),
-                                      }))
+                            options={(!teamSearch ? DEFAULT_TEAMS : searchedTeamsResults).map((team) => ({
+                                value: team.name,
+                                label: (
+                                    <div className={classes.teamItem}>
+                                        <img src={team.logo} alt={team.name} />
+                                        {team.name}
+                                    </div>
+                                ),
+                            }))}
+                            value={
+                                field.value?.map((team) => ({
+                                    value: team.name,
+                                    label: (
+                                        <div className={classes.teamItem}>
+                                            <img src={team.logo} alt={team.name} />
+                                            {team.name}
+                                        </div>
+                                    ),
+                                })) ?? []
                             }
-                            value={field.value.map((t: FavoriteTeam) => JSON.stringify(t))}
-                            onChange={(values) => {
-                                if (values.length > MAX_ITEMS_PER_SELECT) {
+                            onChange={(selectedOptions) => {
+                                if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
                                     message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
-                                } else {
-                                    const parsedValues = values.map((v) => JSON.parse(v));
-                                    setValue('favoriteTeams', parsedValues);
+                                    return;
                                 }
+
+                                const selectedNames = selectedOptions.map((opt) => opt.value);
+
+                                const teamsArr = !teamSearch ? DEFAULT_TEAMS : searchedTeamsResults;
+
+                                const newSelections = selectedNames
+                                    .map((val) => teamsArr.find((t) => t.name === val))
+                                    .filter(Boolean)
+                                    .map((team) => ({
+                                        id: team!.id,
+                                        name: team!.name,
+                                        logo: team!.logo,
+                                    }));
+
+                                const prevSelections = field.value ?? [];
+                                const merged = [
+                                    ...prevSelections.filter((team) => selectedNames.includes(team.name)),
+                                    ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                ];
+
+                                field.onChange(merged);
+                            }}
+                            onClear={() => {
+                                resetField('favoriteTeams');
+                                setTeamSearch('');
                             }}
                             filterOption={false}
                         />
@@ -138,27 +162,61 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                         <Select
                             mode="multiple"
                             showSearch
-                            style={{ width: '100%' }}
+                            labelInValue
                             placeholder={`Type to search leagues (max ${MAX_ITEMS_PER_SELECT})`}
+                            style={{ width: '100%' }}
                             maxTagCount={3}
                             onSearch={setLeagueSearch}
-                            options={searchedLeagues.map((league) => ({
+                            options={searchedLeaguesResults.map((league) => ({
+                                value: league.league.name,
                                 label: (
-                                    <div className="team-item">
+                                    <div className={classes.teamItem}>
                                         <img src={league.league.logo} alt={league.league.name} />
                                         {league.league.name}
                                     </div>
                                 ),
-                                value: JSON.stringify({ id: league.league.id, name: league.league.name }),
                             }))}
-                            value={field.value.map((l: FavoriteLeague) => JSON.stringify(l))}
-                            onChange={(values) => {
-                                if (values.length > MAX_ITEMS_PER_SELECT) {
+                            value={
+                                field.value?.map((league) => ({
+                                    value: league.name,
+                                    label: (
+                                        <div className={classes.teamItem}>
+                                            <img src={league.logo} alt={league.name} />
+                                            {league.name}
+                                        </div>
+                                    ),
+                                })) ?? []
+                            }
+                            onChange={(selectedOptions) => {
+                                if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
                                     message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
-                                } else {
-                                    const parsedValues = values.map((v) => JSON.parse(v));
-                                    setValue('favoriteLeagues', parsedValues);
+                                    return;
                                 }
+
+                                const selectedNames = selectedOptions.map((opt) => opt.value);
+
+                                const leaguesArr = !leagueSearch ? [] : searchedLeaguesResults.map((l) => l.league);
+
+                                const newSelections = selectedNames
+                                    .map((val) => leaguesArr.find((l) => l.name === val))
+                                    .filter(Boolean)
+                                    .map((league) => ({
+                                        id: league!.id,
+                                        name: league!.name,
+                                        logo: league!.logo,
+                                    }));
+
+                                const prevSelections = field.value ?? [];
+                                const merged = [
+                                    ...prevSelections.filter((league) => selectedNames.includes(league.name)),
+                                    ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                ];
+
+                                field.onChange(merged);
+                            }}
+                            onClear={() => {
+                                resetField('favoriteLeagues');
+                                setLeagueSearch('');
                             }}
                             filterOption={false}
                         />
@@ -171,23 +229,27 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                     🏠 Home City or Airport <span>(Choose your home city or the airport you usually travel from)</span>
                 </label>
                 <Controller
+                    rules={{ required: true }}
                     name="homeAirport"
                     control={control}
                     render={({ field }) => (
                         <AutoComplete
-                            value={homeAirportInput}
+                            value={
+                                homeAirportInput || (field.value ? `${field.value.name} (${field.value.iataCode})` : '')
+                            }
                             onSearch={setHomeAirportInput}
                             onSelect={(value) => {
-                                const selected = airportSuggestions.find(
-                                    (airport) => `${airport.name} (${airport.iataCode})` === value
+                                const selectedCity = airportSuggestions.find(
+                                    (city) => `${city.name} (${city.iataCode})` === value
                                 );
-                                field.onChange(selected);
-                                setHomeAirportInput(value);
+                                field.onChange(selectedCity || '');
+                                setHomeAirportInput(undefined);
                             }}
+                            style={{ width: '100%' }}
                             options={airportSuggestions.map((airport) => ({
                                 value: `${airport.name} (${airport.iataCode})`,
                             }))}
-                            style={{ width: '100%' }}
+                            onClear={() => setValue('homeAirport', null)}
                             placeholder="Start typing your city or airport"
                             notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                             allowClear

@@ -4,11 +4,13 @@ import { User } from '../models/user.model';
 interface FavoriteTeam {
     id: number;
     name: string;
+    logo: string;
 }
 
 interface FavoriteLeague {
     id: number;
     name: string;
+    logo: string;
 }
 
 const CityInfoMongooseSchema = new mongoose.Schema(
@@ -23,6 +25,7 @@ const FavoriteTeamMongoSchema = new mongoose.Schema<FavoriteTeam>(
     {
         name: { type: String, required: true },
         id: { type: Number, required: true },
+        logo: { type: String, required: true },
     },
     { _id: false }
 );
@@ -31,6 +34,7 @@ const FavoriteLeagueMongoSchema = new mongoose.Schema<FavoriteLeague>(
     {
         name: { type: String, required: true },
         id: { type: Number, required: true },
+        logo: { type: String, required: true },
     },
     { _id: false }
 );
