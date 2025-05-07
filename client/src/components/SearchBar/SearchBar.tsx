@@ -197,9 +197,9 @@ const SearchBar = () => {
                                         field.onChange(
                                             dates && dates[0] && dates[1]
                                                 ? {
-                                                      from: dates[0].format('YYYY-MM-DD'),
-                                                      to: dates[1].format('YYYY-MM-DD'),
-                                                  }
+                                                    from: dates[0].format('YYYY-MM-DD'),
+                                                    to: dates[1].format('YYYY-MM-DD'),
+                                                }
                                                 : undefined
                                         );
                                     }}

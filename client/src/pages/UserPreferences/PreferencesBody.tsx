@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AutoComplete, Button, message, Select } from 'antd';
-import './preferences-body-model.scss';
+import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GeoService } from '@/api/services/geo.service';
 import { SoccerService } from '@/api/services/soccer.service';
-import { Team, Venue } from '@/types/soccer.types';
 import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { UsersService } from '@/api/services/users.service';
-import { UserPreferencesPayload } from '@/models/user.model';
 import { useAuth } from '@/context/AuthContext';
-import { CityInfo, FavoriteLeague, FavoriteTeam } from '@/models/packages/package.model';
-import { MIN_AIRPORT_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
+import { FavoriteLeague, FavoriteTeam } from '@/models/packages/package.model';
+import { DEFAULT_TEAMS, MIN_AIRPORT_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
+import './preferences-body-model.scss';
 
 const MAX_ITEMS_PER_SELECT = 3;
 
@@ -20,29 +19,24 @@ interface PreferencesBodyProps {
 
 const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
+    const queryClient = useQueryClient();
 
-    const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
-    const [favoriteLeagues, setFavoriteLeagues] = useState<FavoriteLeague[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
-    const [homeAirport, setHomeAirport] = useState<CityInfo>();
     const [teamSearch, setTeamSearch] = useState('');
     const [leagueSearch, setLeagueSearch] = useState('');
-    const [defaultTeams, setDefaultTeams] = useState<{ team: Team; venue: Venue }[]>([]);
-    const queryClient = useQueryClient();
+
+    const { control, handleSubmit, setValue } = useForm({
+        defaultValues: {
+            favoriteTeams: loggedInUser?.favoriteTeams ?? [],
+            favoriteLeagues: loggedInUser?.favoriteLeagues ?? [],
+            homeAirport: loggedInUser?.homeAirport ?? null,
+        },
+    });
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', homeAirportInput],
-        queryFn: async () => {
-            if (
-                homeAirportInput.length < MIN_AIRPORT_SEARCH_KEYWORD_LEN ||
-                homeAirportInput.length > MIN_AIRPORT_SEARCH_KEYWORD_LEN
-            )
-                return [];
-            return GeoService.getCities(homeAirportInput);
-        },
-        enabled:
-            homeAirportInput.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN &&
-            homeAirportInput.length <= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
+        queryFn: () => GeoService.getCities(homeAirportInput),
+        enabled: homeAirportInput.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: searchedTeams = [] } = useQuery({
@@ -57,39 +51,10 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         enabled: leagueSearch.length >= 3,
     });
 
-    // useEffect(() => {
-    // const fetchDefaults = async () => {
-    //     const teamNames = ['Real Madrid', 'Barcelona', 'Manchester City', 'AC Milan', 'Napoli'];
-    //     const fetched = await Promise.all(
-    //         teamNames.map(async (name) => {
-    //             const teams = await SoccerService.getTeams(name);
-    //             return teams[0] ?? null;
-    //         })
-    //     );
-    //     setDefaultTeams(fetched.filter(Boolean) as { team: Team; venue: Venue }[]);
-    // };
-    // fetchDefaults();
-    // }, []);
-
-    useEffect(() => {
-        setFavoriteTeams(loggedInUser!.favoriteTeams || []);
-        setFavoriteLeagues(loggedInUser!.favoriteLeagues || []);
-
-        if (loggedInUser!.homeAirport) {
-            setHomeAirport(loggedInUser!.homeAirport);
-            setHomeAirportInput(`${loggedInUser!.homeAirport.name} (${loggedInUser!.homeAirport.iataCode})`);
-        }
-    }, []);
-
-    const { mutateAsync } = useMutation({
+    const { mutateAsync: updateUser } = useMutation({
         mutationKey: [QUERY_KEYS.UPDATE_USER],
-        mutationFn: async () => {
-            return await UsersService.updateUser(loggedInUser!._id, {
-                favoriteTeams,
-                favoriteLeagues,
-                homeAirport,
-                isFirstVisit: false,
-            } as UserPreferencesPayload);
+        mutationFn: async (data: any) => {
+            return await UsersService.updateUser(loggedInUser!._id, data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LOGGED_IN_USER] });
@@ -98,49 +63,67 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         },
     });
 
-    const handleTeamChange = (value: FavoriteTeam[]) => {
-        if (value.length <= MAX_ITEMS_PER_SELECT) {
-            setFavoriteTeams(value);
-        } else {
-            message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
-        }
+    const onSubmit = async (values: any) => {
+        await updateUser({
+            favoriteTeams: values.favoriteTeams,
+            favoriteLeagues: values.favoriteLeagues,
+            homeAirport: values.homeAirport,
+            isFirstVisit: false,
+        });
     };
-
-    const handleLeagueChange = (value: FavoriteLeague[]) => {
-        if (value.length <= MAX_ITEMS_PER_SELECT) {
-            setFavoriteLeagues(value);
-        } else {
-            message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
-        }
-    };
-
-    const isHomeAirportValid = homeAirport?.iataCode && homeAirport?.name;
-
-    const teamOptions =
-        teamSearch.length < 3
-            ? defaultTeams.map((t) => ({ value: t.team.name }))
-            : searchedTeams.map((t) => ({ value: t.name }));
-
-    const leagueOptions = searchedLeagues.map((l) => ({ value: l.league.name }));
 
     return (
-        <div className="user-preferences">
+        <form onSubmit={handleSubmit(onSubmit)} className="user-preferences">
             <p className="intro">Update your preferences below:</p>
 
             <div className="form-group">
                 <label>
                     🏆 Favorite Teams <span>(Tell us which teams you love to follow)</span>
                 </label>
-                <Select
-                    mode="multiple"
-                    showSearch
-                    style={{ width: '100%' }}
-                    placeholder="Type to search teams (max 3)"
-                    value={favoriteTeams}
-                    onSearch={setTeamSearch}
-                    onChange={handleTeamChange}
-                    options={teamOptions}
-                    filterOption={false}
+                <Controller
+                    name="favoriteTeams"
+                    control={control}
+                    render={({ field }) => (
+                        <Select
+                            mode="multiple"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder={`Type to search teams (max ${MAX_ITEMS_PER_SELECT})`}
+                            maxTagCount={3}
+                            onSearch={setTeamSearch}
+                            options={
+                                teamSearch.length >= 3
+                                    ? searchedTeams.map((team) => ({
+                                          label: (
+                                              <div className="team-item">
+                                                  <img src={team.logo} alt={team.name} />
+                                                  {team.name}
+                                              </div>
+                                          ),
+                                          value: JSON.stringify({ id: team.id, name: team.name }),
+                                      }))
+                                    : DEFAULT_TEAMS.map((team) => ({
+                                          label: (
+                                              <div className="team-item">
+                                                  <img src={team.logo} alt={team.name} />
+                                                  {team.name}
+                                              </div>
+                                          ),
+                                          value: JSON.stringify({ id: team.id, name: team.name }),
+                                      }))
+                            }
+                            value={field.value.map((t: FavoriteTeam) => JSON.stringify(t))}
+                            onChange={(values) => {
+                                if (values.length > MAX_ITEMS_PER_SELECT) {
+                                    message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
+                                } else {
+                                    const parsedValues = values.map((v) => JSON.parse(v));
+                                    setValue('favoriteTeams', parsedValues);
+                                }
+                            }}
+                            filterOption={false}
+                        />
+                    )}
                 />
             </div>
 
@@ -148,16 +131,38 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                 <label>
                     🏆 Preferred Leagues <span>(Select leagues that excite you the most)</span>
                 </label>
-                <Select
-                    mode="multiple"
-                    showSearch
-                    style={{ width: '100%' }}
-                    placeholder="Type to search leagues (max 3)"
-                    value={favoriteLeagues}
-                    onSearch={setLeagueSearch}
-                    onChange={handleLeagueChange}
-                    options={leagueOptions}
-                    filterOption={false}
+                <Controller
+                    name="favoriteLeagues"
+                    control={control}
+                    render={({ field }) => (
+                        <Select
+                            mode="multiple"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder={`Type to search leagues (max ${MAX_ITEMS_PER_SELECT})`}
+                            maxTagCount={3}
+                            onSearch={setLeagueSearch}
+                            options={searchedLeagues.map((league) => ({
+                                label: (
+                                    <div className="team-item">
+                                        <img src={league.league.logo} alt={league.league.name} />
+                                        {league.league.name}
+                                    </div>
+                                ),
+                                value: JSON.stringify({ id: league.league.id, name: league.league.name }),
+                            }))}
+                            value={field.value.map((l: FavoriteLeague) => JSON.stringify(l))}
+                            onChange={(values) => {
+                                if (values.length > MAX_ITEMS_PER_SELECT) {
+                                    message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
+                                } else {
+                                    const parsedValues = values.map((v) => JSON.parse(v));
+                                    setValue('favoriteLeagues', parsedValues);
+                                }
+                            }}
+                            filterOption={false}
+                        />
+                    )}
                 />
             </div>
 
@@ -165,55 +170,38 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                 <label>
                     🏠 Home City or Airport <span>(Choose your home city or the airport you usually travel from)</span>
                 </label>
-                <AutoComplete
-                    value={homeAirportInput}
-                    onSearch={setHomeAirportInput}
-                    onChange={(value) => {
-                        setHomeAirportInput(value);
-
-                        if (!value) {
-                            setHomeAirport(undefined);
-                        }
-                    }}
-                    onSelect={(value) => {
-                        const selected = airportSuggestions.find(
-                            (airport) => `${airport.name} (${airport.iataCode})` === value
-                        );
-                        setHomeAirportInput(value);
-                        if (selected) {
-                            setHomeAirport({
-                                name: selected.name,
-                                iataCode: selected.iataCode || '',
-                            });
-                        } else {
-                            setHomeAirport({ name: '', iataCode: '' });
-                        }
-                    }}
-                    options={airportSuggestions.map((airport) => ({
-                        value: `${airport.name} (${airport.iataCode})`,
-                    }))}
-                    style={{ width: '100%' }}
-                    placeholder="Start typing your city or airport"
-                    notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
-                    allowClear
+                <Controller
+                    name="homeAirport"
+                    control={control}
+                    render={({ field }) => (
+                        <AutoComplete
+                            value={homeAirportInput}
+                            onSearch={setHomeAirportInput}
+                            onSelect={(value) => {
+                                const selected = airportSuggestions.find(
+                                    (airport) => `${airport.name} (${airport.iataCode})` === value
+                                );
+                                field.onChange(selected);
+                                setHomeAirportInput(value);
+                            }}
+                            options={airportSuggestions.map((airport) => ({
+                                value: `${airport.name} (${airport.iataCode})`,
+                            }))}
+                            style={{ width: '100%' }}
+                            placeholder="Start typing your city or airport"
+                            notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                            allowClear
+                        />
+                    )}
                 />
             </div>
 
             <div className="save-btn">
-                <Button
-                    type="primary"
-                    onClick={async () => {
-                        if (!isHomeAirportValid) {
-                            message.error('Please select a valid home city or airport from the suggestions.');
-                            return;
-                        }
-                        await mutateAsync();
-                    }}
-                >
+                <Button type="primary" htmlType="submit">
                     Save
                 </Button>
             </div>
-        </div>
+        </form>
     );
 };
 
