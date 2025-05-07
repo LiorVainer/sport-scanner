@@ -1,10 +1,11 @@
-import Amadeus, {CurrencyCode, FlightOffer as RawFlightOffer, FlightOffersSearchPostParams} from 'amadeus-ts';
-import {ENV} from '../env/env.config';
-import {FlightSearchParams, FlightSearchParamsSchema} from '../models/flights/flights-search-params.model';
-import {FlightOffer, FlightOffersArraySchema} from '../models/flights/flight-offer.model';
-import {CitySearchParams} from '../models/geo.model';
-import {logger} from "../logs/logger";
-import {ProcessTypes} from "../models/log.model";
+// @ts-ignore
+import Amadeus, { CurrencyCode, FlightOffer as RawFlightOffer, FlightOffersSearchPostParams } from 'amadeus-ts';
+import { ENV } from '../env/env.config';
+import { FlightSearchParams, FlightSearchParamsSchema } from '../models/flights/flights-search-params.model';
+import { FlightOffer, FlightOffersArraySchema } from '../models/flights/flight-offer.model';
+import { CitySearchParams } from '../models/geo.model';
+import { logger } from '../logs/logger';
+import { ProcessTypes } from '../models/log.model';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
@@ -14,14 +15,15 @@ const AmadeusClient = new Amadeus({
 export const AmadeusService = {
     searchFlights: async (params: FlightSearchParams) => {
         const validatedParams = FlightSearchParamsSchema.parse(params);
-        const flightOffersSearchParams: FlightOffersSearchPostParams = AmadeusService.buildFlightSearchRequest(validatedParams);
+        const flightOffersSearchParams: FlightOffersSearchPostParams =
+            AmadeusService.buildFlightSearchRequest(validatedParams);
 
         logger.remote.info(`Amadeus flight search request`, {
             processType: ProcessTypes.SEARCH_FLIGHTS,
             searchParams: flightOffersSearchParams,
         });
 
-        const {data} = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
+        const { data } = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
 
         logger.remote.success(`Amadeus flight search response`, {
             processType: ProcessTypes.SEARCH_FLIGHTS,
@@ -93,7 +95,7 @@ export const AmadeusService = {
 
     findPriceRange: (offers: FlightOffer[]) => {
         if (!offers.length) {
-            return {min: null, max: null};
+            return { min: null, max: null };
         }
 
         let min = Number.POSITIVE_INFINITY;
@@ -113,9 +115,9 @@ export const AmadeusService = {
         };
     },
 
-    getCities: async ({countryCode, keyword}: CitySearchParams) => {
+    getCities: async ({ countryCode, keyword }: CitySearchParams) => {
         try {
-            const {data} = await AmadeusClient.referenceData.locations.cities.get({
+            const { data } = await AmadeusClient.referenceData.locations.cities.get({
                 keyword,
                 countryCode,
             });
@@ -125,5 +127,5 @@ export const AmadeusService = {
             console.error(`Failed to get airports for keyword: ${keyword}`, err);
             return [];
         }
-    }
+    },
 };

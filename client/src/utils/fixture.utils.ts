@@ -1,13 +1,12 @@
-import { FixtureItem, FixtureItemWithPrice } from '../models/soccer/fixture.model';
+import { ExtendedFixtureItem } from '../models/soccer/fixture.model';
 
-export const FixtureToFlattenedDetails = (fixture: FixtureItemWithPrice) => {
+export const FixtureToFlattenedDetails = (fixture: ExtendedFixtureItem) => {
     const { league, fixture: fixtureInfo, teams, price } = fixture;
     const { date } = fixtureInfo;
     const { home, away } = teams;
 
     return {
-        league: league.name,
-        leagueLogo: league.logo,
+        league,
         homeTeam: home,
         awayTeam: away,
         price,
@@ -15,7 +14,7 @@ export const FixtureToFlattenedDetails = (fixture: FixtureItemWithPrice) => {
     };
 };
 
-export const FixturesToFlattenedDetails = (fixtures: FixtureItem[]) =>
+export const FixturesToFlattenedDetails = (fixtures: ExtendedFixtureItem[]) =>
     fixtures.map((fixture) => {
         return FixtureToFlattenedDetails(fixture);
     });

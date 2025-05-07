@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Button, message, AutoComplete } from 'antd';
+import { AutoComplete, Button, message, Select } from 'antd';
 import './preferences-body-model.scss';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GeoService } from '@/api/services/geo.service';
 import { SoccerService } from '@/api/services/soccer.service';
-import { MAX_KEYWORD_LEN, MIN_KEYWORD_LEN } from '@/components/SearchBar';
 import { Team, Venue } from '@/types/soccer.types';
 import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { UsersService } from '@/api/services/users.service';
 import { UserPreferencesPayload } from '@/models/user.model';
 import { useAuth } from '@/context/AuthContext';
-import { CityInfo, TeamNoLogo } from '@/models/packages/package.model';
+import { CityInfo, FavoriteLeague, FavoriteTeam } from '@/models/packages/package.model';
+import { MIN_AIRPORT_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
 
 const MAX_ITEMS_PER_SELECT = 3;
 
@@ -21,8 +21,8 @@ interface PreferencesBodyProps {
 const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
 
-    const [favoriteTeams, setFavoriteTeams] = useState<TeamNoLogo[]>([]);
-    const [favoriteLeagues, setFavoriteLeagues] = useState<string[]>([]);
+    const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
+    const [favoriteLeagues, setFavoriteLeagues] = useState<FavoriteLeague[]>([]);
     const [homeAirportInput, setHomeAirportInput] = useState<string>('');
     const [homeAirport, setHomeAirport] = useState<CityInfo>();
     const [teamSearch, setTeamSearch] = useState('');
@@ -33,10 +33,16 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', homeAirportInput],
         queryFn: async () => {
-            if (homeAirportInput.length < MIN_KEYWORD_LEN || homeAirportInput.length > MAX_KEYWORD_LEN) return [];
+            if (
+                homeAirportInput.length < MIN_AIRPORT_SEARCH_KEYWORD_LEN ||
+                homeAirportInput.length > MIN_AIRPORT_SEARCH_KEYWORD_LEN
+            )
+                return [];
             return GeoService.getCities(homeAirportInput);
         },
-        enabled: homeAirportInput.length >= MIN_KEYWORD_LEN && homeAirportInput.length <= MAX_KEYWORD_LEN,
+        enabled:
+            homeAirportInput.length >= MIN_AIRPORT_SEARCH_KEYWORD_LEN &&
+            homeAirportInput.length <= MIN_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: searchedTeams = [] } = useQuery({
@@ -67,7 +73,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
 
     useEffect(() => {
         setFavoriteTeams(loggedInUser!.favoriteTeams || []);
-        setFavoriteLeagues(loggedInUser!.favoriteLeagues|| []);
+        setFavoriteLeagues(loggedInUser!.favoriteLeagues || []);
 
         if (loggedInUser!.homeAirport) {
             setHomeAirport(loggedInUser!.homeAirport);
@@ -92,7 +98,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         },
     });
 
-    const handleTeamChange = (value: TeamNoLogo[]) => {
+    const handleTeamChange = (value: FavoriteTeam[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
             setFavoriteTeams(value);
         } else {
@@ -100,7 +106,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         }
     };
 
-    const handleLeagueChange = (value: string[]) => {
+    const handleLeagueChange = (value: FavoriteLeague[]) => {
         if (value.length <= MAX_ITEMS_PER_SELECT) {
             setFavoriteLeagues(value);
         } else {
@@ -113,7 +119,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const teamOptions =
         teamSearch.length < 3
             ? defaultTeams.map((t) => ({ value: t.team.name }))
-            : searchedTeams.map((t) => ({ value: t.team.name }));
+            : searchedTeams.map((t) => ({ value: t.name }));
 
     const leagueOptions = searchedLeagues.map((l) => ({ value: l.league.name }));
 

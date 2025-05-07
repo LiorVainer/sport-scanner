@@ -20,7 +20,10 @@ interface PackagesContextType {
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
 
 export const PackagesProvider = ({ children }: { children: React.ReactNode }) => {
-    const [progressUpdates, setProgressUpdates] = useState<PackagesGenerationProgressUpdate[]>([]);
+    const [progressUpdates, setProgressUpdates] = useLocalStorage<PackagesGenerationProgressUpdate[]>(
+        'packages-generation-progress-updates',
+        []
+    );
     const [hideProgressTimeline, setHideProgressTimeline] = useState(false);
     const [packages, setPackages] = useLocalStorage<Package[] | undefined>('packages-generated', undefined);
 

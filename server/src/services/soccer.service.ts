@@ -29,8 +29,10 @@ soccerApiClient.interceptors.request.use((config) => {
 });
 
 export const soccerService = {
-    getCountries: async () => {
-        const { data } = await soccerApiClient.get<{ response: Country[]; errors: string[] }>('/countries');
+    getCountries: async (name?: string) => {
+        const { data } = await soccerApiClient.get<{ response: Country[]; errors: string[] }>('/countries', {
+            params: { search: name },
+        });
         if (data.errors.length) throw new Error('Error fetching countries');
         return data.response;
     },
@@ -40,6 +42,7 @@ export const soccerService = {
             response: { league: League; country: Country }[];
             errors: string[];
         }>('/leagues', { params: { country } });
+
         if (data.errors.length) throw new Error('Error fetching leagues');
         return data.response;
     },
@@ -77,12 +80,18 @@ export const soccerService = {
     },
 
     getTeamsByName: async (name: string) => {
+        const data = await soccerService.getTeamsWithVenueByName(name);
+
+        return data.map((item) => item.team);
+    },
+
+    getTeamsWithVenueByName: async (name: string) => {
         const { data } = await soccerApiClient.get<{
             response: { team: Team; venue: Venue }[];
             errors: string[];
         }>('/teams', { params: { search: name } });
 
-        if (data.errors.length) throw new Error('Error searching teams by name');
+        if (data.errors.length) throw new Error('Error searching teams with venue by name');
         return data.response;
     },
 

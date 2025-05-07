@@ -1,13 +1,15 @@
-import {z} from 'zod';
-import {zodDate} from '../../utils/zod.utils';
+import { z } from 'zod';
+import { zodDate } from '../../utils/zod.utils';
 
-export const DateRangeSchema = z.object({
-    from: zodDate,
-    to: zodDate,
-}).describe('Date range for the package generation');
+export const DateRangeSchema = z
+    .object({
+        from: zodDate,
+        to: zodDate,
+    })
+    .describe('Date range for the package generation');
 
 export const PackagesGenerationParamsSchema = z.object({
-    originIATA: z.string().min(1, {message: 'Origin Airport is required'}),
+    originIATA: z.string().min(1, { message: 'Origin Airport is required' }),
     date: z.object({
         from: zodDate,
         to: zodDate,
@@ -23,11 +25,12 @@ export const PackagesGenerationParamsSchema = z.object({
             name: z.string(),
         })
         .optional(),
-    team: z
+    teams: z
         .object({
             id: z.number(),
             name: z.string(),
         })
+        .array()
         .optional(),
 });
 

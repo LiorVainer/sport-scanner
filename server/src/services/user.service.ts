@@ -1,7 +1,7 @@
 import { UpdateUserBody } from '../types/user.types';
 import { UserRepository } from '../repositories/user.repository';
 import { History, PopulatedHistory } from '../models/history.model';
-import { SavedPackage, PopulatedSavedPackage } from '../models/saved-packages.model';
+import { PopulatedSavedPackage, SavedPackage } from '../models/saved-packages.model';
 import { HistoryRepository } from '../repositories/history.repository';
 import { SavedPackageRepository } from '../repositories/saved-packages.repository';
 import mongoose from 'mongoose';
@@ -9,10 +9,7 @@ import { populateAggregation } from '../queries/package.query';
 import { User } from '../models/user.model';
 
 export const UserService = {
-    async updateUserById(
-        userId: string,
-        data: UpdateUserBody
-    ): Promise<Omit<User, 'password' | 'refreshTokens'> | null> {
+    async updateUserById(userId: string, data: UpdateUserBody): Promise<User | null> {
         const user = await UserRepository.findById(userId);
         if (!user) return null;
 
@@ -24,7 +21,8 @@ export const UserService = {
         const matchStage = {
             $match: { userId: new mongoose.Types.ObjectId(userId) },
         };
-        return await HistoryRepository.aggregate(populateAggregation(matchStage));
+
+        return HistoryRepository.aggregate(populateAggregation(matchStage));
     },
 
     async addToUsersHistory(userId: string, packageId: string): Promise<History> {

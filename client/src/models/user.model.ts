@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { zodDate } from '@/utils/zod.utils.ts';
-import { CityInfoSchema, TeamInfoMongooseSchema } from './packages/package.model';
+import { CityInfoSchema, FavoriteLeagueSchema, FavoriteTeamSchema } from './packages/package.model';
 
 export const UserSchema = z.object({
     username: z.string(),
@@ -11,9 +11,9 @@ export const UserSchema = z.object({
     createdAt: zodDate,
     updatedAt: zodDate,
     refreshTokens: z.string().array().optional(),
-    favoriteTeams: TeamInfoMongooseSchema.array().optional(),
     homeAirport: CityInfoSchema.optional(),
-    favoriteLeagues: z.string().array().optional(),
+    favoriteTeams: FavoriteTeamSchema.array().optional(),
+    favoriteLeagues: FavoriteLeagueSchema.array().optional(),
     isFirstVisit: z.boolean().optional(),
 });
 

@@ -4,7 +4,6 @@ import styles from './flight-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { TicketsPlane } from 'lucide-react';
 import { Flight } from '@/models/packages/package.model.ts';
-import React from 'react';
 
 const { Text } = Typography;
 
@@ -14,8 +13,8 @@ interface FlightDetailsProps {
 
 export const FlightDetails = ({ flight }: FlightDetailsProps) => {
     const {
-        origin: { name: originName },
-        destination: { name: destinationName },
+        origin: { name: originName, iataCode: originIataCode },
+        destination: { name: destinationName, iataCode: destinationIataCode },
         departureDate,
         price,
         searchFlightTicketsLink,
@@ -24,12 +23,18 @@ export const FlightDetails = ({ flight }: FlightDetailsProps) => {
     return (
         <div className={styles.flightDetailsContainer}>
             <div className={styles.flightRouteInfo}>
-                <TicketsPlane className={styles.airplaneIcon} />
-                <Text strong className={styles.flightRoute}>
-                    {originName}
-                    <ArrowRightOutlined className={styles.arrowIcon} />
-                    {destinationName}
-                </Text>
+                <div className={styles.flightRouteSection}>
+                    <TicketsPlane className={styles.airplaneIcon} />
+                    <div className={styles.flightRoute}>
+                        <p>
+                            {originName} ({originIataCode})
+                        </p>
+                        <ArrowRightOutlined className={styles.arrowIcon} />
+                        <p>
+                            {destinationName} ({destinationIataCode})
+                        </p>
+                    </div>
+                </div>
                 <Text type="secondary" className={styles.flightDate}>
                     ({formattedDate(departureDate)})
                 </Text>

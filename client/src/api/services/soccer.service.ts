@@ -1,5 +1,5 @@
-import { Country, League, Team, Venue } from '@/types/soccer.types';
 import { axiosInstance } from '../config/axios-instance';
+import { Country, League, Team, Venue } from '@/models/soccer/soccer.model.ts';
 
 export const ROUTE_PREFIX = '/soccer';
 
@@ -14,7 +14,7 @@ export const SoccerService = {
         }
     },
 
-    async getLeagues(country: string | undefined, name?: string) {
+    async getLeagues(country?: string, name?: string) {
         try {
             const { data } = await axiosInstance.get<{ league: League; country: Country }[]>(
                 `${ROUTE_PREFIX}/leagues`,
@@ -52,12 +52,26 @@ export const SoccerService = {
 
     async getTeams(name: string) {
         try {
-            const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
+            const { data } = await axiosInstance.get<Team[]>(`${ROUTE_PREFIX}/teams`, {
                 params: { name },
             });
+
             return data;
         } catch (error) {
             console.error('Error fetching teams:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async getTeamsWithVenue(name: string) {
+        try {
+            const { data } = await axiosInstance.get<{ team: Team; venue: Venue }[]>(`${ROUTE_PREFIX}/teams`, {
+                params: { name, include: 'venue' },
+            });
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching teams with venue:', (error as any).message);
             throw error;
         }
     },

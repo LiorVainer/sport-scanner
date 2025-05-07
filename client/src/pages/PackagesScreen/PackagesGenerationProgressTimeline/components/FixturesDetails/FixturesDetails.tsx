@@ -1,11 +1,10 @@
-import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from './fixtures-details.module.scss';
 import { FixturesToFlattenedDetails } from '@/utils/fixture.utils.ts';
 import moment from 'moment';
-import { FixtureItem } from '@/models/soccer/fixture.model';
+import { ExtendedFixtureItem } from '@/models/soccer/fixture.model';
 
 interface FixtureDetailsProps {
-    fixtures: FixtureItem[];
+    fixtures: ExtendedFixtureItem[];
 }
 
 export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {
@@ -16,8 +15,12 @@ export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {
     return (
         <div className={styles.infoBlock}>
             <div className={styles.fixtureList}>
-                {FixturesToFlattenedDetails(fixtures).map(({ homeTeam, awayTeam, date, price }) => (
+                {FixturesToFlattenedDetails(fixtures).map(({ homeTeam, awayTeam, date, price, league }) => (
                     <div className={styles.fixtureItem} key={date}>
+                        <div className={styles.league}>
+                            <img src={league.logo} alt={league.name} className={styles.leagueLogo} />
+                            <p>{league.name}</p>
+                        </div>
                         <div className={styles.fixtureTeams}>
                             <div className={styles.teamDetails}>
                                 <p className={styles.teamName}>{homeTeam.name}</p>
@@ -31,11 +34,7 @@ export const FixturesDetails = ({ fixtures }: FixtureDetailsProps) => {
                         </div>
                         <div className={styles.metadata}>
                             {price ? (
-                                <p className={styles.fixturePrice}>
-                                    <span>{`${price?.min}$`}</span>
-                                    <ArrowRightOutlined />
-                                    <span>{`${price?.max}$`}</span>
-                                </p>
+                                <p className={styles.fixturePrice}>{`${price?.min}$ - ${price?.max}$`}</p>
                             ) : (
                                 <p className={styles.fixtureDate}>{moment(new Date(date)).format('DD/MM')}</p>
                             )}

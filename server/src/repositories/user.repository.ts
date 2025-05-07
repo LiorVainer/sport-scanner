@@ -1,6 +1,16 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { User } from '../models/user.model';
 
+interface FavoriteTeam {
+    id: number;
+    name: string;
+}
+
+interface FavoriteLeague {
+    id: number;
+    name: string;
+}
+
 const CityInfoMongooseSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
@@ -9,10 +19,21 @@ const CityInfoMongooseSchema = new mongoose.Schema(
     { _id: false }
 );
 
-const TeamNoLogoMongooseSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    id: { type: Number, required: true },
-});
+const FavoriteTeamMongoSchema = new mongoose.Schema<FavoriteTeam>(
+    {
+        name: { type: String, required: true },
+        id: { type: Number, required: true },
+    },
+    { _id: false }
+);
+
+const FavoriteLeagueMongoSchema = new mongoose.Schema<FavoriteLeague>(
+    {
+        name: { type: String, required: true },
+        id: { type: Number, required: true },
+    },
+    { _id: false }
+);
 
 const UserMongoSchema = new Schema(
     {
@@ -23,15 +44,14 @@ const UserMongoSchema = new Schema(
         googleId: { type: String },
         refreshTokens: { type: [String], default: [] },
         favoriteTeams: {
-            type: [TeamNoLogoMongooseSchema],
+            type: [FavoriteTeamMongoSchema],
             default: [],
-            set: (teams: any[]) =>
-                Array.isArray(teams)
-                    ? teams.filter((team) => team && typeof team.id === 'number' && typeof team.name === 'string')
-                    : [],
         },
         homeAirport: { type: CityInfoMongooseSchema },
-        favoriteLeagues: { type: [String], default: [] },
+        favoriteLeagues: {
+            type: [FavoriteLeagueMongoSchema],
+            default: [],
+        },
         isFirstVisit: { type: Boolean, default: true },
     },
     {

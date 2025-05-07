@@ -1,4 +1,4 @@
-import {ValueOf} from "../../types/general.types";
+import { ValueOf } from '@/types/common.types';
 
 export const GeneratePackagesSteps = {
     GENERATE_SEARCH_FIXTURE_PARAMS: 'generate_search_fixture_params',
@@ -11,6 +11,7 @@ export const GeneratePackagesSteps = {
     GENERATE_PACKAGES: 'generate_packages',
     AI_GENERATED_PACKAGES: 'ai_generated_packages',
     FILTER_PACKAGES: 'filter_packages',
+    GENERATING_PACKAGES_METADATA: 'generating_packages_metadata',
     FINISHED_GENERATING_PACKAGES: 'finished_generating_packages',
 } as const;
 
