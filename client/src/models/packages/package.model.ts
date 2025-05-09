@@ -8,18 +8,6 @@ export const CityInfoSchema = z.object({
     iataCode: z.string().length(3).describe('IATA code of the airport'),
 });
 
-export const FavoriteTeamSchema = z.object({
-    name: z.string().describe('Team name'),
-    id: z.number().describe('Unique identifier of the team'),
-    logo: z.string().describe('URL of the team logo'),
-});
-
-export const FavoriteLeagueSchema = z.object({
-    name: z.string().describe('League name'),
-    id: z.number().describe('Unique identifier of the league'),
-    logo: z.string().describe('URL of the league logo'),
-});
-
 export const FlightPurposeSchema = z
     .enum(['departure', 'return', 'connecting'])
     .describe(
@@ -162,8 +150,6 @@ export type Package = z.infer<typeof PackageSchema>;
 export type TimelineItem = z.infer<typeof TimelineItemSchema>;
 export type FlightItem = z.infer<typeof FlightItemSchema>;
 export type Destination = z.infer<typeof DestinationSchema>;
-export type FavoriteTeam = z.infer<typeof FavoriteTeamSchema>;
-export type FavoriteLeague = z.infer<typeof FavoriteLeagueSchema>;
 
 export const PackageDocumentSchema = PackageSchema.extend({
     _id: z.string(),

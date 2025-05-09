@@ -10,14 +10,14 @@ import { useAuth } from '@/context/AuthContext';
 import { DEFAULT_TEAMS, MIN_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
 import './preferences-body-model.scss';
 import classes from '@components/SearchBar/search-bar.module.scss';
-
-const MAX_ITEMS_PER_SELECT = 3;
+import { MAX_ITEMS_PER_SELECT } from '@pages/UserPreferences/preferences-body.const.ts';
 
 interface PreferencesBodyProps {
     handlePreferencesCancel: () => void;
+    isFirstVisit?: boolean;
 }
 
-const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
+const PreferencesBody = ({ isFirstVisit, handlePreferencesCancel }: PreferencesBodyProps) => {
     const { loggedInUser } = useAuth();
     const queryClient = useQueryClient();
 
@@ -25,7 +25,7 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
     const [teamSearch, setTeamSearch] = useState('');
     const [leagueSearch, setLeagueSearch] = useState('');
 
-    const { control, handleSubmit, watch, resetField, setValue } = useForm({
+    const { control, handleSubmit, resetField, setValue } = useForm({
         defaultValues: {
             favoriteTeams: loggedInUser?.favoriteTeams ?? [],
             favoriteLeagues: loggedInUser?.favoriteLeagues ?? [],
@@ -38,8 +38,6 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
         queryFn: () => GeoService.getCities(homeAirportInput!),
         enabled: !!homeAirportInput && homeAirportInput.length >= MIN_SEARCH_KEYWORD_LEN,
     });
-
-    console.log({ homeAirportInput, watch: watch().homeAirport });
 
     const { data: searchedTeamsResults = [] } = useQuery({
         queryKey: ['teams', teamSearch],
@@ -76,7 +74,17 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="user-preferences">
-            <p className="intro">Update your preferences below:</p>
+            {isFirstVisit ? (
+                <div>
+                    <h2>Welcome To Sport Scanner!</h2>
+                    <p className="intro">Please choose your preferences below to personalize your experience.</p>
+                </div>
+            ) : (
+                <div>
+                    <h3>Edit Your Preferences</h3>
+                    <p className="intro">Choose your preferences below to personalize your experience.</p>
+                </div>
+            )}
 
             <div className="form-group">
                 <label>
@@ -91,7 +99,6 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                             showSearch
                             labelInValue
                             placeholder={`Type to search teams (max ${MAX_ITEMS_PER_SELECT})`}
-                            style={{ width: '100%' }}
                             maxTagCount={3}
                             onSearch={setTeamSearch}
                             options={(!teamSearch ? DEFAULT_TEAMS : searchedTeamsResults).map((team) => ({
@@ -164,7 +171,6 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                             showSearch
                             labelInValue
                             placeholder={`Type to search leagues (max ${MAX_ITEMS_PER_SELECT})`}
-                            style={{ width: '100%' }}
                             maxTagCount={3}
                             onSearch={setLeagueSearch}
                             options={searchedLeaguesResults.map((league) => ({
@@ -245,7 +251,6 @@ const PreferencesBody = ({ handlePreferencesCancel }: PreferencesBodyProps) => {
                                 field.onChange(selectedCity || '');
                                 setHomeAirportInput(undefined);
                             }}
-                            style={{ width: '100%' }}
                             options={airportSuggestions.map((airport) => ({
                                 value: `${airport.name} (${airport.iataCode})`,
                             }))}

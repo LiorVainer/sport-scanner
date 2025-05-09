@@ -1,6 +1,21 @@
 import { z } from 'zod';
 import { zodDate } from '@/utils/zod.utils.ts';
-import { CityInfoSchema, FavoriteLeagueSchema, FavoriteTeamSchema } from './packages/package.model';
+import { CityInfoSchema } from './packages/package.model';
+
+export const FavoriteTeamSchema = z.object({
+    name: z.string().describe('Team name'),
+    id: z.number().describe('Unique identifier of the team'),
+    logo: z.string().describe('URL of the team logo'),
+});
+
+export const FavoriteLeagueSchema = z.object({
+    name: z.string().describe('League name'),
+    id: z.number().describe('Unique identifier of the league'),
+    logo: z.string().describe('URL of the league logo'),
+});
+
+export type FavoriteTeam = z.infer<typeof FavoriteTeamSchema>;
+export type FavoriteLeague = z.infer<typeof FavoriteLeagueSchema>;
 
 export const UserSchema = z.object({
     username: z.string(),
@@ -32,6 +47,7 @@ export const UserPreferencesPayload = UserSchema.pick({
     favoriteLeagues: true,
     isFirstVisit: true,
 }).partial();
+
 export type UserPreferencesPayload = z.infer<typeof UserPreferencesPayload>;
 
 export type User = z.infer<typeof UserSchema>;

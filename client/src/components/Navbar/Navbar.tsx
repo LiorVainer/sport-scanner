@@ -51,11 +51,13 @@ export const Navbar = () => {
                     onCancel={handlePreferencesCancel}
                     footer={null}
                     centered
-                    width={700}
+                    className={classes.preferencesModal}
                     destroyOnClose
-                    title="Edit Preferences"
                 >
-                    <PreferencesBody handlePreferencesCancel={handlePreferencesCancel} />
+                    <PreferencesBody
+                        isFirstVisit={loggedInUser?.isFirstVisit}
+                        handlePreferencesCancel={handlePreferencesCancel}
+                    />
                 </Modal>
             </div>
         </nav>
