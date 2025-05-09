@@ -28,7 +28,7 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
 /**
  * @swagger
  * security:
- *   - BearerAuth: []  # This indicates that Bearer token is required for authorization
+ *   - BearerAuth: []
  */
 
 /**
@@ -38,7 +38,7 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *     summary: Get all countries
  *     tags: [Soccer]
  *     security:
- *       - BearerAuth: []  # Require Bearer token for this endpoint
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: A list of countries
@@ -57,23 +57,23 @@ router.get('/countries', soccerController.getCountries);
  * @swagger
  * /soccer/leagues:
  *   get:
- *     summary: Get all leagues in a specific country (optionally filter by league name)
+ *     summary: Get leagues by country or search by name
  *     tags: [Soccer]
  *     security:
- *       - BearerAuth: []  # Require Bearer token for this endpoint
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: country
  *         schema:
  *           type: string
- *         required: true
+ *         required: false
  *         description: The country for which leagues are being retrieved
  *       - in: query
  *         name: name
  *         schema:
  *           type: string
  *         required: false
- *         description: Optional league name to filter the results (case-insensitive)
+ *         description: Optional league name to search or filter by (case-insensitive)
  *     responses:
  *       200:
  *         description: A list of leagues
@@ -83,10 +83,11 @@ router.get('/countries', soccerController.getCountries);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/League'
+ *       400:
+ *         description: Missing required query (must provide at least country or name)
  *       500:
  *         description: Error fetching leagues
  */
-
 router.get('/leagues', soccerController.getLeagues);
 
 /**
@@ -96,7 +97,7 @@ router.get('/leagues', soccerController.getLeagues);
  *     summary: Get all venues in a specific country
  *     tags: [Soccer]
  *     security:
- *       - BearerAuth: []  # Require Bearer token for this endpoint
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: country
@@ -122,23 +123,17 @@ router.get('/venues', soccerController.getVenues);
  * @swagger
  * /soccer/teams:
  *   get:
- *     summary: Get all teams in a specific league and season
+ *     summary: Get all teams by team name (min 3 characters)
  *     tags: [Soccer]
  *     security:
- *       - BearerAuth: []  # Require Bearer token for this endpoint
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
- *         name: league
+ *         name: name
  *         schema:
  *           type: string
  *         required: true
- *         description: The league for which teams are being retrieved
- *       - in: query
- *         name: season
- *         schema:
- *           type: string
- *         required: false
- *         description: The season for which teams are being retrieved (optional, defaults to current season)
+ *         description: Team name to search (min 3 characters)
  *     responses:
  *       200:
  *         description: A list of teams
@@ -148,6 +143,8 @@ router.get('/venues', soccerController.getVenues);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Team'
+ *       400:
+ *         description: Team name is required and must be at least 3 characters
  *       500:
  *         description: Error fetching teams
  */

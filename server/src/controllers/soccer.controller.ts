@@ -24,19 +24,31 @@ export const soccerController = {
 
     getLeagues: async (req: Request, res: Response) => {
         try {
-            const country = req.query.country as string;
-            const leagueName = req.query.name as string;
+            const country = req.query.country as string | undefined;
+            const name = req.query.name as string | undefined;
 
-            const leagues = await soccerService.getLeaguesByCountry(country);
+            if (!country && name) {
+                const leagues = await soccerService.getLeaguesByName(name);
+                res.status(200).json(leagues);
 
-            if (leagueName && leagueName !== '') {
-                const regex = new RegExp(leagueName, 'i');
-                const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
-                res.status(200).json(filteredLeagues);
-                return;
+                return
             }
 
-            res.status(200).json(leagues);
+            if (country) {
+                const leagues = await soccerService.getLeaguesByCountry(country);
+                if (name) {
+                    const regex = new RegExp(name, 'i');
+                    const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
+                    res.status(200).json(filteredLeagues);
+
+                    return
+                }
+                res.status(200).json(leagues);
+
+                return
+            }
+
+            res.status(400).json({ message: 'Missing required query: country or name' });
         } catch (e) {
             res.status(500).json({ message: 'Error fetching leagues', error: e });
         }
@@ -60,7 +72,9 @@ export const soccerController = {
             const withVenue = include === 'venue';
 
             if (!name || name.length < 3) {
-                res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
+                res
+                    .status(400)
+                    .json({ message: 'Team name is required and must be at least 3 characters long.' });
                 return;
             }
 

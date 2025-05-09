@@ -1,5 +1,21 @@
 import { z } from 'zod';
 import { zodDate } from '@/utils/zod.utils.ts';
+import { CityInfoSchema } from './packages/package.model';
+
+export const FavoriteTeamSchema = z.object({
+    name: z.string().describe('Team name'),
+    id: z.number().describe('Unique identifier of the team'),
+    logo: z.string().describe('URL of the team logo'),
+});
+
+export const FavoriteLeagueSchema = z.object({
+    name: z.string().describe('League name'),
+    id: z.number().describe('Unique identifier of the league'),
+    logo: z.string().describe('URL of the league logo'),
+});
+
+export type FavoriteTeam = z.infer<typeof FavoriteTeamSchema>;
+export type FavoriteLeague = z.infer<typeof FavoriteLeagueSchema>;
 
 export const UserSchema = z.object({
     username: z.string(),
@@ -10,6 +26,10 @@ export const UserSchema = z.object({
     createdAt: zodDate,
     updatedAt: zodDate,
     refreshTokens: z.string().array().optional(),
+    homeAirport: CityInfoSchema.optional(),
+    favoriteTeams: FavoriteTeamSchema.array().optional(),
+    favoriteLeagues: FavoriteLeagueSchema.array().optional(),
+    isFirstVisit: z.boolean().optional(),
 });
 
 export const RegisterPayload = UserSchema.omit({ createdAt: true, updatedAt: true });
@@ -20,6 +40,15 @@ export type LoginPayload = z.infer<typeof LoginPayload>;
 
 export const UserUpdatePayload = UserSchema.pick({ picture: true, username: true }).partial();
 export type UserUpdatePayload = z.infer<typeof UserUpdatePayload>;
+
+export const UserPreferencesPayload = UserSchema.pick({
+    favoriteTeams: true,
+    homeAirport: true,
+    favoriteLeagues: true,
+    isFirstVisit: true,
+}).partial();
+
+export type UserPreferencesPayload = z.infer<typeof UserPreferencesPayload>;
 
 export type User = z.infer<typeof UserSchema>;
 

@@ -27,6 +27,19 @@ export const SoccerService = {
         }
     },
 
+    async getLeaguesByName(name: string) {
+        try {
+            const { data } = await axiosInstance.get<{ league: League; country: Country }[]>(
+                `${ROUTE_PREFIX}/leagues`,
+                { params: { name } }
+            );
+            return data;
+        } catch (error) {
+            console.error('Error fetching leagues by name:', (error as any).message);
+            throw error;
+        }
+    },
+
     async getVenues(country: string) {
         try {
             const { data } = await axiosInstance.get<Venue[]>(`${ROUTE_PREFIX}/venues`, { params: { country } });

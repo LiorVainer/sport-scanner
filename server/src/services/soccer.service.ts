@@ -47,6 +47,16 @@ export const soccerService = {
         return data.response;
     },
 
+    getLeaguesByName: async (name: string) => {
+        const { data } = await soccerApiClient.get<{
+            response: { league: League; country: Country }[];
+            errors: string[];
+        }>('/leagues', { params: { search: name } });
+
+        if (data.errors.length) throw new Error('Error fetching leagues by name');
+        return data.response;
+    },
+
     getVenuesByCountry: async (country: string) => {
         const { data } = await soccerApiClient.get<{ response: Venue[]; errors: string[] }>('/venues', {
             params: { country },

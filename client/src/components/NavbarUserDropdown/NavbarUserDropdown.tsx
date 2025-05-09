@@ -6,11 +6,12 @@ import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
 
 export interface NavbarUserDropdownProps {
     showModal: () => void;
+    showPreferencesModal: () => void;
 }
 
 const { Text } = Typography;
 
-export const NavbarUserDropdown = ({ showModal }: NavbarUserDropdownProps) => {
+export const NavbarUserDropdown = ({ showModal, showPreferencesModal }: NavbarUserDropdownProps) => {
     const { loggedInUser, logout } = useAuth();
 
     const items: MenuProps['items'] = [
@@ -31,14 +32,25 @@ export const NavbarUserDropdown = ({ showModal }: NavbarUserDropdownProps) => {
                         <Text className={classes.profileEmail}>{loggedInUser.email}</Text>
                     </div>
 
-                    <Button
-                        type="link"
-                        icon={<EditOutlined />}
-                        className={classes.customizeProfileButton}
-                        onClick={showModal}
-                    >
-                        Edit User
-                    </Button>
+                    <div className={classes.textCenter}>
+                        <Button
+                            type="link"
+                            icon={<EditOutlined />}
+                            className={classes.customizeProfileButton}
+                            onClick={showModal}
+                        >
+                            Edit User
+                        </Button>
+
+                        <Button
+                            type="link"
+                            icon={<EditOutlined />}
+                            className={classes.customizeProfileButton}
+                            onClick={showPreferencesModal}
+                        >
+                            Edit Preferences
+                        </Button>
+                    </div>
 
                     <Divider className={classes.divider} />
 

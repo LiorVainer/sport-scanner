@@ -6,6 +6,7 @@
     "prod:pm2": "npm run build:prod && pm2 restart ecosystem.config.js --env production",
     "prod": "cp .env.prod .env && npm run start:prod",
     "dev": "cp .env.dev .env && nodemon -x npx tsx src/app.ts",
+    "dev:windows": "copy .env.dev .env && nodemon -x npx tsx src/app.ts",
     "build": "tsc",
     "start": "tsc && node ./dist/app.js",
     "start:prod": "npm run build:prod && node ./dist/app.js",
