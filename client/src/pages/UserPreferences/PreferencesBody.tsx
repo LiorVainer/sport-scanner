@@ -86,32 +86,23 @@ const PreferencesBody = ({ isFirstVisit, handlePreferencesCancel }: PreferencesB
                 </div>
             )}
 
-            <div className="form-group">
-                <label>
-                    🏆 Favorite Teams <span>(Tell us which teams you love to follow)</span>
-                </label>
-                <Controller
-                    name="favoriteTeams"
-                    control={control}
-                    render={({ field }) => (
-                        <Select
-                            mode="multiple"
-                            showSearch
-                            labelInValue
-                            placeholder={`Type to search teams (max ${MAX_ITEMS_PER_SELECT})`}
-                            maxTagCount={3}
-                            onSearch={setTeamSearch}
-                            options={(!teamSearch ? DEFAULT_TEAMS : searchedTeamsResults).map((team) => ({
-                                value: team.name,
-                                label: (
-                                    <div className={classes.teamItem}>
-                                        <img src={team.logo} alt={team.name} />
-                                        {team.name}
-                                    </div>
-                                ),
-                            }))}
-                            value={
-                                field.value?.map((team) => ({
+            <div className="form-fields">
+                <div className="form-group">
+                    <label>
+                        🏆 Favorite Teams <span>(Tell us which teams you love to follow)</span>
+                    </label>
+                    <Controller
+                        name="favoriteTeams"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                mode="multiple"
+                                showSearch
+                                labelInValue
+                                placeholder={`Type to search teams (max ${MAX_ITEMS_PER_SELECT})`}
+                                maxTagCount={3}
+                                onSearch={setTeamSearch}
+                                options={(!teamSearch ? DEFAULT_TEAMS : searchedTeamsResults).map((team) => ({
                                     value: team.name,
                                     label: (
                                         <div className={classes.teamItem}>
@@ -119,155 +110,166 @@ const PreferencesBody = ({ isFirstVisit, handlePreferencesCancel }: PreferencesB
                                             {team.name}
                                         </div>
                                     ),
-                                })) ?? []
-                            }
-                            onChange={(selectedOptions) => {
-                                if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
-                                    message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
-                                    return;
+                                }))}
+                                value={
+                                    field.value?.map((team) => ({
+                                        value: team.name,
+                                        label: (
+                                            <div className={classes.teamItem}>
+                                                <img src={team.logo} alt={team.name} />
+                                                {team.name}
+                                            </div>
+                                        ),
+                                    })) ?? []
                                 }
+                                onChange={(selectedOptions) => {
+                                    if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
+                                        message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} teams.`);
+                                        return;
+                                    }
 
-                                const selectedNames = selectedOptions.map((opt) => opt.value);
+                                    const selectedNames = selectedOptions.map((opt) => opt.value);
 
-                                const teamsArr = !teamSearch ? DEFAULT_TEAMS : searchedTeamsResults;
+                                    const teamsArr = !teamSearch ? DEFAULT_TEAMS : searchedTeamsResults;
 
-                                const newSelections = selectedNames
-                                    .map((val) => teamsArr.find((t) => t.name === val))
-                                    .filter(Boolean)
-                                    .map((team) => ({
-                                        id: team!.id,
-                                        name: team!.name,
-                                        logo: team!.logo,
-                                    }));
+                                    const newSelections = selectedNames
+                                        .map((val) => teamsArr.find((t) => t.name === val))
+                                        .filter(Boolean)
+                                        .map((team) => ({
+                                            id: team!.id,
+                                            name: team!.name,
+                                            logo: team!.logo,
+                                        }));
 
-                                const prevSelections = field.value ?? [];
-                                const merged = [
-                                    ...prevSelections.filter((team) => selectedNames.includes(team.name)),
-                                    ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
-                                ];
+                                    const prevSelections = field.value ?? [];
+                                    const merged = [
+                                        ...prevSelections.filter((team) => selectedNames.includes(team.name)),
+                                        ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                    ];
 
-                                field.onChange(merged);
-                            }}
-                            onClear={() => {
-                                resetField('favoriteTeams');
-                                setTeamSearch('');
-                            }}
-                            filterOption={false}
-                        />
-                    )}
-                />
-            </div>
+                                    field.onChange(merged);
+                                }}
+                                onClear={() => {
+                                    resetField('favoriteTeams');
+                                    setTeamSearch('');
+                                }}
+                                filterOption={false}
+                            />
+                        )}
+                    />
+                </div>
 
-            <div className="form-group">
-                <label>
-                    🏆 Preferred Leagues <span>(Select leagues that excite you the most)</span>
-                </label>
-                <Controller
-                    name="favoriteLeagues"
-                    control={control}
-                    render={({ field }) => (
-                        <Select
-                            mode="multiple"
-                            showSearch
-                            labelInValue
-                            placeholder={`Type to search leagues (max ${MAX_ITEMS_PER_SELECT})`}
-                            maxTagCount={3}
-                            onSearch={setLeagueSearch}
-                            options={searchedLeaguesResults.map((league) => ({
-                                value: league.league.name,
-                                label: (
-                                    <div className={classes.teamItem}>
-                                        <img src={league.league.logo} alt={league.league.name} />
-                                        {league.league.name}
-                                    </div>
-                                ),
-                            }))}
-                            value={
-                                field.value?.map((league) => ({
-                                    value: league.name,
+                <div className="form-group">
+                    <label>
+                        🏆 Preferred Leagues <span>(Select leagues that excite you the most)</span>
+                    </label>
+                    <Controller
+                        name="favoriteLeagues"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                mode="multiple"
+                                showSearch
+                                labelInValue
+                                placeholder={`Type to search leagues (max ${MAX_ITEMS_PER_SELECT})`}
+                                maxTagCount={3}
+                                onSearch={setLeagueSearch}
+                                options={searchedLeaguesResults.map((league) => ({
+                                    value: league.league.name,
                                     label: (
                                         <div className={classes.teamItem}>
-                                            <img src={league.logo} alt={league.name} />
-                                            {league.name}
+                                            <img src={league.league.logo} alt={league.league.name} />
+                                            {league.league.name}
                                         </div>
                                     ),
-                                })) ?? []
-                            }
-                            onChange={(selectedOptions) => {
-                                if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
-                                    message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
-                                    return;
-                                }
-
-                                const selectedNames = selectedOptions.map((opt) => opt.value);
-
-                                const leaguesArr = !leagueSearch ? [] : searchedLeaguesResults.map((l) => l.league);
-
-                                const newSelections = selectedNames
-                                    .map((val) => leaguesArr.find((l) => l.name === val))
-                                    .filter(Boolean)
-                                    .map((league) => ({
-                                        id: league!.id,
-                                        name: league!.name,
-                                        logo: league!.logo,
-                                    }));
-
-                                const prevSelections = field.value ?? [];
-                                const merged = [
-                                    ...prevSelections.filter((league) => selectedNames.includes(league.name)),
-                                    ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
-                                ];
-
-                                field.onChange(merged);
-                            }}
-                            onClear={() => {
-                                resetField('favoriteLeagues');
-                                setLeagueSearch('');
-                            }}
-                            filterOption={false}
-                        />
-                    )}
-                />
-            </div>
-
-            <div className="form-group">
-                <label>
-                    🏠 Home City or Airport *{' '}
-                    <span>(Choose your home city or the airport you usually travel from)</span>
-                </label>
-                <Controller
-                    rules={{ required: true }}
-                    name="homeAirport"
-                    control={control}
-                    render={({ field, fieldState, formState }) => (
-                        <>
-                            <AutoComplete
-                                value={
-                                    homeAirportInput ||
-                                    (field.value ? `${field.value.name} (${field.value.iataCode})` : '')
-                                }
-                                onSearch={setHomeAirportInput}
-                                onSelect={(value) => {
-                                    const selectedCity = airportSuggestions.find(
-                                        (city) => `${city.name} (${city.iataCode})` === value
-                                    );
-                                    field.onChange(selectedCity || '');
-                                    setHomeAirportInput(undefined);
-                                }}
-                                options={airportSuggestions.map((airport) => ({
-                                    value: `${airport.name} (${airport.iataCode})`,
                                 }))}
-                                onClear={() => setValue('homeAirport', null)}
-                                placeholder="Start typing your city or airport"
-                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
-                                allowClear
+                                value={
+                                    field.value?.map((league) => ({
+                                        value: league.name,
+                                        label: (
+                                            <div className={classes.teamItem}>
+                                                <img src={league.logo} alt={league.name} />
+                                                {league.name}
+                                            </div>
+                                        ),
+                                    })) ?? []
+                                }
+                                onChange={(selectedOptions) => {
+                                    if (selectedOptions.length > MAX_ITEMS_PER_SELECT) {
+                                        message.warning(`You can select up to ${MAX_ITEMS_PER_SELECT} leagues.`);
+                                        return;
+                                    }
+
+                                    const selectedNames = selectedOptions.map((opt) => opt.value);
+
+                                    const leaguesArr = !leagueSearch ? [] : searchedLeaguesResults.map((l) => l.league);
+
+                                    const newSelections = selectedNames
+                                        .map((val) => leaguesArr.find((l) => l.name === val))
+                                        .filter(Boolean)
+                                        .map((league) => ({
+                                            id: league!.id,
+                                            name: league!.name,
+                                            logo: league!.logo,
+                                        }));
+
+                                    const prevSelections = field.value ?? [];
+                                    const merged = [
+                                        ...prevSelections.filter((league) => selectedNames.includes(league.name)),
+                                        ...newSelections.filter((t) => !prevSelections.some((p) => p.id === t.id)),
+                                    ];
+
+                                    field.onChange(merged);
+                                }}
+                                onClear={() => {
+                                    resetField('favoriteLeagues');
+                                    setLeagueSearch('');
+                                }}
+                                filterOption={false}
                             />
-                            {formState.isSubmitted && fieldState.invalid && (
-                                <p className="error-message">Home city or airport is required</p>
-                            )}
-                        </>
-                    )}
-                />
+                        )}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>
+                        🏠 Home City or Airport *{' '}
+                        <span>(Choose your home city or the airport you usually travel from)</span>
+                    </label>
+                    <Controller
+                        rules={{ required: true }}
+                        name="homeAirport"
+                        control={control}
+                        render={({ field, fieldState, formState }) => (
+                            <>
+                                <AutoComplete
+                                    value={
+                                        homeAirportInput ||
+                                        (field.value ? `${field.value.name} (${field.value.iataCode})` : '')
+                                    }
+                                    onSearch={setHomeAirportInput}
+                                    onSelect={(value) => {
+                                        const selectedCity = airportSuggestions.find(
+                                            (city) => `${city.name} (${city.iataCode})` === value
+                                        );
+                                        field.onChange(selectedCity || '');
+                                        setHomeAirportInput(undefined);
+                                    }}
+                                    options={airportSuggestions.map((airport) => ({
+                                        value: `${airport.name} (${airport.iataCode})`,
+                                    }))}
+                                    onClear={() => setValue('homeAirport', null)}
+                                    placeholder="Start typing your city or airport"
+                                    notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                    allowClear
+                                />
+                                {formState.isSubmitted && fieldState.invalid && (
+                                    <p className="error-message">Home city or airport is required</p>
+                                )}
+                            </>
+                        )}
+                    />
+                </div>
             </div>
 
             <div className="save-btn">

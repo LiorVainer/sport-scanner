@@ -1,10 +1,9 @@
 .user-preferences {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 2rem;
 
   .intro {
     font-size: 16px;
@@ -61,4 +60,11 @@
   margin-top: 4px;
   color: red;
   font-size: 14px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
 }
