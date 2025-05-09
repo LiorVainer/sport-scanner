@@ -34,4 +34,11 @@ export const PackagesGenerationParamsSchema = z.object({
         .optional(),
 });
 
+export const InnerPackagesGenerationParamsSchema = PackagesGenerationParamsSchema.omit({ date: true }).extend({
+    date: z.object({
+        from: z.date(),
+        to: z.date(),
+    }),
+});
+
 export type PackagesGenerationParams = z.infer<typeof PackagesGenerationParamsSchema>;
