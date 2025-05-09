@@ -232,33 +232,40 @@ const PreferencesBody = ({ isFirstVisit, handlePreferencesCancel }: PreferencesB
 
             <div className="form-group">
                 <label>
-                    🏠 Home City or Airport <span>(Choose your home city or the airport you usually travel from)</span>
+                    🏠 Home City or Airport *{' '}
+                    <span>(Choose your home city or the airport you usually travel from)</span>
                 </label>
                 <Controller
                     rules={{ required: true }}
                     name="homeAirport"
                     control={control}
-                    render={({ field }) => (
-                        <AutoComplete
-                            value={
-                                homeAirportInput || (field.value ? `${field.value.name} (${field.value.iataCode})` : '')
-                            }
-                            onSearch={setHomeAirportInput}
-                            onSelect={(value) => {
-                                const selectedCity = airportSuggestions.find(
-                                    (city) => `${city.name} (${city.iataCode})` === value
-                                );
-                                field.onChange(selectedCity || '');
-                                setHomeAirportInput(undefined);
-                            }}
-                            options={airportSuggestions.map((airport) => ({
-                                value: `${airport.name} (${airport.iataCode})`,
-                            }))}
-                            onClear={() => setValue('homeAirport', null)}
-                            placeholder="Start typing your city or airport"
-                            notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
-                            allowClear
-                        />
+                    render={({ field, fieldState, formState }) => (
+                        <>
+                            <AutoComplete
+                                value={
+                                    homeAirportInput ||
+                                    (field.value ? `${field.value.name} (${field.value.iataCode})` : '')
+                                }
+                                onSearch={setHomeAirportInput}
+                                onSelect={(value) => {
+                                    const selectedCity = airportSuggestions.find(
+                                        (city) => `${city.name} (${city.iataCode})` === value
+                                    );
+                                    field.onChange(selectedCity || '');
+                                    setHomeAirportInput(undefined);
+                                }}
+                                options={airportSuggestions.map((airport) => ({
+                                    value: `${airport.name} (${airport.iataCode})`,
+                                }))}
+                                onClear={() => setValue('homeAirport', null)}
+                                placeholder="Start typing your city or airport"
+                                notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
+                                allowClear
+                            />
+                            {formState.isSubmitted && fieldState.invalid && (
+                                <p className="error-message">Home city or airport is required</p>
+                            )}
+                        </>
                     )}
                 />
             </div>
