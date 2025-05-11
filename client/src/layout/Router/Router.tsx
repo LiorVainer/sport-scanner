@@ -8,6 +8,8 @@ import { PackageDetailsScreen } from '@/pages/PackageDetailsScreen';
 import { PackagesScreen } from '@/pages/PackagesScreen';
 import { HistoryScreen } from '@/pages/HistoryScreen';
 import { SavedPackagesScreen } from '@/pages/SavedPackagesScreen';
+import { GroupsScreen } from '@/pages/GroupsScreen/GroupsScreen';
+import { AddGroupScreen } from '@/pages/AddGroupScreen/AddGroupScreen';
 
 export interface RouterProps {}
 
@@ -22,6 +24,8 @@ export const Router = (_props: RouterProps) => {
                     <Route path={`${ROUTES.PACKAGES}/:packageId`} element={<PackageDetailsScreen />} />
                     <Route path={ROUTES.HISTORY} element={<HistoryScreen />} />
                     <Route path={ROUTES.SAVED_PACKAGES} element={<SavedPackagesScreen />} />
+                    <Route path={ROUTES.GROUPS} element={<GroupsScreen />} />
+                    <Route path={ROUTES.ADD_GROUP} element={<AddGroupScreen />} />
                 </Route>
             </Route>
         </Routes>
