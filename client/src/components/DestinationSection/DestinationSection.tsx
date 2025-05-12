@@ -7,7 +7,7 @@ export interface DestinationSectionProps {
     destination: Destination;
 }
 
-export const DestinationSection = ({ destination }: DestinationSectionProps) => {
+export const DestinationSection = ({ destination }: DestinationSectionProps) => {    
     return (
         <div className={classes.destinationSection}>
             <DestinationHeader destination={destination} />
