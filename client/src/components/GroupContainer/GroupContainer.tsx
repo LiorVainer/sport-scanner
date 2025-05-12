@@ -41,9 +41,9 @@ export const GroupContainer = ({ groupName, members, travelPackage }: GroupConta
 
       <div className={styles.pickedPackageTitle}>Picked Package</div>
       <div className={styles.matchList}>
-        {matches.map((match, index) => (
-          <MatchDetails key={index} match={match} />
-        ))}
+        <MatchDetails match={matches[0]} />
+            <span className={styles.arrow}>→</span>
+        <MatchDetails match={matches[1]} />
       </div>
     </div>
   );

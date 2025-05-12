@@ -6,6 +6,8 @@
   padding: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 32px;
+  margin-top: 32px;
+  width: 70vw;
 }
 
 .header {
@@ -58,7 +60,14 @@
 }
 
 .matchList {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  
+  .arrow {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1890ff;
+  }
+  
