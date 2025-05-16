@@ -6,7 +6,8 @@
 }
 
 .suggestedPackagesContainer {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   align-items: stretch;
   justify-content: center;
   gap: 3rem;
