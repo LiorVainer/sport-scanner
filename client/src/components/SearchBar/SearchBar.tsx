@@ -58,6 +58,8 @@ const DefaultCountryOptions = TopFootballCountries.map((country) => ({
     value: country,
 }));
 
+export type StoredSearchParams = Omit<PackagesGenerationFormValues, 'date'>;
+
 const SearchBar = () => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
     const [countryNameSearch, setCountryNameSearch] = useState<string>();
@@ -67,7 +69,7 @@ const SearchBar = () => {
     const navigate = useNavigate();
     const { fetchPackages } = usePackages();
 
-    const [storedSearchParams, setStoredSearchParams] = useLocalStorage<PackagesGenerationFormValues>(
+    const [storedSearchParams, setStoredSearchParams] = useLocalStorage<StoredSearchParams>(
         'searchParams',
         defaultGenerateParamsRef.current
     );
@@ -84,7 +86,7 @@ const SearchBar = () => {
         setValue,
     } = useForm<PackagesGenerationFormValues>({
         resolver: zodResolver(PackagesGenerationFormValuesSchema),
-        defaultValues: storedSearchParams,
+        defaultValues: { ...storedSearchParams, date: defaultGenerateParamsRef?.current.date },
     });
 
     const watchCountry = watch('country');
@@ -143,7 +145,8 @@ const SearchBar = () => {
 
     useEffect(() => {
         const subscription = watch((value) => {
-            setStoredSearchParams(value as PackagesGenerationFormValues);
+            const { date, ...rest } = value;
+            setStoredSearchParams(rest as StoredSearchParams);
         });
         return () => subscription.unsubscribe();
     }, [watch]);

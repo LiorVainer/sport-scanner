@@ -13,6 +13,7 @@ import Bluebird from 'bluebird';
 import { userSuggestedPackagesGenerationLogger } from '../logs/cron.logger';
 import { DB } from './db.cron';
 import { ProcessTypes } from '../models/log.model';
+import { CronTime } from 'cron-time-generator';
 
 const MAX_PACKAGES_PER_USER = ENV?.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_PER_USER;
 const MAX_CONCURRENT_REQUESTS = ENV?.USER_SUGGESTED_PACKAGES_GENERATION_MAX_CONCURRENT_REQUESTS;
@@ -21,7 +22,7 @@ const MAX_PACKAGES_PER_USER_WITH_OFFSET =
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_PER_USER +
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_OFFSET;
 
-const schedule = ENV.NODE_ENV === 'development' ? '*/2 * * * *' : '0 0 * * *';
+const schedule = ENV.NODE_ENV === 'development' ? CronTime.everyHour() : CronTime.everyDay();
 
 /**
  * Cron Job that runs once a day at midnight (00:00).

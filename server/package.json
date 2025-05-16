@@ -20,7 +20,7 @@
     "test:coverage": "cp .env.test .env && jest --coverage --runInBand --coverageDirectory=coverage"
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.12",
+    "@ai-sdk/google": "^1.2.18",
     "@logtail/node": "^0.5.2",
     "@logtail/winston": "^0.5.2",
     "@types/body-parser": "^1.19.5",
@@ -43,6 +43,7 @@
     "bluebird": "^3.7.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "cron-time-generator": "^2.0.3",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "eslint": "^9.16.0",

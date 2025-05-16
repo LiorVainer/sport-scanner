@@ -53,7 +53,12 @@ export const PackageService = {
                 },
                 onerror(err) {
                     controller.abort();
+                    console.error(err);
                     reject(err);
+                    throw err;
+                },
+                onclose: () => {
+                    controller.abort();
                 },
                 openWhenHidden: false,
             });

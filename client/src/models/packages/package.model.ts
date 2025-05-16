@@ -108,7 +108,6 @@ export const PackageMetadataSchema = z
 
 export const PackageSchema = z
     .object({
-        id: z.number().describe('Unique identifier of the package'),
         title: z
             .string()
             .describe(
@@ -140,6 +139,10 @@ There can be multiple flights depending on the number of destinations.`
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 
+export const PackageWithIdSchema = PackageSchema.extend({
+    _id: z.string().describe('Unique identifier of the package'),
+});
+
 export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
 
 export type Match = z.infer<typeof MatchSchema>;
@@ -147,6 +150,7 @@ export type Flight = z.infer<typeof FlightSchema>;
 export type Team = z.infer<typeof TeamSchema>;
 export type CityInfo = z.infer<typeof CityInfoSchema>;
 export type Package = z.infer<typeof PackageSchema>;
+export type PackageWithId = z.infer<typeof PackageWithIdSchema>;
 export type TimelineItem = z.infer<typeof TimelineItemSchema>;
 export type FlightItem = z.infer<typeof FlightItemSchema>;
 export type Destination = z.infer<typeof DestinationSchema>;

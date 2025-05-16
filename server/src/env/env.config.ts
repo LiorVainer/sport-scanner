@@ -92,6 +92,11 @@ export const EnvSchema = z.object({
     // =======================
     // 🔄 Flight & Fixture Search Configuration
     // =======================
+    FLIGHT_DATE_OFFSET_DAYS: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS must be a positive integer' }),
+
     FLIGHT_SEARCH_CONCURRENCY_LIMIT: z.coerce
         .number()
         .int()

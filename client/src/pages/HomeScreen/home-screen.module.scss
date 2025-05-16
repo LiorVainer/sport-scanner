@@ -3,11 +3,29 @@
 .container {
   padding-inline: 10rem;
   gap: 2rem;
-  height: 100%;
   padding-block: 5rem;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
+}
+
+.searchBarContainer {
+  flex: 3;
+  width: 100%;
+}
+
+.userSuggestedPackagesContainer {
+  flex: 2;
+  width: 100%;
+}
+
+.searchBarContainer,
+.userSuggestedPackagesContainer {
+  min-height: 0; // ✅ Important for flex children to not overflow
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }

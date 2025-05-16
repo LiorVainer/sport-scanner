@@ -27,13 +27,34 @@
   border-radius: 1px;
 }
 
-.image {
-  width: 90px;
+.imageBase {
   aspect-ratio: 1;
   padding: 0.5rem;
   border-radius: 0.5rem;
   object-fit: contain;
 }
+
+.image {
+  width: 90px;
+}
+
+.compactImage {
+  width: 60px;
+}
+
+.vsBase {
+  font-weight: 600;
+  color: #2f4f6f;
+}
+
+.vs {
+  font-size: 24px;
+}
+
+.compactVs {
+  font-size: 14px;
+}
+
 
 .details {
   flex: 1;
@@ -45,13 +66,21 @@
 .titleRow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .matchTitle {
-  font-size: 16px;
   font-weight: 500;
   color: #2f4f6f;
+}
+
+.matchTitleFull {
+  font-size: 16px;
+}
+
+.matchTitleCompact {
+  font-size: 14px;
 }
 
 .matchDate {

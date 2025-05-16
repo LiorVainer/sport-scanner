@@ -9,7 +9,10 @@
   flex-direction: column;
   gap: 1.5rem;
   transition: box-shadow 0.2s ease;
-  overflow: hidden;
+  overflow: auto;
+  width: 100%;
+  justify-content: space-between;
+  max-height: 100%;
 }
 
 .divider {
