@@ -13,7 +13,6 @@ const FreeTextSearch = () => {
 
     const handleSubmit = () => {
         if (searchText) {
-            console.log('Searching for:', searchText);
             navigate(ROUTES.PACKAGES);
             fetchPackages({
                 freeText: searchText,
