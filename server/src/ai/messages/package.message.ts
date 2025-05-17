@@ -6,6 +6,7 @@ import { FixtureContextMessagesGenerator } from './fixture.message';
 import { FlightContextMessageGenerator } from './flight.message';
 import { RulesContextMessageGenerator } from './rules.message';
 import { AgentManipulationContextMessageGenerator } from './agent-manipulation.message';
+import { FreeTextToPackageParamsMessageGenerator } from './free-text-to-package-params.messgae';
 
 export const PackagesContextMessagesGenerator = {
     create: (
@@ -22,4 +23,6 @@ export const PackagesContextMessagesGenerator = {
         RulesContextMessageGenerator.create(maxPackages),
         AgentManipulationContextMessageGenerator.create(),
     ],
+
+    createWithFreeText: (freeText: string): CoreMessage[] => [FreeTextToPackageParamsMessageGenerator.create(freeText)],
 };

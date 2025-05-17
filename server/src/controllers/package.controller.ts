@@ -3,9 +3,11 @@ import { PackageRepository } from '../repositories/package.repository';
 import {
     PackagesGenerationParams,
     PackagesGenerationParamsSchema,
+    PackagesGenerationParamsWithFreeText,
 } from '../models/packages/package-generate-params.model';
 import { packageService } from '../services/package.service';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
+import { packagesLogger } from '../logs/packages.logger';
 
 export const packageController = {
     generatePackages: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
@@ -19,8 +21,18 @@ export const packageController = {
 
         res.status(200).send(generatedPackage);
     },
-    streamPackageGeneration: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
-        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(req.body);
+    streamPackageGeneration: async (req: Request<any, any, PackagesGenerationParamsWithFreeText>, res: Response) => {
+        const { freeText, ...restInitial } = req.body;
+        let rest: any = restInitial;
+
+        if (freeText) {
+            packagesLogger.info(`💬 Received free text input: ${freeText}`);
+            rest = await packageService.transformFreeTextIntoPackagesGenerationParams(freeText);
+            packagesLogger.info(`✨ Transform the free text input into: ${JSON.stringify(rest)}`);
+        }
+
+        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(rest);
+
         if (error) {
             res.status(400).send({ message: 'Invalid request body', error });
             return;

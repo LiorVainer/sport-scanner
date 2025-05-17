@@ -1,4 +1,9 @@
-import { PackagesGenerationParams } from '../models/packages/package-generate-params.model';
+import {
+    PackagesGenerationParams,
+    PackagesGenerationParamsFromFreeTextSchema,
+    PackagesGenerationParamsWithFreeText,
+    PackagesGenerationParamsWithStringDates,
+} from '../models/packages/package-generate-params.model';
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixturesSearchQueryParams } from '../converters/package-to-fixtures';
@@ -168,6 +173,20 @@ class PackageService {
         });
 
         return validPackages;
+    };
+
+    transformFreeTextIntoPackagesGenerationParams = async (freeText: string): Promise<PackagesGenerationParamsWithStringDates> => {
+        const { data } = await AIService.generateObject({
+            schema: PackagesGenerationParamsFromFreeTextSchema,
+            saveOutputToFile: true,
+            messages: PackagesContextMessagesGenerator.createWithFreeText(freeText),
+            noTokensLimit: true,
+        });
+
+        const { league, teams, ...rest } = data;
+        const result = await soccerService.transformFieldsToActualGenerationParams({ league, teams });
+
+        return { ...result, ...rest };
     };
 
     private generateMetadataForGeneratedPackages = async (

@@ -1,0 +1,26 @@
+.freeTextSearch {
+    background-color: rgb(187, 187, 187);
+    border-radius: 30px;
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 2rem;
+    width: 60%;
+    align-items: center;
+    z-index: 1;
+}
+
+.searchInput {
+    background: white;
+    min-width: 300px;
+    border: none;
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.searchIcon {
+    font-size: 28px;
+}

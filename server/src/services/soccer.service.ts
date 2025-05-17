@@ -10,6 +10,10 @@ import {
 } from '../models/soccer/fixture.model';
 import qs from 'qs';
 import { Country } from '../models/geo.model';
+import {
+    PackagesGenerationParams,
+    PackagesGenerationParamsFromFreeText,
+} from '../models/packages/package-generate-params.model';
 
 const currSeason = calculateCurrentSeason(new Date());
 
@@ -115,5 +119,39 @@ export const soccerService = {
         }
 
         return validatedData.response;
+    },
+
+    transformFieldsToActualGenerationParams: async (
+        fieldsToTransform: Pick<PackagesGenerationParamsFromFreeText, 'teams' | 'league'>
+    ) => {
+        const { league, teams } = fieldsToTransform;
+        let actualLeague: League | undefined;
+        let actualTeams: Team[] | undefined;
+
+        if (league) {
+            const leagues = await soccerService.getLeaguesByName(league);
+            if (leagues.length > 0) {
+                actualLeague = leagues[0].league;
+            }
+        }
+
+        if (teams) {
+            actualTeams = await Promise.all(
+                teams.map(async (team) => {
+                    const teamData = await soccerService.getTeamsWithVenueByName(team.name);
+                    return teamData.map((t) => t.team);
+                })
+            ).then((teams) => teams.flat().slice(0, teams.length));
+        }
+
+        const transformedParams: Pick<PackagesGenerationParams, 'teams' | 'league'> = {
+            league: actualLeague ? { id: actualLeague.id, name: actualLeague.name } : undefined,
+            teams:
+                actualTeams && actualTeams.length > 0
+                    ? actualTeams.map((team) => ({ id: team.id, name: team.name }))
+                    : undefined,
+        };
+
+        return transformedParams;
     },
 };
