@@ -3,7 +3,7 @@ import { PackageRepository } from '../repositories/package.repository';
 import {
     PackagesGenerationParams,
     PackagesGenerationParamsSchema,
-    PackagesGenerationParamsWithFreeText,
+    PackagesGenerationParamsWithStringDatesAndFreeText,
 } from '../models/packages/package-generate-params.model';
 import { packageService } from '../services/package.service';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
@@ -21,17 +21,20 @@ export const packageController = {
 
         res.status(200).send(generatedPackage);
     },
-    streamPackageGeneration: async (req: Request<any, any, PackagesGenerationParamsWithFreeText>, res: Response) => {
-        const { freeText, ...restInitial } = req.body;
-        let rest: any = restInitial;
 
+    streamPackageGeneration: async (
+        req: Request<any, any, PackagesGenerationParamsWithStringDatesAndFreeText>,
+        res: Response
+    ) => {
+        const { freeText, ...initialParams } = req.body;
+        let params = initialParams;
         if (freeText) {
             packagesLogger.info(`💬 Received free text input: ${freeText}`);
-            rest = await packageService.transformFreeTextIntoPackagesGenerationParams(freeText);
-            packagesLogger.info(`✨ Transform the free text input into: ${JSON.stringify(rest)}`);
+            params = await packageService.transformFreeTextIntoPackagesGenerationParams(freeText);
+            packagesLogger.info(`✨ Transform the free text input into: ${JSON.stringify(params)}`);
         }
 
-        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(rest);
+        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(params);
 
         if (error) {
             res.status(400).send({ message: 'Invalid request body', error });

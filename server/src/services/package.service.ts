@@ -1,8 +1,6 @@
 import {
     PackagesGenerationParams,
     PackagesGenerationParamsFromFreeTextSchema,
-    PackagesGenerationParamsWithFreeText,
-    PackagesGenerationParamsWithStringDates,
 } from '../models/packages/package-generate-params.model';
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
@@ -175,7 +173,7 @@ class PackageService {
         return validPackages;
     };
 
-    transformFreeTextIntoPackagesGenerationParams = async (freeText: string): Promise<PackagesGenerationParamsWithStringDates> => {
+    transformFreeTextIntoPackagesGenerationParams = async (freeText: string) => {
         const { data } = await AIService.generateObject({
             schema: PackagesGenerationParamsFromFreeTextSchema,
             saveOutputToFile: true,

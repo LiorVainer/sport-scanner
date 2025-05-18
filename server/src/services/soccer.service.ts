@@ -129,17 +129,22 @@ export const soccerService = {
         let actualTeams: Team[] | undefined;
 
         if (league) {
-            const leagues = await soccerService.getLeaguesByName(league);
-            if (leagues.length > 0) {
-                actualLeague = leagues[0].league;
+            const actualLeagues = await soccerService.getLeaguesByName(league);
+            if (actualLeagues.length > 0) {
+                actualLeague = actualLeagues[0].league;
             }
         }
 
         if (teams) {
             actualTeams = await Promise.all(
                 teams.map(async (team) => {
-                    const teamData = await soccerService.getTeamsWithVenueByName(team.name);
-                    return teamData.map((t) => t.team);
+                    try {
+                        const teamData = await soccerService.getTeamsByName(team.name);
+                        return teamData;
+                    } catch (error) {
+                        console.error(`Error fetching team data for team: ${team.name}`, error);
+                        return [];
+                    }
                 })
             ).then((teams) => teams.flat().slice(0, teams.length));
         }

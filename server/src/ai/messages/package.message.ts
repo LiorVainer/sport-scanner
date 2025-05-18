@@ -24,5 +24,5 @@ export const PackagesContextMessagesGenerator = {
         AgentManipulationContextMessageGenerator.create(),
     ],
 
-    createWithFreeText: (freeText: string): CoreMessage[] => [FreeTextToPackageParamsMessageGenerator.create(freeText)],
+    createWithFreeText: (freeText: string): CoreMessage[] => FreeTextToPackageParamsMessageGenerator.create(freeText),
 };
