@@ -1,6 +1,7 @@
 import { Button, DatePicker, Input } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { UsergroupAddOutlined, CalendarOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
+import { useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 import classes from './add-group-screen.module.scss';
 
@@ -17,6 +18,9 @@ interface GroupFormValues {
 }
 
 export const AddGroupScreen = () => {
+  const location = useLocation();
+  const state = location.state as { group?: Partial<GroupFormValues> } | null;
+
   const {
     control,
     handleSubmit,
@@ -24,10 +28,13 @@ export const AddGroupScreen = () => {
     formState: { errors },
   } = useForm<GroupFormValues>({
     defaultValues: {
-      groupName: '',
-      members: '',
-      tripDates: ['2025-05-14', '2025-05-24'], // example default values
-      budget: { min: '100', max: '1000' },
+      groupName: state?.group?.groupName ?? '',
+      members: state?.group?.members ?? '',
+      tripDates: state?.group?.tripDates ?? ['', ''],
+      budget: {
+        min: state?.group?.budget?.min ?? '',
+        max: state?.group?.budget?.max ?? '',
+      },
     },
   });
 
@@ -80,10 +87,16 @@ export const AddGroupScreen = () => {
                 className={classes.dateRange}
                 format="YYYY-MM-DD"
                 placeholder={['Start Date', 'End Date']}
-                value={[dayjs(field.value?.[0]), dayjs(field.value?.[1])]}
+                value={[
+                  field.value?.[0] ? dayjs(field.value[0]) : null,
+                  field.value?.[1] ? dayjs(field.value[1]) : null,
+                ]}
                 onChange={(dates) => {
                   if (dates) {
-                    field.onChange([dates[0]?.format('YYYY-MM-DD'), dates[1]?.format('YYYY-MM-DD')]);
+                    field.onChange([
+                      dates[0]?.format('YYYY-MM-DD') || '',
+                      dates[1]?.format('YYYY-MM-DD') || '',
+                    ]);
                   }
                 }}
               />
