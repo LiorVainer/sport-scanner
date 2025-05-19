@@ -139,7 +139,7 @@ export const soccerService = {
             actualTeams = await Promise.all(
                 teams.map(async (team) => {
                     try {
-                        return await soccerService.getTeamsByName(team.name);
+                        return soccerService.getTeamsByName(team.name);
                     } catch (error) {
                         console.error(`Error fetching team data for team: ${team.name}`, error);
                         return [];
