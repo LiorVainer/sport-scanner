@@ -53,3 +53,6 @@ export const MIN_COUNTRY_SEARCH_KEYWORD_LEN = 3;
 export const TopFootballCountries: string[] = ['Spain', 'England', 'Germany', 'Italy', 'France'];
 
 export const MAX_TEAMS_LIMIT = 5;
+
+export const MIN_PRICE = 100;
+export const MAX_PRICE = 1000;

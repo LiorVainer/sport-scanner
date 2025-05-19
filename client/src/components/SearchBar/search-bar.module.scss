@@ -1,38 +1,16 @@
 @use '../../theme/theme' as *;
 
-:global {
-  .ant-tag {
-    margin-inline-end: 0;
-  }
-}
-
-.container {
-  padding-inline: 10rem;
-  gap: 2rem;
-  height: 100%;
-  padding-block: 5rem;
-  overflow: hidden;
-  width: 100%;
-}
-
 .main {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-image: url("/stadium.avif");
+  background-image: url('/stadium.avif');
   background-size: cover;
   background-position: center;
   border-radius: $system-border-radius;
   padding: 6rem;
   overflow: hidden;
   width: 100%;
-  align-items: center;
-}
-
-.buttonGroup {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
   align-items: center;
 }
 
@@ -67,94 +45,28 @@
   margin-top: 8px;
 }
 
-.formInputs {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-}
-
-.content {
+.toggleWrapper {
   background-color: rgb(187, 187, 187);
-  border-radius: $system-border-radius;
-  padding: 12px 16px;
+  border-radius: 30px;
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  position: relative;
+  gap: 0.5rem;
   z-index: 1;
-  width: fit-content;
-
-  :global {
-    .ant-select-single {
-      border-radius: $system-border-radius;
-      background-color: #f5f5f5;
-    }
-
-    .ant-select-selector {
-      border-radius: $system-border-radius;
-      background-color: #f5f5f5;
-    }
-
-    .ant-picker {
-      border-radius: $system-border-radius;
-
-    }
-
-    .ant-form-item {
-      margin-bottom: 0;
-    }
-
-    .ant-select-disabled {
-      border-radius: $system-border-radius;
-      background: #eae9e9 !important;
-    }
-  }
+  padding: 0.25rem 0.5rem;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.originCountry {
-  width: 220px;
-}
+.toggleBtn {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: medium;
+  transition: 0.3s ease;
 
-.originAirport {
-  min-width: 200px;
-}
-
-.dateRange {
-  width: 220px;
-}
-
-.priceRange {
-  width: 180px;
-}
-
-.selectCountry {
-  min-width: 120px;
-}
-
-.selectCountryContainer {
-  width: 150px;
-}
-
-.selectLeague {
-  width: 180px;
-}
-
-.selectTeams {
-  width: 200px;
-}
-
-.teamItem {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-
-  & > img {
-    width: 18px;
-    height: 18px;
+  &.active {
+    background: white;
+    color: black;
   }
 }

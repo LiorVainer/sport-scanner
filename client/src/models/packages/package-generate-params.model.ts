@@ -35,8 +35,12 @@ export const PackagesGenerationParamsSchema = z.object({
         .max(5, 'You can select up to 5 teams')
         .optional(),
 });
+export const PackagesGenerationParamsWithFreeTextSchema = PackagesGenerationParamsSchema.partial().extend({
+    freeText: z.string().optional(),
+});
 
 export type PackagesGenerationParams = z.infer<typeof PackagesGenerationParamsSchema>;
+export type PackagesGenerationParamsWithFreeText = z.infer<typeof PackagesGenerationParamsWithFreeTextSchema>;
 
 export const PackagesGenerationFormValuesSchema = PackagesGenerationParamsSchema.omit({ teams: true }).extend({
     teams: z
