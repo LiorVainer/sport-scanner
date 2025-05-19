@@ -82,6 +82,13 @@ export const PackagesGenerationParamsFromFreeTextSchema = PackagesGenerationPara
         .describe('List of preferred teams (optional)'),
 }).describe('Structured input used to generate travel packages based on user free text input');
 
+export const InnerPackagesGenerationParamsSchema = PackagesGenerationParamsSchema.omit({ date: true }).extend({
+    date: z.object({
+        from: z.date(),
+        to: z.date(),
+    }),
+});
+
 export type PackagesGenerationParams = z.infer<typeof PackagesGenerationParamsSchema>;
 export type PackagesGenerationParamsWithFreeText = z.infer<typeof PackagesGenerationParamsWithFreeTextSchema>;
 export type PackagesGenerationParamsFromFreeText = z.infer<typeof PackagesGenerationParamsFromFreeTextSchema>;

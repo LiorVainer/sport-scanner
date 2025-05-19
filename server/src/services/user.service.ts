@@ -41,7 +41,7 @@ export const UserService = {
             matchStage.packageId = new mongoose.Types.ObjectId(packageId);
         }
 
-        return await SavedPackageRepository.aggregate(populateAggregation({ $match: matchStage }));
+        return SavedPackageRepository.aggregate(populateAggregation({ $match: matchStage }));
     },
 
     async savePackage(userId: string, packageId: string): Promise<SavedPackage> {
@@ -49,6 +49,10 @@ export const UserService = {
     },
 
     async unsavePackage(userId: string, packageId: string): Promise<SavedPackage | null> {
-        return await SavedPackageRepository.findOneAndDelete({ userId, packageId });
+        return SavedPackageRepository.findOneAndDelete({ userId, packageId });
+    },
+
+    async getSuggestedPackages(userId: string) {
+        return UserRepository.findById(userId).populate('suggestedPackages').select('suggestedPackages').lean();
     },
 };

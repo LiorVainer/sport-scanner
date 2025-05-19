@@ -110,7 +110,6 @@ Do NOT deduplicate based on city names or flight IDs — every timeline flight i
 
 export const PackageSchema = z
     .object({
-        id: z.number().describe('Unique identifier of the package'),
         title: z
             .string()
             .describe(

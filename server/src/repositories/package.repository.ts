@@ -39,6 +39,6 @@ export const PackageSchema = new Schema<
     }
 );
 
-export const PackageRepository = mongoose.model<Omit<PackageWithMetadata, 'id'>>('packages', PackageSchema);
+export const PackageRepository = mongoose.model<Omit<PackageWithMetadata, 'id'>>('Packages', PackageSchema);
 
 export type PackageDocument = Document<unknown, {}, Omit<PackageWithMetadata, 'id'>>;

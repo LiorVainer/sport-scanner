@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import FilterSearch from '../FilterSearch/FilterSearch';
 import classes from './search-bar.module.scss';
-import {Button } from 'antd';
-import { MenuOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import { FilterOutlined, MenuOutlined } from '@ant-design/icons';
 import FreeTextSearch from '../FreeTextSearch/FreeTextSearch';
 
 const SearchBar = () => {
@@ -12,29 +12,31 @@ const SearchBar = () => {
         <div className={classes.main}>
             <div className={classes.overlay} />
 
-            <div className={classes.title}>
+            <div className={classes.titles}>
                 <h1 className={classes.mainTitle}>Find your next soccer experience</h1>
                 <p className={classes.secondaryTitle}>View upcoming events, explore personalized packages, and more</p>
             </div>
 
-            <div className={classes.toggleWrapper}>
-                <Button
-                    className={`${classes.toggleBtn} ${mode === 'free' ? classes.active : ''}`}
-                    onClick={() => setMode('free')}
-                    icon={<MenuOutlined />}
-                >
-                    Free Text Search
-                </Button>
-                <Button
-                    className={`${classes.toggleBtn} ${mode === 'filter' ? classes.active : ''}`}
-                    onClick={() => setMode('filter')}
-                    icon={<FilterOutlined />}
-                >
-                    Filter Search
-                </Button>
-            </div>
+            <div className={classes.searchZone}>
+                <div className={classes.toggleWrapper}>
+                    <Button
+                        className={`${classes.toggleBtn} ${mode === 'free' ? classes.active : ''}`}
+                        onClick={() => setMode('free')}
+                        icon={<MenuOutlined />}
+                    >
+                        Free Text Search
+                    </Button>
+                    <Button
+                        className={`${classes.toggleBtn} ${mode === 'filter' ? classes.active : ''}`}
+                        onClick={() => setMode('filter')}
+                        icon={<FilterOutlined />}
+                    >
+                        Filter Search
+                    </Button>
+                </div>
 
-            {mode === 'filter' ? <FilterSearch /> : <FreeTextSearch />}
+                {mode === 'filter' ? <FilterSearch /> : <FreeTextSearch />}
+            </div>
         </div>
     );
 };

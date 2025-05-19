@@ -44,26 +44,29 @@ export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) 
     };
 
     return (
-        <div className={styles.footer}>
-            <div className={styles.footerRangeContainer}>
-                <div className={styles.rangeContainer}>
-                    <Calendar className={styles.icon} />
-                    <Text strong className={styles.range}>
-                        {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />
-                        {formattedDate(endDate)}
-                    </Text>
+        <div>
+            <div className={styles.divider} />
+            <div className={styles.footer}>
+                <div className={styles.footerRangeContainer}>
+                    <div className={styles.rangeContainer}>
+                        <Calendar className={styles.icon} />
+                        <Text strong className={styles.range}>
+                            {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />
+                            {formattedDate(endDate)}
+                        </Text>
+                    </div>
+                    <div className={styles.rangeContainer}>
+                        <CircleDollarSignIcon className={styles.icon} />
+                        <Text strong className={styles.range}>
+                            {totalPrice.min}$ - {totalPrice.max}$
+                        </Text>
+                    </div>
                 </div>
-                <div className={styles.rangeContainer}>
-                    <CircleDollarSignIcon className={styles.icon} />
-                    <Text strong className={styles.range}>
-                        {totalPrice.min}$ - {totalPrice.max}$
-                    </Text>
-                </div>
+                <Button type="primary" onClick={addToHistory}>
+                    Continue
+                    <RightOutlined />
+                </Button>
             </div>
-            <Button type="primary" onClick={addToHistory}>
-                Continue
-                <RightOutlined />
-            </Button>
         </div>
     );
 };

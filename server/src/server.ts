@@ -1,3 +1,4 @@
+import './cron-jobs/packages.cron';
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';

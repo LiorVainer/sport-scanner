@@ -42,6 +42,7 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
         onSuccess: (data) => {
             setPackages(data);
         },
+        retry: false,
     });
 
     const fetchPackages = async (params: PackagesGenerationParamsWithFreeText) => {

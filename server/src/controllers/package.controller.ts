@@ -17,7 +17,7 @@ export const packageController = {
             return;
         }
 
-        const generatedPackage = await packageService.generatePackage(validatedBody);
+        const generatedPackage = await packageService.generatePackages({ searchParams: validatedBody });
 
         res.status(200).send(generatedPackage);
     },
@@ -50,7 +50,7 @@ export const packageController = {
             res.write(`data: ${JSON.stringify(event)}\n\n`);
         };
 
-        await packageService.generatePackage(validatedBody, emit);
+        await packageService.generatePackages({ searchParams: validatedBody, emit });
 
         res.end();
     },
