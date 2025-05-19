@@ -13,7 +13,6 @@ import classes from './add-group-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
 
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
 interface GroupFormValues {
   groupName: string;
@@ -77,6 +76,7 @@ export const AddGroupScreen = () => {
       <h1 className={classes.title}>Create Your Group for the Ultimate Sports Experience</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+        {/* Group Name */}
         <div>
           <label className={classes.formTitle}>
             <UsergroupAddOutlined className={classes.icon} /> Group Name
@@ -92,6 +92,7 @@ export const AddGroupScreen = () => {
           {errors.groupName && <p className={classes.error}>Group name is required</p>}
         </div>
 
+        {/* Members */}
         <div>
           <label className={classes.formTitle}>
             <UsergroupAddOutlined className={classes.icon} /> Group Members
@@ -99,6 +100,7 @@ export const AddGroupScreen = () => {
           <Controller
             name="members"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
               <Select
                 {...field}
@@ -113,8 +115,10 @@ export const AddGroupScreen = () => {
               />
             )}
           />
+          {errors.members && <p className={classes.error}>At least one group member is required</p>}
         </div>
 
+        {/* Trip Dates */}
         <div>
           <label className={classes.formTitle}>
             <CalendarOutlined className={classes.icon} /> Preferred Trip Dates
@@ -122,6 +126,9 @@ export const AddGroupScreen = () => {
           <Controller
             name="tripDates"
             control={control}
+            rules={{
+              validate: (val) => val[0] !== '' && val[1] !== '',
+            }}
             render={({ field }) => (
               <RangePicker
                 className={classes.dateRange}
@@ -142,8 +149,10 @@ export const AddGroupScreen = () => {
               />
             )}
           />
+          {errors.tripDates && <p className={classes.error}>Trip date range is required</p>}
         </div>
 
+        {/* Budget */}
         <div>
           <label className={classes.formTitle}>
             <DollarOutlined className={classes.icon} /> Budget Range per Person
@@ -152,6 +161,7 @@ export const AddGroupScreen = () => {
             <Controller
               name="budget.min"
               control={control}
+              rules={{ required: true }}
               render={({ field }) => (
                 <Input {...field} className={classes.input} placeholder="e.g., 100$" />
               )}
@@ -160,11 +170,15 @@ export const AddGroupScreen = () => {
             <Controller
               name="budget.max"
               control={control}
+              rules={{ required: true }}
               render={({ field }) => (
                 <Input {...field} className={classes.input} placeholder="e.g., 1000$" />
               )}
             />
           </div>
+          {(errors.budget?.min || errors.budget?.max) && (
+            <p className={classes.error}>Budget range is required</p>
+          )}
         </div>
 
         <Button
