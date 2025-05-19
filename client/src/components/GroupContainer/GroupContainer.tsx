@@ -1,4 +1,3 @@
-// GroupContainer.tsx
 import { Typography, Avatar, Tooltip } from 'antd';
 import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 import { Package } from '@/models/packages/package.model';
