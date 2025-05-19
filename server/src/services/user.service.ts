@@ -51,4 +51,12 @@ export const UserService = {
     async unsavePackage(userId: string, packageId: string): Promise<SavedPackage | null> {
         return await SavedPackageRepository.findOneAndDelete({ userId, packageId });
     },
+
+    async getUsers(username?: string): Promise<User[]> {
+        const filter = username
+          ? { username: { $regex: username, $options: 'i' } }
+          : {};
+        return await UserRepository.find(filter).select('username _id');
+    },
+      
 };

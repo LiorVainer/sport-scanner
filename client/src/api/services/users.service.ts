@@ -86,4 +86,17 @@ export const UsersService = {
             throw error;
         }
     },
+
+    async getUsers(username?: string) {
+        try {
+          const response = await axiosInstance.get(`${ROUTE_PREFIX}`, {
+            params: { username },
+          });
+          return response.data;
+        } catch (error) {
+          console.error('Error fetching users:', error);
+          throw error;
+        }
+    },
+      
 } satisfies Record<string, (...args: any[]) => Promise<any>>;

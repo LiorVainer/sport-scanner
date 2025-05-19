@@ -108,4 +108,6 @@ router.delete('/packages/:packageId/unsave', authMiddleware, userController.unsa
  */
 router.put('/:id', authMiddleware, userController.updateUserById);
 
+router.get('/', authMiddleware, userController.getUsers);
+
 export default router;

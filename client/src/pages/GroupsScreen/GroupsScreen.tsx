@@ -7,7 +7,6 @@ import { PublicUser } from '@/models/user.model';
 import classes from './groups-screen.module.scss';
 import { GroupContainer } from '@/components/GroupContainer/GroupContainer';
 
-// 🧪 Mock Data
 const mockGroups = [
     {
       title: 'The Best Traveling Group',

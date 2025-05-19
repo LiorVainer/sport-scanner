@@ -65,4 +65,15 @@ export const userController = {
             res.status(500).send(err);
         }
     },
+
+    getUsers: async (req: Request, res: Response) => {
+        try {
+          const { username } = req.query;
+          const users = await UserService.getUsers(username as string);
+          res.status(200).send(users);
+        } catch (err) {
+          res.status(500).send({ message: 'Error fetching users', error: err });
+        }
+    },
+      
 };
