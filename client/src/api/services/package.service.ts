@@ -6,13 +6,13 @@ import {
 } from '@/models/packages/package-generation-progress-update.model.ts';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
-import { PackagesGenerationParams } from '@/models/packages/package-generate-params.model.ts';
+import { PackagesGenerationParamsWithFreeText } from '@/models/packages/package-generate-params.model.ts';
 
 export const ROUTE_PREFIX = '/packages';
 
 export const PackageService = {
     getPackages: async function (
-        params: PackagesGenerationParams,
+        params: PackagesGenerationParamsWithFreeText,
         onProgress?: (progress: PackagesGenerationProgressUpdate) => void
     ): Promise<Package[]> {
         if (!onProgress) {

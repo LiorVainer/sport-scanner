@@ -3,9 +3,11 @@ import { PackageRepository } from '../repositories/package.repository';
 import {
     PackagesGenerationParams,
     PackagesGenerationParamsSchema,
+    PackagesGenerationParamsWithStringDatesAndFreeText,
 } from '../models/packages/package-generate-params.model';
 import { packageService } from '../services/package.service';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
+import { packagesLogger } from '../logs/packages.logger';
 
 export const packageController = {
     generatePackages: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
@@ -19,8 +21,21 @@ export const packageController = {
 
         res.status(200).send(generatedPackage);
     },
-    streamPackageGeneration: async (req: Request<any, any, PackagesGenerationParams>, res: Response) => {
-        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(req.body);
+
+    streamPackageGeneration: async (
+        req: Request<any, any, PackagesGenerationParamsWithStringDatesAndFreeText>,
+        res: Response
+    ) => {
+        const { freeText, ...initialParams } = req.body;
+        let params = initialParams;
+        if (freeText) {
+            packagesLogger.info(`💬 Received free text input: ${freeText}`);
+            params = await packageService.transformFreeTextIntoPackagesGenerationParams(freeText);
+            packagesLogger.info(`✨ Transform the free text input into: ${JSON.stringify(params)}`);
+        }
+
+        const { data: validatedBody, error } = PackagesGenerationParamsSchema.safeParse(params);
+
         if (error) {
             res.status(400).send({ message: 'Invalid request body', error });
             return;
