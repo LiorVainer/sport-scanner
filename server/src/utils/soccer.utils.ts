@@ -1,3 +1,3 @@
 export const calculateCurrentSeason = (date: Date): number => {
-    return date.getMonth() >= 6 ? date.getFullYear() : date.getFullYear() - 1;
+    return date.getMonth() >= 5 ? date.getFullYear() : date.getFullYear() - 1;
 };
