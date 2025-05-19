@@ -1,4 +1,4 @@
-import { Button, DatePicker, Input, Select } from 'antd';
+import { Button, DatePicker, Input, Select, Slider } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import {
   UsergroupAddOutlined,
@@ -19,8 +19,8 @@ interface GroupFormValues {
   members: string[];
   tripDates: [string, string];
   budget: {
-    min: string;
-    max: string;
+    min: number;
+    max: number;
   };
 }
 
@@ -32,6 +32,7 @@ export const AddGroupScreen = () => {
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<GroupFormValues>({
     defaultValues: {
@@ -39,8 +40,8 @@ export const AddGroupScreen = () => {
       members: state?.group?.members ?? [],
       tripDates: state?.group?.tripDates ?? ['', ''],
       budget: {
-        min: state?.group?.budget?.min ?? '',
-        max: state?.group?.budget?.max ?? '',
+        min: state?.group?.budget?.min ?? 100,
+        max: state?.group?.budget?.max ?? 1000,
       },
     },
   });
@@ -152,32 +153,40 @@ export const AddGroupScreen = () => {
           {errors.tripDates && <p className={classes.error}>Trip date range is required</p>}
         </div>
 
-        {/* Budget */}
         <div>
           <label className={classes.formTitle}>
             <DollarOutlined className={classes.icon} /> Budget Range per Person
           </label>
-          <div className={classes.budgetInputs}>
-            <Controller
-              name="budget.min"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input {...field} className={classes.input} placeholder="e.g., 100$" />
-              )}
-            />
-            <span className={classes.arrow}>→</span>
-            <Controller
-              name="budget.max"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input {...field} className={classes.input} placeholder="e.g., 1000$" />
-              )}
-            />
-          </div>
-          {(errors.budget?.min || errors.budget?.max) && (
-            <p className={classes.error}>Budget range is required</p>
+          <Controller
+            name="budget"
+            control={control}
+            rules={{
+              required: true,
+              validate: (val) => val.min < val.max || 'Min must be less than Max',
+            }}
+            render={({ field }) => (
+              <>
+                <Slider
+                  range
+                  min={50}
+                  max={5000}
+                  step={10}
+                  defaultValue={[field.value.min, field.value.max]}
+                  onChange={(value) => {
+                    const [min, max] = value;
+                    field.onChange({ min, max });
+                  }}
+                  tooltip={{ formatter: (val) => `$${val}` }}
+                />
+                <div className={classes.budgetValues}>
+                  <span>${field.value.min}</span>
+                  <span>${field.value.max}</span>
+                </div>
+              </>
+            )}
+          />
+          {errors.budget && (
+            <p className={classes.error}>{errors.budget.message || 'Budget range is required'}</p>
           )}
         </div>
 
