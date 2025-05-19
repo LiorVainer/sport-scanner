@@ -3,7 +3,7 @@ import { BaseLogger } from './base-logger.logger';
 
 class UserPackagesSuggestionsGenerationLogger extends BaseLogger {
     constructor() {
-        super(ProcessTypes.USER_SUGGESTED_PACKAGES_GENERATION); // This is the general process type
+        super(ProcessTypes.USER_SUGGESTED_PACKAGES_GENERATION);
     }
 }
 

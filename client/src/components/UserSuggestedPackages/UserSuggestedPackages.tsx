@@ -1,6 +1,7 @@
 import classes from './user-suggested-packages.module.scss';
 import { Package } from '@/models/packages/package.model.ts';
 import { PackageCard } from '@components/PackageCard';
+import { ROUTES } from '@/constants/routes.const.ts';
 
 export interface UserSuggestedPackagesProps {
     userSuggestedPackages: Package[];
@@ -9,12 +10,24 @@ export interface UserSuggestedPackagesProps {
 export const UserSuggestedPackages = ({ userSuggestedPackages }: UserSuggestedPackagesProps) => {
     return (
         <div className={classes.container}>
-            <h2>Suggested Packages For You</h2>
-            <div className={classes.suggestedPackagesContainer}>
-                {userSuggestedPackages?.map((singlePackage) => (
-                    <PackageCard singlePackage={singlePackage} variant="compact" />
-                ))}
-            </div>
+            {userSuggestedPackages.length > 0 ? (
+                <>
+                    <h2>Suggested Packages For You</h2>
+                    <div className={classes.suggestedPackagesContainer}>
+                        {userSuggestedPackages?.map((singlePackage) => (
+                            <PackageCard singlePackage={singlePackage} variant="compact" backRoute={ROUTES.HOME} />
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <div className={classes.noPackagesContainer}>
+                    <h2>No Suggested Packages Available</h2>
+                    <div className={classes.noPackagesText}>
+                        <p>We couldn't find packages that are suitable for your preferences. 😔</p>
+                        <p>Try adjusting your preferences or check back later!</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

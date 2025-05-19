@@ -3,7 +3,7 @@ import { axiosInstance } from '../config/axios-instance';
 import { ROUTE_PREFIX as PACKAGES_ROUTE_PREFIX } from './package.service';
 import { History, PopulatedHistory } from '@/models/history.model';
 import { PopulatedSavedPackage, SavedPackage } from '@/models/saved-packages.model';
-import { PackageSchema } from '@/models/packages/package.model.ts';
+import { PackageWithIdSchema } from '@/models/packages/package.model.ts';
 
 export const ROUTE_PREFIX = '/users';
 
@@ -94,7 +94,7 @@ export const UsersService = {
                 `${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/suggested`
             );
 
-            const { data: validPackages, success, error } = PackageSchema.array().safeParse(data);
+            const { data: validPackages, success, error } = PackageWithIdSchema.array().safeParse(data);
 
             if (!success) {
                 console.error('Not valid response for getting users suggested packages:', error);

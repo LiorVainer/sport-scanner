@@ -26,6 +26,7 @@ export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) 
 
     const addToHistory = async () => {
         try {
+            console.log({ isSavedPackage: isSavedPackage(singlePackage), savedPackage: singlePackage });
             if (isSavedPackage(singlePackage)) {
                 await UsersService.addToUsersHistory(singlePackage._id);
                 navigate(`${ROUTES.PACKAGES}/${singlePackage._id}`, {
