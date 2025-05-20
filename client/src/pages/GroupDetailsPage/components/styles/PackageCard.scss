@@ -1,0 +1,60 @@
+.package-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .package-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .vote-btn {
+            background: #007bff;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+    }
+
+    .divider {
+        margin: 12px 0;
+        border: none;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .card-content {
+        .match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 14px;
+            margin-bottom: 6px;
+
+            img {
+                height: 24px;
+                width: 24px;
+                object-fit: contain;
+            }
+        }
+
+        .date-range,
+        .price-range {
+            font-size: 13px;
+            margin-top: 8px;
+        }
+    }
+}

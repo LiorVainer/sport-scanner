@@ -1,0 +1,66 @@
+.package-voting {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 32px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+
+    h3 {
+        margin-bottom: 16px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .bars-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-end;
+        height: 160px;
+        margin-top: 20px;
+        gap: 12px;
+
+        .vote-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+
+            .bar-wrapper {
+                position: relative;
+                height: 120px;
+                width: 48px;
+
+                .bar-bg {
+                    height: 100%;
+                    background-color: #e2e8f0;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .bar-fill {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
+                    background-color: #007bff;
+                    transition: height 0.3s ease-in-out;
+                }
+
+                .bar-label {
+                    position: absolute;
+                    width: 100%;
+                    text-align: center;
+                    top: -24px;
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+            }
+
+            p {
+                font-size: 14px;
+                font-weight: 500;
+                margin-top: 4px;
+            }
+        }
+    }
+}

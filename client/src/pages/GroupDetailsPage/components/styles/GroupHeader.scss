@@ -1,0 +1,108 @@
+.group-header-box {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+
+    .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+
+        .left {
+            display: flex;
+            flex-direction: column;
+
+            h2 {
+                margin-bottom: 6px;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .members-label {
+                font-size: 14px;
+                margin-bottom: 6px;
+                font-weight: 500;
+            }
+
+            .avatars {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .avatar-block {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    font-size: 12px;
+
+                    img {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                    }
+
+                    span {
+                        margin-top: 4px;
+                        max-width: 48px;
+                        text-align: center;
+                    }
+                }
+
+                .add-avatar {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    background: #e0e0e0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            .info-row {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                font-weight: 500;
+                color: #333;
+                gap: 16px;
+
+                .icon {
+                    font-size: 16px;
+                }
+
+                .text {
+                    white-space: nowrap;
+                }
+            }
+
+            .add-members-row {
+                margin-top: auto;
+
+                .add-btn {
+                    background: #007bff;
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    border: none;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
