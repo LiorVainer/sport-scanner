@@ -7,7 +7,7 @@ import { SoccerService } from '@/api/services/soccer.service';
 import { QUERY_KEYS } from '@/api/constants/query-keys.const';
 import { UsersService } from '@/api/services/users.service';
 import { useAuth } from '@/context/AuthContext';
-import { DEFAULT_TEAMS, MIN_SEARCH_KEYWORD_LEN } from '@components/SearchBar/search-bar.const.ts';
+import { DEFAULT_TEAMS, MIN_SEARCH_KEYWORD_LEN } from '@/components/FilterSearch/filter-search.const';
 import './preferences-body-model.scss';
 import classes from '@components/SearchBar/search-bar.module.scss';
 import { MAX_ITEMS_PER_SELECT } from '@pages/UserPreferences/preferences-body.const.ts';

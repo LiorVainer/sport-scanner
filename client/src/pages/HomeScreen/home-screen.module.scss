@@ -2,12 +2,35 @@
 
 .container {
   padding-inline: 10rem;
-  gap: 2rem;
-  height: 100%;
+  gap: 4rem;
   padding-block: 5rem;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
+
+  @media (max-width: 1600px) {
+    padding-inline: 3rem;
+    padding-block: 3rem;
+  }
+}
+
+.searchBarContainer {
+  flex: 5;
+  width: 100%;
+}
+
+.userSuggestedPackagesContainer {
+  flex: 4;
+  width: 100%;
+}
+
+.searchBarContainer,
+.userSuggestedPackagesContainer {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }

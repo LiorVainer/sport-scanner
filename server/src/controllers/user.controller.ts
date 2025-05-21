@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { UpdateUserBody } from '../types/user.types';
 import { UserService } from '../services/user.service';
 
-
 export const userController = {
     updateUserById: async (req: Request<Record<any, any>, {}, UpdateUserBody>, res: Response) => {
         try {
@@ -76,4 +75,12 @@ export const userController = {
         }
     },
       
+    getUsersSuggestedPackages: async (req: Request, res: Response) => {
+        try {
+            const userWithPackages = await UserService.getSuggestedPackages(req.userId!);
+            res.status(200).send(userWithPackages?.suggestedPackages || []);
+        } catch (err) {
+            res.status(500).send({ message: 'Failed to get suggested packages', error: err });
+        }
+    },
 };

@@ -5,14 +5,15 @@ import { DestinationHeader } from './DestinationHeader';
 
 export interface DestinationSectionProps {
     destination: Destination;
+    variant?: 'full' | 'compact';
 }
 
-export const DestinationSection = ({ destination }: DestinationSectionProps) => {    
+export const DestinationSection = ({ destination, variant }: DestinationSectionProps) => {
     return (
         <div className={classes.destinationSection}>
             <DestinationHeader destination={destination} />
             {destination.matches.map((match) => (
-                <MatchDetails match={match} />
+                <MatchDetails match={match} variant={variant} />
             ))}
         </div>
     );
