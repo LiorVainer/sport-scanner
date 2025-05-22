@@ -6,8 +6,9 @@ import { Package } from '@/models/packages/package.model';
 import { PublicUser } from '@/models/user.model';
 import classes from './groups-screen.module.scss';
 import { GroupCard } from '@/components/GroupCard/GroupCard';
+import { Group } from '@/models/group.model';
 
-const mockGroups = [
+const mockGroups: Group[] = [
     {
       title: 'The Best Traveling Group',
       users: [
