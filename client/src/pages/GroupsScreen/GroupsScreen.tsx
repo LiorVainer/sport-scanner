@@ -8,271 +8,234 @@ import classes from './groups-screen.module.scss';
 import { GroupCard } from '@/components/GroupCard/GroupCard';
 import { Group } from '@/models/group.model';
 
-const mockGroups: Group[] = [
-    {
-      title: 'The Best Traveling Group',
-      users: [
+export const mockGroups: Group[] = [
+  // ✅ Group with 2 matches
+  {
+    title: 'Double Match Madness',
+    users: [
+      {
+        _id: '1',
+        username: 'Leo',
+        email: 'leo@test.com',
+        picture: 'https://randomuser.me/api/portraits/men/32.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        _id: '2',
+        username: 'Mbappe',
+        email: 'mbappe@test.com',
+        picture: 'https://randomuser.me/api/portraits/men/33.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    selectedPackage: {
+      title: 'Epic Double Match Trip',
+      description: 'Two matches across Europe!',
+      startDate: '2025-05-10',
+      endDate: '2025-05-20',
+      location: 'Europe',
+      flightsPrice: 600,
+      matchesPrice: { min: 80, max: 250 },
+      totalPrice: { min: 680, max: 950 },
+      timeline: [
         {
-          _id: '1',
-          username: 'Leo',
-          email: 'leo@test.com',
-          picture: 'https://randomuser.me/api/portraits/men/32.jpg',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          _id: '2',
-          username: 'Mbappe',
-          email: 'mbappe@test.com',
-          picture: 'https://randomuser.me/api/portraits/men/33.jpg',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          _id: '3',
-          username: 'Vinicius',
-          email: 'vini@test.com',
-          picture: 'https://randomuser.me/api/portraits/men/34.jpg',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ] as PublicUser[],
-      selectedPackage: {
-        id: 1,
-        title: 'Epic Double Match Trip: Roma & Manchester',
-        description: 'Catch two thrilling games across Italy and England!',
-        startDate: '2025-05-15',
-        endDate: '2025-05-24',
-        location: 'Europe',
-        flightsPrice: 720,
-        matchesPrice: { min: 70, max: 280 },
-        totalPrice: { min: 790, max: 1000 },
-        timeline: [
-          {
-            type: 'destination',
-            city: 'Roma',
-            cityIataCode: 'FCO',
-            startDate: '2025-05-15',
-            endDate: '2025-05-21',
-            matches: [
-              {
-                id: 1223964,
-                timezone: '+00:00',
-                date: '2025-05-18T13:00:00+00:00',
-                timestamp: 1716037200,
-                league: {
-                  id: 135,
-                  name: 'Serie A',
-                  logo: 'https://media.api-sports.io/football/leagues/135.png',
-                  round: 'Regular Season - 37',
-                },
-                homeTeam: {
-                  id: 497,
-                  name: 'AS Roma',
-                  logo: 'https://media.api-sports.io/football/teams/497.png',
-                },
-                awayTeam: {
-                  id: 489,
-                  name: 'AC Milan',
-                  logo: 'https://media.api-sports.io/football/teams/489.png',
-                },
-                stadium: {
-                  name: 'Stadio Olimpico',
-                  city: 'Roma',
-                },
-                price: {
-                  min: 70,
-                  max: 250,
-                },
-                searchMatchTicketsLink: 'https://www.stubhub.com/search?q=AS%20Roma%20vs%20AC%20Milan%202025-05-18',
-              },
-            ],
-          },
-          {
-            type: 'destination',
-            city: 'Manchester',
-            cityIataCode: 'MAN',
-            startDate: '2025-05-17',
-            endDate: '2025-05-24',
-            matches: [
-              {
-                id: 1208391,
-                timezone: '+00:00',
-                date: '2025-05-20T19:00:00+00:00',
-                timestamp: 1716222000,
-                league: {
-                  id: 39,
-                  name: 'Premier League',
-                  logo: 'https://media.api-sports.io/football/leagues/39.png',
-                  round: 'Regular Season - 37',
-                },
-                homeTeam: {
-                  id: 50,
-                  name: 'Manchester City',
-                  logo: 'https://media.api-sports.io/football/teams/50.png',
-                },
-                awayTeam: {
-                  id: 35,
-                  name: 'Bournemouth',
-                  logo: 'https://media.api-sports.io/football/teams/35.png',
-                },
-                stadium: {
-                  name: 'Etihad Stadium',
-                  city: 'Manchester',
-                },
-                price: {
-                  min: 90,
-                  max: 280,
-                },
-                searchMatchTicketsLink: 'https://www.stubhub.com/search?q=Manchester%20City%20vs%20Bournemouth%202025-05-20',
-              },
-            ],
-          },
-        ],
-        metadata: {
-          destinationsCount: 2,
-          flightsCount: 2,
-          matchesCount: 2,
-          citiesVisited: ['Roma', 'Manchester'],
-          durationDays: 9,
-          averageMatchTicketPrice: 170,
-          destinations: [],
-        },
-      } as Package,
-    },
-    {
-        title: 'The Best Traveling Group',
-        users: [
-          {
-            _id: '1',
-            username: 'Leo',
-            email: 'leo@test.com',
-            picture: 'https://randomuser.me/api/portraits/men/32.jpg',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          {
-            _id: '2',
-            username: 'Mbappe',
-            email: 'mbappe@test.com',
-            picture: 'https://randomuser.me/api/portraits/men/33.jpg',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          {
-            _id: '3',
-            username: 'Vinicius',
-            email: 'vini@test.com',
-            picture: 'https://randomuser.me/api/portraits/men/34.jpg',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ] as PublicUser[],
-        selectedPackage: {
-          id: 1,
-          title: 'Epic Double Match Trip: Roma & Manchester',
-          description: 'Catch two thrilling games across Italy and England!',
-          startDate: '2025-05-15',
-          endDate: '2025-05-24',
-          location: 'Europe',
-          flightsPrice: 720,
-          matchesPrice: { min: 70, max: 280 },
-          totalPrice: { min: 790, max: 1000 },
-          timeline: [
+          type: 'destination',
+          city: 'Rome',
+          cityIataCode: 'FCO',
+          startDate: '2025-05-10',
+          endDate: '2025-05-14',
+          matches: [
             {
-              type: 'destination',
-              city: 'Roma',
-              cityIataCode: 'FCO',
-              startDate: '2025-05-15',
-              endDate: '2025-05-21',
-              matches: [
-                {
-                  id: 1223964,
-                  timezone: '+00:00',
-                  date: '2025-05-18T13:00:00+00:00',
-                  timestamp: 1716037200,
-                  league: {
-                    id: 135,
-                    name: 'Serie A',
-                    logo: 'https://media.api-sports.io/football/leagues/135.png',
-                    round: 'Regular Season - 37',
-                  },
-                  homeTeam: {
-                    id: 497,
-                    name: 'AS Roma',
-                    logo: 'https://media.api-sports.io/football/teams/497.png',
-                  },
-                  awayTeam: {
-                    id: 489,
-                    name: 'AC Milan',
-                    logo: 'https://media.api-sports.io/football/teams/489.png',
-                  },
-                  stadium: {
-                    name: 'Stadio Olimpico',
-                    city: 'Roma',
-                  },
-                  price: {
-                    min: 70,
-                    max: 250,
-                  },
-                  searchMatchTicketsLink: 'https://www.stubhub.com/search?q=AS%20Roma%20vs%20AC%20Milan%202025-05-18',
-                },
-              ],
-            },
-            {
-              type: 'destination',
-              city: 'Manchester',
-              cityIataCode: 'MAN',
-              startDate: '2025-05-17',
-              endDate: '2025-05-24',
-              matches: [
-                {
-                  id: 1208391,
-                  timezone: '+00:00',
-                  date: '2025-05-20T19:00:00+00:00',
-                  timestamp: 1716222000,
-                  league: {
-                    id: 39,
-                    name: 'Premier League',
-                    logo: 'https://media.api-sports.io/football/leagues/39.png',
-                    round: 'Regular Season - 37',
-                  },
-                  homeTeam: {
-                    id: 50,
-                    name: 'Manchester City',
-                    logo: 'https://media.api-sports.io/football/teams/50.png',
-                  },
-                  awayTeam: {
-                    id: 35,
-                    name: 'Bournemouth',
-                    logo: 'https://media.api-sports.io/football/teams/35.png',
-                  },
-                  stadium: {
-                    name: 'Etihad Stadium',
-                    city: 'Manchester',
-                  },
-                  price: {
-                    min: 90,
-                    max: 280,
-                  },
-                  searchMatchTicketsLink: 'https://www.stubhub.com/search?q=Manchester%20City%20vs%20Bournemouth%202025-05-20',
-                },
-              ],
+              id: 1,
+              timezone: '+00:00',
+              date: '2025-05-12T18:00:00+00:00',
+              timestamp: 1715536800,
+              league: {
+                id: 1,
+                name: 'Serie A',
+                logo: 'https://media.api-sports.io/football/leagues/135.png',
+                round: 'Round 35',
+              },
+              homeTeam: {
+                id: 101,
+                name: 'AS Roma',
+                logo: 'https://media.api-sports.io/football/teams/497.png',
+              },
+              awayTeam: {
+                id: 102,
+                name: 'Lazio',
+                logo: 'https://media.api-sports.io/football/teams/489.png',
+              },
+              stadium: { name: 'Stadio Olimpico', city: 'Rome' },
+              price: { min: 80, max: 230 },
+              searchMatchTicketsLink: 'https://www.stubhub.com',
             },
           ],
-          metadata: {
-            destinationsCount: 2,
-            flightsCount: 2,
-            matchesCount: 2,
-            citiesVisited: ['Roma', 'Manchester'],
-            durationDays: 9,
-            averageMatchTicketPrice: 170,
-            destinations: [],
-          },
-        } as Package,
+        },
+        {
+          type: 'destination',
+          city: 'London',
+          cityIataCode: 'LHR',
+          startDate: '2025-05-14',
+          endDate: '2025-05-20',
+          matches: [
+            {
+              id: 2,
+              timezone: '+00:00',
+              date: '2025-05-18T20:00:00+00:00',
+              timestamp: 1716052800,
+              league: {
+                id: 2,
+                name: 'Premier League',
+                logo: 'https://media.api-sports.io/football/leagues/39.png',
+                round: 'Matchday 38',
+              },
+              homeTeam: {
+                id: 201,
+                name: 'Arsenal',
+                logo: 'https://media.api-sports.io/football/teams/42.png',
+              },
+              awayTeam: {
+                id: 202,
+                name: 'Chelsea',
+                logo: 'https://media.api-sports.io/football/teams/49.png',
+              },
+              stadium: { name: 'Emirates Stadium', city: 'London' },
+              price: { min: 90, max: 250 },
+              searchMatchTicketsLink: 'https://www.stubhub.com',
+            },
+          ],
+        },
+      ],
+      metadata: {
+        destinationsCount: 2,
+        flightsCount: 2,
+        matchesCount: 2,
+        citiesVisited: ['Rome', 'London'],
+        durationDays: 10,
+        averageMatchTicketPrice: 165,
+        destinations: [],
       },
-  ];
-  
+    },
+  },
+
+  // ✅ Group with 1 match
+  {
+    title: 'Rome Football Break',
+    users: [
+      {
+        _id: '4',
+        username: 'Neymar',
+        email: 'ney@test.com',
+        picture: 'https://randomuser.me/api/portraits/men/35.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    selectedPackage: {
+      title: 'Single Match Trip to Rome',
+      description: 'Short break to Rome with a Serie A classic.',
+      startDate: '2025-06-01',
+      endDate: '2025-06-04',
+      location: 'Rome',
+      flightsPrice: 300,
+      matchesPrice: { min: 50, max: 120 },
+      totalPrice: { min: 350, max: 420 },
+      timeline: [
+        {
+          type: 'destination',
+          city: 'Rome',
+          cityIataCode: 'FCO',
+          startDate: '2025-06-01',
+          endDate: '2025-06-04',
+          matches: [
+            {
+              id: 3,
+              timezone: '+00:00',
+              date: '2025-06-02T17:00:00+00:00',
+              timestamp: 1717347600,
+              league: {
+                id: 135,
+                name: 'Serie A',
+                logo: 'https://media.api-sports.io/football/leagues/135.png',
+                round: 'Final Round',
+              },
+              homeTeam: {
+                id: 497,
+                name: 'AS Roma',
+                logo: 'https://media.api-sports.io/football/teams/497.png',
+              },
+              awayTeam: {
+                id: 501,
+                name: 'Juventus',
+                logo: 'https://media.api-sports.io/football/teams/496.png',
+              },
+              stadium: { name: 'Stadio Olimpico', city: 'Rome' },
+              price: { min: 50, max: 120 },
+              searchMatchTicketsLink: 'https://www.stubhub.com',
+            },
+          ],
+        },
+      ],
+      metadata: {
+        destinationsCount: 1,
+        flightsCount: 1,
+        matchesCount: 1,
+        citiesVisited: ['Rome'],
+        durationDays: 3,
+        averageMatchTicketPrice: 85,
+        destinations: [],
+      },
+    },
+  },
+
+  // ✅ Group with 0 matches
+  {
+    title: 'Relax Trip - No Football',
+    users: [
+      {
+        _id: '5',
+        username: 'Messi',
+        email: 'messi@test.com',
+        picture: 'https://randomuser.me/api/portraits/men/36.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    selectedPackage: {
+      title: 'Beach Getaway in Corfu',
+      description: 'Pure relaxation in Greece. No matches.',
+      startDate: '2025-07-10',
+      endDate: '2025-07-15',
+      location: 'Corfu',
+      flightsPrice: 280,
+      matchesPrice: { min: 0, max: 0 },
+      totalPrice: { min: 280, max: 280 },
+      timeline: [
+        {
+          type: 'destination',
+          city: 'Corfu',
+          cityIataCode: 'CFU',
+          startDate: '2025-07-10',
+          endDate: '2025-07-15',
+          matches: [], // No matches
+        },
+      ],
+      metadata: {
+        destinationsCount: 1,
+        flightsCount: 1,
+        matchesCount: 0,
+        citiesVisited: ['Corfu'],
+        durationDays: 5,
+        averageMatchTicketPrice: 0,
+        destinations: [],
+      },
+    },
+  },
+];
+
 
 export const GroupsScreen = () => {
   const navigate = useNavigate();

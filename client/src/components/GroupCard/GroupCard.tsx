@@ -14,7 +14,7 @@ export const GroupCard = ({ group }: GroupCardProps) => {
   const { title, users, selectedPackage } = group;
   const { startDate, endDate, totalPrice, timeline } = selectedPackage;
   const destinations = timeline.filter((item) => item.type === 'destination');
-  const matches = destinations.flatMap((dest) => dest.matches);
+  const matches = destinations.flatMap((dest) => dest.matches || []);
 
   return (
     <div className={styles.container}>
@@ -36,9 +36,17 @@ export const GroupCard = ({ group }: GroupCardProps) => {
       </div>
 
       <div className={styles.matchList}>
-        <MatchDetails match={matches[0]} />
-        <span className={styles.arrow}>→</span>
-        <MatchDetails match={matches[1]} />
+        {matches.length === 0 && <Text>No matches scheduled</Text>}
+
+        {matches.length === 1 && <MatchDetails match={matches[0]} />}
+
+        {matches.length === 2 && (
+          <>
+            <MatchDetails match={matches[0]} />
+            <span className={styles.arrow}>→</span>
+            <MatchDetails match={matches[1]} />
+          </>
+        )}
       </div>
     </div>
   );
