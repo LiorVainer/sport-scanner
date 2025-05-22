@@ -77,7 +77,6 @@ export const AddGroupScreen = () => {
       <h1 className={classes.title}>Create Your Group for the Ultimate Sports Experience</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-        {/* Group Name */}
         <div>
           <label className={classes.formTitle}>
             <UsergroupAddOutlined className={classes.icon} /> Group Name
@@ -93,7 +92,6 @@ export const AddGroupScreen = () => {
           {errors.groupName && <p className={classes.error}>Group name is required</p>}
         </div>
 
-        {/* Members */}
         <div>
           <label className={classes.formTitle}>
             <UsergroupAddOutlined className={classes.icon} /> Group Members
@@ -119,7 +117,6 @@ export const AddGroupScreen = () => {
           {errors.members && <p className={classes.error}>At least one group member is required</p>}
         </div>
 
-        {/* Trip Dates */}
         <div>
           <label className={classes.formTitle}>
             <CalendarOutlined className={classes.icon} /> Preferred Trip Dates

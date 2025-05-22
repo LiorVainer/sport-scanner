@@ -5,7 +5,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { Package } from '@/models/packages/package.model';
 import { PublicUser } from '@/models/user.model';
 import classes from './groups-screen.module.scss';
-import { GroupContainer } from '@/components/GroupContainer/GroupContainer';
+import { GroupCard } from '@/components/GroupCard/GroupCard';
 
 const mockGroups = [
     {
@@ -306,7 +306,7 @@ export const GroupsScreen = () => {
       </div>
 
       {mockGroups.map((group, idx) => (
-        <GroupContainer
+        <GroupCard
         key={idx}
         groupName={group.title}
         members={group.users}

@@ -90,10 +90,10 @@ export const UsersService = {
 
     async getUsers(username?: string) {
         try {
-          const response = await axiosInstance.get(`${ROUTE_PREFIX}`, {
+          const { data } = await axiosInstance.get(`${ROUTE_PREFIX}`, {
             params: { username },
           });
-          return response.data;
+          return data;
         } catch (error) {
           console.error('Error fetching users:', error);
           throw error;

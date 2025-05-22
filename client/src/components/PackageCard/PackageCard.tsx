@@ -15,7 +15,7 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full' }: Pack
     const destinations = useMemo(
         () => singlePackage.timeline.filter((item): item is Destination => item.type === 'destination'),
         [singlePackage]
-    );    
+    );
 
     return (
         <div className={styles.packageCard}>

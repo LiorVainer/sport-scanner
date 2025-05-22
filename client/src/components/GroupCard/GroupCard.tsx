@@ -4,7 +4,7 @@ import { Package } from '@/models/packages/package.model';
 import { PublicUser } from '@/models/user.model.ts';
 
 import { MatchDetails } from '@/components/MatchDetails/MatchDetails';
-import styles from './group-container.module.scss';
+import styles from './group-card.module.scss';
 
 const { Title, Text } = Typography;
 
@@ -14,7 +14,7 @@ interface GroupContainerProps {
   travelPackage: Package;
 }
 
-export const GroupContainer = ({ groupName, members, travelPackage }: GroupContainerProps) => {
+export const GroupCard = ({ groupName, members, travelPackage }: GroupContainerProps) => {
   const { startDate, endDate, totalPrice, timeline } = travelPackage;
   const destinations = timeline.filter((item) => item.type === 'destination');
   const matches = destinations.flatMap((dest) => dest.matches);

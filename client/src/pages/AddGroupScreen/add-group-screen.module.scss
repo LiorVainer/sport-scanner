@@ -1,8 +1,7 @@
 @use '../../theme/theme' as theme;
 
 .container {
-  background-color: #e9eff5;
-  min-height: 100vh;
+  background-color: theme.$background;
   padding: 5rem 2rem;
   display: flex;
   flex-direction: column;
@@ -76,6 +75,6 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #4b5563;
+  color: theme.$accent;
   margin-top: 8px;
 }
