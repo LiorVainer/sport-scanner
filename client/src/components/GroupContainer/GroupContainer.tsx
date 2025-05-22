@@ -37,8 +37,6 @@ export const GroupContainer = ({ groupName, members, travelPackage }: GroupConta
           ))}
         </div>
       </div>
-
-      <div className={styles.pickedPackageTitle}>Picked Package</div>
       <div className={styles.matchList}>
         <MatchDetails match={matches[0]} />
             <span className={styles.arrow}>→</span>
