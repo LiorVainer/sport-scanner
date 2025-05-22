@@ -307,12 +307,7 @@ export const GroupsScreen = () => {
       </div>
 
       {mockGroups.map((group, idx) => (
-        <GroupCard
-        key={idx}
-        groupName={group.title}
-        members={group.users}
-        travelPackage={group.selectedPackage}
-      />
+        <GroupCard key={idx} group={group} />
       ))}
     </div>
   );
