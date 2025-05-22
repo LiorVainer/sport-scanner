@@ -8,9 +8,10 @@ import {
 } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import classes from './add-group-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
+import { useQuery } from '@tanstack/react-query';
 
 const { RangePicker } = DatePicker;
 
@@ -46,27 +47,22 @@ export const AddGroupScreen = () => {
     },
   });
 
-  const [userOptions, setUserOptions] = useState<{ label: string; value: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await UsersService.getUsers(searchTerm);
-        const options = users.map((user: any) => ({
-          label: user.username,
-          value: user._id,
-        }));
-        setUserOptions(options);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
+  const { data: usersData = [] } = useQuery({
+    queryKey: ['users', searchTerm],
+    queryFn: () => UsersService.getUsers(searchTerm),
+    enabled: !!searchTerm,
+  });
 
-    if (searchTerm) {
-      fetchUsers();
-    }
-  }, [searchTerm]);
+  const userOptions = useMemo(
+    () =>
+      usersData.map((user: any) => ({
+        label: user.username,
+        value: user._id,
+      })),
+    [usersData]
+  );
 
   const onSubmit = (data: GroupFormValues) => {
     console.log('Form submitted with data:', data);
