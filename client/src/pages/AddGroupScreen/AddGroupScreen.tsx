@@ -12,6 +12,7 @@ import { useState, useEffect, useMemo } from 'react';
 import classes from './add-group-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
 import { useQuery } from '@tanstack/react-query';
+import { PublicUser } from '@/models/user.model';
 
 const { RangePicker } = DatePicker;
 
@@ -49,7 +50,7 @@ export const AddGroupScreen = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: usersData = [] } = useQuery({
+  const { data: usersData = [] } = useQuery<PublicUser[]>({
     queryKey: ['users', searchTerm],
     queryFn: () => UsersService.getUsers(searchTerm),
     enabled: !!searchTerm,
@@ -57,7 +58,7 @@ export const AddGroupScreen = () => {
 
   const userOptions = useMemo(
     () =>
-      usersData.map((user: any) => ({
+      usersData.map((user) => ({
         label: user.username,
         value: user._id,
       })),
