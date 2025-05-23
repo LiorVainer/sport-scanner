@@ -1,18 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
-import PackageCard from './components/PackageCard';
+import GroupPackageCard from './components/GroupPackageCard';
 import PackageVoting from './components/PackageVoting';
 import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { mockData } from './mockData';
-import { Package } from '@/models/packages/package.model';
+import { PackageWithId } from '@/models/packages/package.model';
 
 const GroupDetailsPage: React.FC = () => {
     const [votes, setVotes] = useState<Record<string, number>>({});
     const users = mockData.users;
     const totalUsers = users.length;
 
-    const allPackages: Package[] = Array(6)
+    const allPackages: PackageWithId[] = Array(6)
         .fill(mockData.selectedPackage)
         .map((pkg, index) => ({
             ...pkg,
@@ -29,7 +29,7 @@ const GroupDetailsPage: React.FC = () => {
 
     const votePercentages = useMemo(() => {
         return allPackages.map((pkg) => {
-            const count = voteCounts[pkg.id] || 0;
+            const count = voteCounts[Number(pkg._id)] || 0;
             return Math.round((count / totalUsers) * 100);
         });
     }, [voteCounts, totalUsers, allPackages]);
@@ -39,7 +39,7 @@ const GroupDetailsPage: React.FC = () => {
         .filter(([_, count]) => count === maxVotes)
         .map(([pkgId]) => +pkgId);
 
-    const chosenPackage = allPackages.find((pkg) => pkg.id === chosenPackageIds[0]);
+    const chosenPackage = allPackages.find((pkg) => Number(pkg._id) === chosenPackageIds[0]);
 
     const handleVote = (userId: string, packageId: number) => {
         setVotes((prev) => {
@@ -62,11 +62,11 @@ const GroupDetailsPage: React.FC = () => {
                 <h3 className="section-title">Tailored Packages for Your Group</h3>
                 <div className="packages-grid">
                     {allPackages.map((pkg) => (
-                        <PackageCard
-                            key={pkg.id}
+                        <GroupPackageCard
+                            key={pkg._id}
                             pkg={pkg}
-                            isVoted={Object.entries(votes).some(([_, v]) => v === pkg.id)}
-                            onVote={(userId) => handleVote(userId, pkg.id)}
+                            isVoted={Object.entries(votes).some(([_, v]) => v === Number(pkg._id))}
+                            onVote={(userId) => handleVote(userId, Number(pkg._id))}
                         />
                     ))}
                 </div>

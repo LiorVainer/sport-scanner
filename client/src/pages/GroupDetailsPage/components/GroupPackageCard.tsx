@@ -12,7 +12,7 @@ interface Props {
     isVoted: boolean;
 }
 
-const PackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
+const GroupPackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
     const { loggedInUser } = useAuth();
     const currentUserId = loggedInUser?._id;
     const navigate = useNavigate();
@@ -74,4 +74,4 @@ const PackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
     );
 };
 
-export default PackageCard;
+export default GroupPackageCard;
