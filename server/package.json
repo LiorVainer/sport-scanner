@@ -8,7 +8,7 @@
     "dev": "cp .env.dev .env && nodemon -x npx tsx src/app.ts",
     "dev:windows": "copy .env.dev .env && nodemon -x npx tsx src/app.ts",
     "build": "tsc",
-    "start": "tsc && node ./dist/app.js",
+    "start": "node ./dist/app.js",
     "start:prod": "npm run build:prod && node ./dist/app.js",
     "build:prod": "tsc -p tsconfig.prod.json",
     "test": "cp .env.test .env && jest --detectOpenHandles --forceExit --runInBand",
