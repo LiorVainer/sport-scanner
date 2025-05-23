@@ -1,13 +1,13 @@
 import React from 'react';
 import './styles/PackageCard.scss';
-import { Package } from '@/models/packages/package.model';
+import { PackageWithId } from '@/models/packages/package.model';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FireFilled, LikeOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
 interface Props {
-    pkg: Package;
+    pkg: PackageWithId;
     onVote: (userId: string) => void;
     isVoted: boolean;
 }
@@ -19,7 +19,7 @@ const PackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
     const location = useLocation();
 
     const handleDetailsClick = () => {
-        navigate(`/package/${pkg.id}`, {
+        navigate(`/package/${pkg._id}`, {
             state: { backRoute: location.pathname },
         });
     };
@@ -27,7 +27,7 @@ const PackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
     return (
         <div className="package-card">
             <div className="card-header">
-                <div className="package-label">Package {pkg.id}</div>
+                <div className="package-label">Package {pkg._id}</div>
                 <button
                     className={`vote-btn ${isVoted ? 'voted' : ''}`}
                     onClick={(e) => {
