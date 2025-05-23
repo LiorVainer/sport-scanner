@@ -10,17 +10,18 @@ const { Text } = Typography;
 interface MatchDetailsProps {
     match: Match;
     variant?: 'full' | 'compact';
+    includeDivider?: boolean;
 }
 
-export const MatchDetails = ({ match, variant = 'full' }: MatchDetailsProps) => {
+export const MatchDetails = ({ match, variant = 'full', includeDivider }: MatchDetailsProps) => {
     const { homeTeam, awayTeam, stadium, league, date, price } = match;
 
     const isFull = variant === 'full';
 
     return (
         <div className={styles.matchDetailsWrapper}>
-            <div className={styles.divider} />
-            <div className={styles.matchDetailsCard}>
+            {includeDivider && <div className={styles.divider} />}
+            <div className={clsx(styles.matchDetailsCard, { [styles.compactCard]: !isFull })}>
                 <div className={styles.matchTeamsLogos}>
                     <img
                         src={homeTeam.logo}

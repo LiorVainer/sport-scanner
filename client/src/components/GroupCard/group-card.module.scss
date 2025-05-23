@@ -7,7 +7,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 32px;
   margin-top: 32px;
-  width: 70vw;
+  width: 100%;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    background-color: theme.gray-scale(96%);
+    cursor: pointer;
+  }
 }
 
 .header {
@@ -52,15 +58,24 @@
   box-shadow: 0 0 0 1px #d1d5db;
 }
 
+.selectedPackage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: theme.gray-scale(90%) solid 1px;
+  border-radius: theme.$card-border-radius;
+  padding: 1rem;
+}
+
 .matchList {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-  
-  .arrow {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1890ff;
-  }
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.arrow {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1890ff;
+}
   

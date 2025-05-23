@@ -4,15 +4,20 @@ import { PackageSchema } from './packages/package.model';
 import { zodDate } from '@/utils/zod.utils.ts';
 
 export const GroupSchema = z.object({
-  title: z.string().describe('Name of the group'),
-  users: PublicUserSchema.array().describe('List of users in the group'),
-  selectedPackage: PackageSchema.describe('Selected travel package for the group'),
+    title: z.string().describe('Name of the group'),
+    users: PublicUserSchema.array().describe('List of users in the group'),
+    dates: z.object({
+        start: zodDate,
+        end: zodDate,
+    }),
+    maxBudget: z.number(),
+    selectedPackage: PackageSchema.describe('Selected travel package for the group'),
 });
 
 export const GroupWithIdSchema = GroupSchema.extend({
-  _id: z.string(),
-  createdAt: zodDate,
-  updatedAt: zodDate,
+    _id: z.string(),
+    createdAt: zodDate,
+    updatedAt: zodDate,
 });
 
 export const CreateGroupPayloadSchema = GroupSchema.omit({ selectedPackage: true });
