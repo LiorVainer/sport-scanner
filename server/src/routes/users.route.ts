@@ -52,6 +52,7 @@ router.post('/packages/:packageId/history', authMiddleware, userController.addTo
 router.post('/packages/:packageId/save', authMiddleware, userController.savePackageForUser);
 
 router.delete('/packages/:packageId/unsave', authMiddleware, userController.unsavePackageForUser);
+router.get('/packages/suggested', authMiddleware, userController.getUsersSuggestedPackages);
 
 /**
  * @swagger

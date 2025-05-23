@@ -26,10 +26,11 @@ export const UserSchema = z.object({
     createdAt: zodDate,
     updatedAt: zodDate,
     refreshTokens: z.string().array().optional(),
-    favoriteTeams: FavoriteTeamSchema.array().optional(),
-    favoriteLeagues: FavoriteLeagueSchema.array().optional(),
+    favoriteTeams: FavoriteTeamSchema.array().default([]),
+    favoriteLeagues: FavoriteLeagueSchema.array().default([]),
     homeAirport: CityInfoSchema.optional(),
     isFirstVisit: z.boolean().optional(),
+    suggestedPackages: z.string().array().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

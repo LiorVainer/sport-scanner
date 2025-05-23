@@ -7,7 +7,9 @@ export const convertPackageGenerateParamsToFixturesSearchQueryParams = (
 ): FixtureQueryParams[] => {
     const from = params.date?.from?.toISOString().slice(0, 10);
     const to = params.date?.to?.toISOString().slice(0, 10);
-    const season = calculateCurrentSeason(new Date());
+    const season = calculateCurrentSeason(
+        new Date(params.date?.from).getTime() > new Date().getTime() ? new Date(params.date?.from) : new Date()
+    );
 
     return params.teams
         ? params.teams?.map((team) => ({ from, to, team: team.id, season }))

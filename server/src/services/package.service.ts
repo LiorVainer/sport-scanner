@@ -1,4 +1,8 @@
-import { PackagesGenerationParams } from '../models/packages/package-generate-params.model';
+import {
+    PackagesGenerationParams,
+    PackagesGenerationParamsFromFreeTextSchema,
+} from '../models/packages/package-generate-params.model';
+// @ts-ignore
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixturesSearchQueryParams } from '../converters/package-to-fixtures';
@@ -26,22 +30,29 @@ import { LogLevels } from '../models/log.model';
 import { PackagesContextMessagesGenerator } from '../ai/messages/package.message';
 import { FixtureContextMessagesGenerator } from '../ai/messages/fixture.message';
 
+export type GeneratePackagesParams = {
+    searchParams: PackagesGenerationParams;
+    emit?: (update: PackagesGenerationProgressUpdate) => void;
+    maxAmountOfPackages?: number;
+};
+
 class PackageService {
-    generatePackage = async (
-        params: PackagesGenerationParams,
-        emit?: (update: PackagesGenerationProgressUpdate) => void
-    ): Promise<Package[]> => {
+    generatePackages = async ({
+        searchParams,
+        maxAmountOfPackages = ENV?.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
+        emit,
+    }: GeneratePackagesParams): Promise<Package[]> => {
         const timer = new Timer<GeneratePackagesTimingStep>();
         const flightSearchErrors: { params: FlightSearchParams; error: string }[] = [];
 
-        packagesLogger.info(`📦 Generating package with params: ${JSON.stringify(params)}`);
+        packagesLogger.info(`📦 Generating package with params: ${JSON.stringify(searchParams)}`);
         emit?.({
             step: GeneratePackagesSteps.GENERATE_SEARCH_FIXTURE_PARAMS,
             message: 'Creating fixture search params...',
-            dateRange: params.date,
+            dateRange: searchParams.date,
         });
 
-        const fixtures = await this.fetchFixturesWithPrice(params, timer, emit);
+        const fixtures = await this.fetchFixturesWithPrice(searchParams, timer, emit);
         if (!fixtures) return [];
 
         emit?.({
@@ -49,7 +60,7 @@ class PackageService {
             message: 'Generating flight search parameters...',
         });
 
-        const searchMeta = await this.generateFlightSearchMeta(fixtures, params, timer);
+        const searchMeta = await this.generateFlightSearchMeta(fixtures, searchParams, timer);
         if (!searchMeta) return [];
 
         const { flightSearchParamsArray, cityIataToCityMetadata } = searchMeta;
@@ -82,7 +93,14 @@ class PackageService {
             message: 'Generating packages...',
         });
 
-        const generatedPackagesResponse = await this.callAiToGeneratePackages(fixtures, allFlightOffers, params, timer);
+        const generatedPackagesResponse = await this.callAiToGeneratePackages(
+            fixtures,
+            allFlightOffers,
+            searchParams,
+            timer,
+            maxAmountOfPackages
+        );
+
         if (!generatedPackagesResponse) {
             packagesLogger.error('❌ Error generating packages');
             emit?.({
@@ -107,7 +125,7 @@ class PackageService {
 
         const { valid: validPackages, invalid: invalidPackages } = await this.filterAiGeneratedPackagesByRules(
             generatedPackagesResult.data,
-            params,
+            searchParams,
             timer
         );
 
@@ -159,7 +177,7 @@ class PackageService {
             flightsCount: allFlightOffers.length,
             packagesGeneratedCount: generatedPackagesResult.data.length,
             packagesValidCount: validPackagesWithMetadata.length,
-            requestParams: params,
+            requestParams: searchParams,
             errors: flightSearchErrors.length ? { flightSearchErrors } : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
@@ -167,7 +185,21 @@ class PackageService {
             packagesGenerated: validPackagesWithMetadata,
         });
 
-        return validPackages;
+        return validPackagesWithMetadata;
+    };
+
+    transformFreeTextIntoPackagesGenerationParams = async (freeText: string) => {
+        const { data } = await AIService.generateObject({
+            schema: PackagesGenerationParamsFromFreeTextSchema,
+            saveOutputToFile: true,
+            messages: PackagesContextMessagesGenerator.createWithFreeText(freeText),
+            noTokensLimit: true,
+        });
+
+        const { league, teams, ...rest } = data;
+        const result = await soccerService.transformFieldsToActualGenerationParams({ league, teams });
+
+        return { ...result, ...rest };
     };
 
     private generateMetadataForGeneratedPackages = async (
@@ -398,7 +430,8 @@ class PackageService {
         fixtures: ExtendedFixtureItem[],
         flightOffers: FlightOffer[],
         params: PackagesGenerationParams,
-        timer: Timer<GeneratePackagesTimingStep>
+        timer: Timer<GeneratePackagesTimingStep>,
+        maxAmountOfPackages?: number
     ) {
         packagesLogger.info(`🧠 Generating packages from ${fixtures.length} fixtures & ${flightOffers.length} flights`);
 
@@ -407,7 +440,8 @@ class PackageService {
         const { result, contextMessages, error } = await this.generatePackageCombinations(
             fixtures,
             flightOffers,
-            params.originIATA
+            params.originIATA,
+            maxAmountOfPackages
         );
         timer.stop(GeneratePackagesTimingSteps.GENERATE_PACKAGES);
 
@@ -466,12 +500,13 @@ class PackageService {
     private generatePackageCombinations = async (
         fixtures: ExtendedFixtureItem[],
         flightOffers: FlightOffer[],
-        originIATACode: string
+        originIATACode: string,
+        maxAmountOfPackages: number = ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH
     ) => {
         const contextMessages = PackagesContextMessagesGenerator.create(
             fixtures,
             flightOffers,
-            ENV.MAX_AMOUNT_OF_PACKAGES_IN_ONE_SEARCH,
+            maxAmountOfPackages,
             originIATACode
         );
 

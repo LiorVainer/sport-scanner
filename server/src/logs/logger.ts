@@ -1,10 +1,10 @@
 import winston from 'winston';
-import {Logtail} from '@logtail/node';
-import {LogtailTransport} from '@logtail/winston';
-import {customLevels, CustomLogLevel} from "./levels.logger";
-import {ENV} from "../env/env.config";
-import {LogLevels} from "../models/log.model";
-import {injectRequestContextFormat} from "./utils.logger";
+import { Logtail } from '@logtail/node';
+import { LogtailTransport } from '@logtail/winston';
+import { customLevels, CustomLogLevel } from './levels.logger';
+import { ENV } from '../env/env.config';
+import { LogLevels } from '../models/log.model';
+import { injectRequestContextFormat } from './utils.logger';
 
 const logtail = new Logtail(ENV.LOGTAIL_SOURCE_TOKEN, {
     endpoint: ENV.LOGTAIL_INGESTING_HOST,
@@ -21,36 +21,30 @@ const emojiMap: Record<CustomLogLevel, string> = {
 };
 
 const baseFormat = winston.format.combine(
-    winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
-    winston.format.errors({stack: true}), winston.format.printf(({timestamp, level, message, meta}) => {
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.errors({ stack: true }),
+    winston.format.printf(({ timestamp, level, message, meta }) => {
         const emoji = emojiMap[level as CustomLogLevel] || '';
         const typedMeta = meta as { requestId?: string };
 
         const requestId = typedMeta?.requestId;
         const extra = Object.keys(typedMeta || {}).length ? ` | ${JSON.stringify(typedMeta, null, 2)}` : '';
 
-        return `${timestamp} ${emoji} [${level.toUpperCase()}]: ${message}${requestId && ` (requestId="${requestId}")`}`;
-    }));
+        return `${timestamp} ${emoji} [${level.toUpperCase()}]: ${message}${requestId ? ` (requestId="${requestId}")` : ''}`;
+    })
+);
 
 const consoleLogger = winston.createLogger({
     levels: customLevels.levels,
     level: 'debug',
-    format: winston.format.combine(
-        injectRequestContextFormat(),
-        baseFormat,
-        winston.format.colorize({all: true})
-    ),
+    format: winston.format.combine(injectRequestContextFormat(), baseFormat, winston.format.colorize({ all: true })),
     transports: [new winston.transports.Console()],
 });
 
 const logtailLogger = winston.createLogger({
     levels: customLevels.levels,
     level: 'debug',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        injectRequestContextFormat(),
-        winston.format.json()
-    ),
+    format: winston.format.combine(winston.format.timestamp(), injectRequestContextFormat(), winston.format.json()),
     transports: [new LogtailTransport(logtail)],
 });
 
@@ -86,8 +80,8 @@ export const logger: LogInterface & {
     },
 
     success: (message, meta) => {
-        consoleLogger.log({level: LogLevels.SUCCESS, message});
-        logtailLogger.log({level: LogLevels.SUCCESS, message, ...(meta ?? {})});
+        consoleLogger.log({ level: LogLevels.SUCCESS, message });
+        logtailLogger.log({ level: LogLevels.SUCCESS, message, ...(meta ?? {}) });
     },
 
     debug: (message, meta) => {
@@ -100,30 +94,30 @@ export const logger: LogInterface & {
         logtailLogger.warn(message, meta);
     },
 
-    log: ({level, message, meta}) => {
-        consoleLogger.log({level, message, ...(meta ?? {})});
-        logtailLogger.log({level, message, ...(meta ?? {})});
+    log: ({ level, message, meta }) => {
+        consoleLogger.log({ level, message, ...(meta ?? {}) });
+        logtailLogger.log({ level, message, ...(meta ?? {}) });
     },
 
     local: {
         info: (msg, meta) => consoleLogger.info(msg, meta),
         error: (msg, meta) => consoleLogger.error(msg, meta),
-        success: (msg, meta) => consoleLogger.log({level: 'success', message: msg, ...(meta ?? {})}),
+        success: (msg, meta) => consoleLogger.log({ level: 'success', message: msg, ...(meta ?? {}) }),
         debug: (msg, meta) => consoleLogger.debug(msg, meta),
         warn: (msg, meta) => consoleLogger.warn(msg, meta),
-        log: ({level, message, meta}) => {
-            consoleLogger.log({level, message, ...(meta ?? {})});
+        log: ({ level, message, meta }) => {
+            consoleLogger.log({ level, message, ...(meta ?? {}) });
         },
     },
 
     remote: {
         info: (msg, meta) => logtailLogger.info(msg, meta),
         error: (msg, meta) => logtailLogger.error(msg, meta),
-        success: (msg, meta) => logtailLogger.log({level: 'success', message: msg, ...(meta ?? {})}),
+        success: (msg, meta) => logtailLogger.log({ level: 'success', message: msg, ...(meta ?? {}) }),
         debug: (msg, meta) => logtailLogger.debug(msg, meta),
         warn: (msg, meta) => logtailLogger.warn(msg, meta),
-        log: ({level, message, meta}) => {
-            logtailLogger.log({level, message, ...(meta ?? {})});
+        log: ({ level, message, meta }) => {
+            logtailLogger.log({ level, message, ...(meta ?? {}) });
         },
     },
 };

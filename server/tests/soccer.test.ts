@@ -1,8 +1,8 @@
 import request from 'supertest';
-import { initServer } from '../server';
+import { initServer } from '../src/server';
 import mongoose from 'mongoose';
-import { UserRepository } from '../repositories/user.repository';
-import { UserWithTokens } from '../types/user.types';
+import { UserRepository } from '../src/repositories/user.repository';
+import { UserWithTokens } from '../src/types/user.types';
 import { Application } from 'express';
 
 let app: Application;
