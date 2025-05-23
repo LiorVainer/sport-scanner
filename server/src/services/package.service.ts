@@ -2,6 +2,7 @@ import {
     PackagesGenerationParams,
     PackagesGenerationParamsFromFreeTextSchema,
 } from '../models/packages/package-generate-params.model';
+// @ts-ignore
 import { ResponseError as AmadeusResponseError } from 'amadeus-ts';
 import { soccerService } from './soccer.service';
 import { convertPackageGenerateParamsToFixturesSearchQueryParams } from '../converters/package-to-fixtures';
