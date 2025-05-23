@@ -109,4 +109,6 @@ router.get('/packages/suggested', authMiddleware, userController.getUsersSuggest
  */
 router.put('/:id', authMiddleware, userController.updateUserById);
 
+router.get('/', authMiddleware, userController.getUsers);
+
 export default router;

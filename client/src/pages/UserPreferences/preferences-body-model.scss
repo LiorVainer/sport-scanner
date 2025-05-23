@@ -68,3 +68,14 @@
   gap: 2rem;
   justify-content: center;
 }
+
+.teamItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  & > img {
+    width: 18px;
+    height: 18px;
+  }
+}

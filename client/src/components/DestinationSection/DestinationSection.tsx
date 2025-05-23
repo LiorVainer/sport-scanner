@@ -13,7 +13,7 @@ export const DestinationSection = ({ destination, variant }: DestinationSectionP
         <div className={classes.destinationSection}>
             <DestinationHeader destination={destination} />
             {destination.matches.map((match) => (
-                <MatchDetails match={match} variant={variant} />
+                <MatchDetails match={match} includeDivider variant={variant} />
             ))}
         </div>
     );

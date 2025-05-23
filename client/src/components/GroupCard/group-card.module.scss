@@ -1,0 +1,81 @@
+@use '../../theme/theme' as theme;
+
+.container {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 32px;
+  margin-top: 32px;
+  width: 100%;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    background-color: theme.gray-scale(96%);
+    cursor: pointer;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.groupInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupInfo h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.metaInfo {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.metaInfo svg {
+  margin-right: 4px;
+  color: #1890ff;
+}
+
+.avatars {
+  display: flex;
+  gap: -8px;
+}
+
+.avatars :global(.ant-avatar) {
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #d1d5db;
+}
+
+.selectedPackage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: theme.gray-scale(90%) solid 1px;
+  border-radius: theme.$card-border-radius;
+  padding: 1rem;
+}
+
+.matchList {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.arrow {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1890ff;
+}
+  

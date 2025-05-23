@@ -55,4 +55,12 @@ export const UserService = {
     async getSuggestedPackages(userId: string) {
         return UserRepository.findById(userId).populate('suggestedPackages').select('suggestedPackages').lean();
     },
+
+    async getUsers(username?: string): Promise<User[]> {
+        const filter = username
+          ? { username: { $regex: username, $options: 'i' } }
+          : {};
+        return await UserRepository.find(filter).select('username _id');
+    },
+      
 };

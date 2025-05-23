@@ -88,6 +88,18 @@ export const UsersService = {
         }
     },
 
+    async getUsers(username?: string) {
+        try {
+          const { data } = await axiosInstance.get(`${ROUTE_PREFIX}`, {
+            params: { username },
+          });
+          return data;
+        } catch (error) {
+          console.error('Error fetching users:', error);
+          throw error;
+        }
+    },
+      
     async getUsersSuggestedPackages() {
         try {
             const { data } = await axiosInstance.get<PopulatedSavedPackage[]>(

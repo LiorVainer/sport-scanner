@@ -36,6 +36,9 @@ export const Navbar = () => {
 
             <div className={classes.right}>
                 <div className={classes.navLinks}>
+                    <Link to={ROUTES.GROUPS}>Groups</Link>
+                </div>
+                <div className={classes.navLinks}>
                     <Link to={ROUTES.HISTORY}>History</Link>
                 </div>
                 <div className={classes.navLinks}>

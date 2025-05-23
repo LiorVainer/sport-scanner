@@ -4,4 +4,7 @@ export const ROUTES = {
     AUTH: '/',
     HISTORY: 'histories',
     SAVED_PACKAGES: '/saved-packages',
+    GROUPS: '/groups',
+    EDIT_GROUP: '/edit-group',
+    ADD_GROUP: '/add-group',
 };

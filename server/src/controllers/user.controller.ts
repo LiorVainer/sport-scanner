@@ -65,6 +65,16 @@ export const userController = {
         }
     },
 
+    getUsers: async (req: Request, res: Response) => {
+        try {
+          const { username } = req.query;
+          const users = await UserService.getUsers(username as string);
+          res.status(200).send(users);
+        } catch (err) {
+          res.status(500).send({ message: 'Error fetching users', error: err });
+        }
+    },
+      
     getUsersSuggestedPackages: async (req: Request, res: Response) => {
         try {
             const userWithPackages = await UserService.getSuggestedPackages(req.userId!);

@@ -8,21 +8,22 @@ import { Package, PackageDocument } from '@/models/packages/package.model.ts';
 import { Calendar, CircleDollarSignIcon } from 'lucide-react';
 import { UsersService } from '@/api/services/users.service';
 import { PackageService } from '@/api/services/package.service';
+import clsx from 'clsx';
 
 const { Text } = Typography;
 
 interface PackageFooterProps {
     singlePackage: Package | PackageDocument;
     backRoute?: string;
+    actionLabel?: string;
+    variant?: 'default' | 'compact';
 }
 
-export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) => {
+export const PackageFooter = ({ singlePackage, backRoute, actionLabel, variant = 'default' }: PackageFooterProps) => {
     const navigate = useNavigate();
     const { startDate, endDate, totalPrice } = singlePackage;
 
-    const isSavedPackage = (pkg: Package | PackageDocument): pkg is PackageDocument => {
-        return '_id' in pkg && Boolean(pkg._id);
-    };
+    const isSavedPackage = (pkg: Package | PackageDocument): pkg is PackageDocument => '_id' in pkg && Boolean(pkg._id);
 
     const addToHistory = async () => {
         try {
@@ -46,25 +47,29 @@ export const PackageFooter = ({ singlePackage, backRoute }: PackageFooterProps) 
     return (
         <div>
             <div className={styles.divider} />
-            <div className={styles.footer}>
+            <div className={clsx(styles.footer, variant === 'compact' && styles.compactFooter)}>
                 <div className={styles.footerRangeContainer}>
                     <div className={styles.rangeContainer}>
-                        <Calendar className={styles.icon} />
-                        <Text strong className={styles.range}>
-                            {formattedDate(startDate)} <ArrowRightOutlined className={styles.arrowIcon} />
+                        <Calendar className={clsx(styles.icon, variant === 'compact' && styles.compactIcon)} />
+                        <Text strong className={clsx(styles.range, variant === 'compact' && styles.compactText)}>
+                            {formattedDate(startDate)}{' '}
+                            <ArrowRightOutlined
+                                className={clsx(styles.arrowIcon, variant === 'compact' && styles.compactText)}
+                            />
                             {formattedDate(endDate)}
                         </Text>
                     </div>
                     <div className={styles.rangeContainer}>
-                        <CircleDollarSignIcon className={styles.icon} />
-                        <Text strong className={styles.range}>
+                        <CircleDollarSignIcon
+                            className={clsx(styles.icon, variant === 'compact' && styles.compactIcon)}
+                        />
+                        <Text strong className={clsx(styles.range, variant === 'compact' && styles.compactText)}>
                             {totalPrice.min}$ - {totalPrice.max}$
                         </Text>
                     </div>
                 </div>
                 <Button type="primary" onClick={addToHistory}>
-                    Continue
-                    <RightOutlined />
+                    {actionLabel ?? 'Continue'} <RightOutlined />
                 </Button>
             </div>
         </div>
