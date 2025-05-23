@@ -10,15 +10,15 @@ const PackageVoting: React.FC<Props> = ({ percentages }) => {
         <div className="package-voting">
             <h3>Packages Voting</h3>
             <div className="bars-container">
-                {percentages.map((percent, i) => (
-                    <div className="vote-bar" key={i}>
-                        <div className="bar-wrapper">
-                            <div className="bar-bg">
-                                <div className="bar-fill" style={{ height: `${percent}%` }} />
+                {percentages.map((percent, index) => (
+                    <div className="vote-bar" key={index}>
+                        <div className="bar-bg">
+                            <div className="bar-percent" style={{ bottom: `calc(${percent}% + 4px)` }}>
+                                {percent}%
                             </div>
-                            <div className="bar-label">{percent}%</div>
+                            <div className="bar-fill" style={{ height: `${percent}%` }} />
                         </div>
-                        <p>Package {i + 1}</p>
+                        <div className="bar-title">Package {index + 1}</div>
                     </div>
                 ))}
             </div>

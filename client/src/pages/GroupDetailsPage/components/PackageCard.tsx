@@ -1,21 +1,43 @@
 import React from 'react';
 import './styles/PackageCard.scss';
 import { Package } from '@/models/packages/package.model';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FireFilled, LikeOutlined, RightOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 interface Props {
     pkg: Package;
     onVote: (userId: string) => void;
+    isVoted: boolean;
 }
 
-const currentUserId = '1';
+const PackageCard: React.FC<Props> = ({ pkg, onVote, isVoted }) => {
+    const { loggedInUser } = useAuth();
+    const currentUserId = loggedInUser?._id;
+    const navigate = useNavigate();
+    const location = useLocation();
 
-const PackageCard: React.FC<Props> = ({ pkg, onVote }) => {
+    const handleDetailsClick = () => {
+        navigate(`/package/${pkg.id}`, {
+            state: { backRoute: location.pathname },
+        });
+    };
+
     return (
         <div className="package-card">
             <div className="card-header">
                 <div className="package-label">Package {pkg.id}</div>
-                <button className="vote-btn" onClick={() => onVote(currentUserId)}>
-                    👍 Vote
+                <button
+                    className={`vote-btn ${isVoted ? 'voted' : ''}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!currentUserId) return;
+                        onVote(currentUserId);
+                    }}
+                >
+                    {isVoted ? <FireFilled style={{ marginRight: 6 }} /> : <LikeOutlined style={{ marginRight: 6 }} />}
+                    {isVoted ? 'Unvote' : 'Vote'}
                 </button>
             </div>
 
@@ -23,15 +45,15 @@ const PackageCard: React.FC<Props> = ({ pkg, onVote }) => {
 
             <div className="card-content">
                 {pkg.timeline
-                    .filter((t) => t.type === 'destination')
-                    .flatMap((d: any) =>
-                        d.matches.map((m: any) => (
-                            <div key={m.id} className="match-row">
-                                <img src={m.homeTeam.logo} alt={m.homeTeam.name} />
+                    .filter((item) => item.type === 'destination')
+                    .flatMap((destination) =>
+                        destination.matches.map((match) => (
+                            <div key={match.id} className="match-row">
+                                <img src={match.homeTeam.logo} alt={match.homeTeam.name} />
                                 <span>
-                                    {m.homeTeam.name} VS {m.awayTeam.name}
+                                    {match.homeTeam.name} VS {match.awayTeam.name}
                                 </span>
-                                <img src={m.awayTeam.logo} alt={m.awayTeam.name} />
+                                <img src={match.awayTeam.logo} alt={match.awayTeam.name} />
                             </div>
                         ))
                     )}
@@ -41,6 +63,12 @@ const PackageCard: React.FC<Props> = ({ pkg, onVote }) => {
                 <p className="price-range">
                     💶 €{pkg.totalPrice.min} - €{pkg.totalPrice.max}
                 </p>
+            </div>
+
+            <div className="card-footer">
+                <Button type="primary" className="vote-btn" onClick={handleDetailsClick}>
+                    Continue <RightOutlined />
+                </Button>
             </div>
         </div>
     );

@@ -3,9 +3,9 @@ import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
 import PackageCard from './components/PackageCard';
 import PackageVoting from './components/PackageVoting';
+import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { mockData } from './mockData';
 import { Package } from '@/models/packages/package.model';
-import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 
 const GroupDetailsPage: React.FC = () => {
     const [votes, setVotes] = useState<Record<string, number>>({});
@@ -21,11 +21,10 @@ const GroupDetailsPage: React.FC = () => {
         }));
 
     const voteCounts = useMemo(() => {
-        const counts: Record<number, number> = {};
-        Object.values(votes).forEach((packageId) => {
-            counts[packageId] = (counts[packageId] || 0) + 1;
-        });
-        return counts;
+        return Object.values(votes).reduce<Record<number, number>>((acc, packageId) => {
+            acc[packageId] = (acc[packageId] ?? 0) + 1;
+            return acc;
+        }, {});
     }, [votes]);
 
     const votePercentages = useMemo(() => {
@@ -43,28 +42,36 @@ const GroupDetailsPage: React.FC = () => {
     const chosenPackage = allPackages.find((pkg) => pkg.id === chosenPackageIds[0]);
 
     const handleVote = (userId: string, packageId: number) => {
-        setVotes((prev) => ({
-            ...prev,
-            [userId]: packageId,
-        }));
+        setVotes((prev) => {
+            if (prev[userId] === packageId) {
+                const newVotes = { ...prev };
+                delete newVotes[userId];
+                return newVotes;
+            }
+            return {
+                ...prev,
+                [userId]: packageId,
+            };
+        });
     };
 
     return (
         <div className="group-details">
             <div className="content-wrapper">
                 <GroupHeader title={mockData.title} users={users} selectedPackage={mockData.selectedPackage} />
-
                 <h3 className="section-title">Tailored Packages for Your Group</h3>
-
                 <div className="packages-grid">
-                    {allPackages.map((pkg, i) => (
-                        <PackageCard key={pkg.id} pkg={pkg} onVote={(userId) => handleVote(userId, pkg.id)} />
+                    {allPackages.map((pkg) => (
+                        <PackageCard
+                            key={pkg.id}
+                            pkg={pkg}
+                            isVoted={Object.entries(votes).some(([_, v]) => v === pkg.id)}
+                            onVote={(userId) => handleVote(userId, pkg.id)}
+                        />
                     ))}
                 </div>
-
                 <PackageVoting percentages={votePercentages} />
-
-                {chosenPackage && <ChosenPackageTimeline pkg={chosenPackage} />}
+                {chosenPackage && <ChosenPackageTimeline pkg={chosenPackage} backRoute="/group/group_id" />}
             </div>
         </div>
     );
