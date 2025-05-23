@@ -16,9 +16,9 @@ export const soccerController = {
 
             const countries = (await soccerService.getCountries(name)) ?? [];
 
-            return res.status(200).json(countries);
+            res.status(200).json(countries);
         } catch (e) {
-            return res.status(500).json({ message: 'Error fetching countries', error: e });
+            res.status(500).json({ message: 'Error fetching countries', error: e });
         }
     },
 
@@ -31,7 +31,7 @@ export const soccerController = {
                 const leagues = await soccerService.getLeaguesByName(name);
                 res.status(200).json(leagues);
 
-                return
+                return;
             }
 
             if (country) {
@@ -41,11 +41,11 @@ export const soccerController = {
                     const filteredLeagues = leagues.filter((league) => regex.test(league.league.name));
                     res.status(200).json(filteredLeagues);
 
-                    return
+                    return;
                 }
                 res.status(200).json(leagues);
 
-                return
+                return;
             }
 
             res.status(400).json({ message: 'Missing required query: country or name' });
@@ -72,9 +72,7 @@ export const soccerController = {
             const withVenue = include === 'venue';
 
             if (!name || name.length < 3) {
-                res
-                    .status(400)
-                    .json({ message: 'Team name is required and must be at least 3 characters long.' });
+                res.status(400).json({ message: 'Team name is required and must be at least 3 characters long.' });
                 return;
             }
 

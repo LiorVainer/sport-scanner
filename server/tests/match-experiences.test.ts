@@ -1,13 +1,13 @@
 import request from 'supertest';
-import { initServer } from '../server';
+import { initServer } from '../src/server';
 import mongoose from 'mongoose';
 import { Express } from 'express';
-import { MatchExperience } from '../models/match-experience.model';
-import { UserWithTokens } from '../types/user.types';
-import { MatchExperienceRepository } from '../repositories/match-experience.repository';
-import { matchExperienceService } from '../services/match-experience.service';
-import { UserRepository } from '../repositories/user.repository';
-import { CommentRepository } from '../repositories/comment.repository';
+import { MatchExperience } from '../src/models/match-experience.model';
+import { UserWithTokens } from '../src/types/user.types';
+import { MatchExperienceRepository } from '../src/repositories/match-experience.repository';
+import { matchExperienceService } from '../src/services/match-experience.service';
+import { UserRepository } from '../src/repositories/user.repository';
+import { CommentRepository } from '../src/repositories/comment.repository';
 
 let app: Express;
 let matchExperienceId = '';
