@@ -1,0 +1,92 @@
+.package-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .package-label {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .vote-btn {
+        background-color: #1890ff;
+        color: white;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+
+        &.voted {
+            background-color: #ff4d4f;
+        }
+    }
+}
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 16px;
+}
+.vote-btn {
+    background-color: #1890ff;
+    border: none;
+    color: white;
+    padding: 4px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    &:hover {
+        background-color: #40a9ff;
+    }
+
+    &.voted {
+        background-color: #ff4d4f;
+    }
+}
+
+.divider {
+    margin: 12px 0;
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.card-content {
+    .match-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+
+        img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+    }
+
+    .date-range,
+    .price-range {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #333;
+    }
+}

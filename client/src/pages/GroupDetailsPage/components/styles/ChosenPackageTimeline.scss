@@ -1,0 +1,9 @@
+.chosen-package {
+    margin-top: 40px;
+
+    .packageContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+}
