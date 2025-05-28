@@ -251,17 +251,6 @@ export const GroupsScreen = () => {
         navigate(ROUTES.ADD_GROUP);
     };
 
-    // navigate(ROUTES.ADD_GROUP, { // in ido page
-    //   state: {
-    //     group: {
-    //       groupName: 'UEFA Lovers',
-    //       members: '@Rom Pollak, @Lior Vainer',
-    //       tripDates: ['2025-06-01', '2025-06-10'],
-    //       budget: { min: '300', max: '900' }
-    //     }
-    //   }
-    // });
-
     return (
         <div className={classes.container}>
             <div className={classes.header}>

@@ -6,14 +6,28 @@ import PackageVoting from './components/PackageVoting';
 import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { mockData } from './mockData';
 import { PackageWithId } from '@/models/packages/package.model';
+import { useLocation } from 'react-router-dom';
+import { Group } from '@/models/group.model';
 
 const GroupDetailsPage: React.FC = () => {
     const [votes, setVotes] = useState<Record<string, number>>({});
-    const users = mockData.users;
+
+    const { state } = useLocation();
+    const group: Group | undefined = state?.group;
+
+    if (!group) {
+        return <div>Group data not available.</div>;
+    }
+
+    const users = group.users || mockData.users;
     const totalUsers = users.length;
 
+    const selectedPackage = group.selectedPackage || mockData.selectedPackage;
+    const title = group.title || mockData.title;
+
+
     const allPackages: PackageWithId[] = Array(6)
-        .fill(mockData.selectedPackage)
+        .fill(selectedPackage)
         .map((pkg, index) => ({
             ...pkg,
             id: index + 1,
@@ -58,7 +72,7 @@ const GroupDetailsPage: React.FC = () => {
     return (
         <div className="group-details">
             <div className="content-wrapper">
-                <GroupHeader title={mockData.title} users={users} selectedPackage={mockData.selectedPackage} />
+                <GroupHeader title={title} users={users} selectedPackage={selectedPackage} />
                 <h3 className="section-title">Tailored Packages for Your Group</h3>
                 <div className="packages-grid">
                     {allPackages.map((pkg) => (

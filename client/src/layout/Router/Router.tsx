@@ -10,6 +10,7 @@ import { HistoryScreen } from '@/pages/HistoryScreen';
 import { SavedPackagesScreen } from '@/pages/SavedPackagesScreen';
 import { GroupsScreen } from '@/pages/GroupsScreen/GroupsScreen';
 import { GroupFormScreen } from '@pages/GroupFormScreen/GroupFormScreen.tsx';
+import GroupDetailsPage from '@/pages/GroupDetailsPage/GroupDetailsPage';
 
 export interface RouterProps {}
 
@@ -27,6 +28,7 @@ export const Router = (_props: RouterProps) => {
                     <Route path={ROUTES.GROUPS} element={<GroupsScreen />} />
                     <Route path={`${ROUTES.EDIT_GROUP}/:groupId`} element={<GroupFormScreen />} />
                     <Route path={ROUTES.ADD_GROUP} element={<GroupFormScreen />} />
+                    <Route path={ROUTES.GROUP_DETAILS} element={<GroupDetailsPage />} />
                 </Route>
             </Route>
         </Routes>
