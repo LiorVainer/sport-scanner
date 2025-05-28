@@ -64,7 +64,7 @@ export const GroupFormScreen = () => {
     );
 
     const onSubmit = async (data: GroupFormValues) => {
-        const group = submitGroupForm(data); // TODO: get the group created?
+        submitGroupForm(data); // TODO: get the group created?
         
         navigate(ROUTES.GROUP_DETAILS, { state: { group } });
     };

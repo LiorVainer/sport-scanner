@@ -7,5 +7,5 @@ export const ROUTES = {
     GROUPS: '/groups',
     EDIT_GROUP: '/edit-group',
     ADD_GROUP: '/add-group',
-    GROUP_DETAILS: '/groups/:groupId',
+    GROUP_DETAILS: '/group_details',
 };
