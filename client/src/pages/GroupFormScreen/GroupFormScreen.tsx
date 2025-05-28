@@ -63,9 +63,8 @@ export const GroupFormScreen = () => {
         [usersData]
     );
 
-    const onSubmit = (data: GroupFormValues) => {
-        const a = submitGroupForm(data);
-        console.log(a);
+    const onSubmit = async (data: GroupFormValues) => {
+        const group = submitGroupForm(data);
         
         navigate(ROUTES.GROUP_DETAILS);
     };

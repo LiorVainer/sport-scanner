@@ -6,6 +6,7 @@ import styles from './group-card.module.scss';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { PackageFooter } from '@pages/PackagesScreen/PackageFooter';
 import { formattedDate } from '@/utils/date.utils.ts';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -19,9 +20,14 @@ export const GroupCard = ({ group, backRoute }: GroupCardProps) => {
     const { timeline } = selectedPackage;
     const destinations = timeline.filter((item) => item.type === 'destination');
     const matches = destinations.flatMap((dest) => dest.matches || []);
+    const navigate = useNavigate();
+
+    const handleGroupClick = () => {
+        navigate(ROUTES.GROUP_DETAILS, { state: { group } });
+    };
 
     return (
-        <div className={styles.container}>
+        <div onClick={handleGroupClick} className={styles.container}>
             <div className={styles.header}>
                 <div className={styles.groupInfo}>
                     <Title level={4}>{title}</Title>
