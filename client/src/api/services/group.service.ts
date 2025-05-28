@@ -1,6 +1,5 @@
 import { axiosInstance } from '../config/axios-instance';
-import { Group } from '@/models/group.model.ts';
-import { GroupFormValues } from '@pages/GroupFormScreen/group-form.schema.ts';
+import { CreateGroupPayload, Group, UpdateGroupPayload } from '@/models/group.model.ts';
 
 export const ROUTE_PREFIX = '/groups';
 
@@ -16,7 +15,18 @@ export const GroupService = {
         }
     },
 
-    async create(newGroup: GroupFormValues) {
+    async getAll() {
+        try {
+            const { data } = await axiosInstance.get<Group[]>(`${ROUTE_PREFIX}/`);
+
+            return data;
+        } catch (error) {
+            console.error('Error getting all groups:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async create(newGroup: CreateGroupPayload) {
         try {
             const { data } = await axiosInstance.post<Group>(`${ROUTE_PREFIX}/`, newGroup);
             return data;
@@ -26,9 +36,9 @@ export const GroupService = {
         }
     },
 
-    async update(updatedGroup: GroupFormValues) {
+    async update(updatedGroup: Partial<UpdateGroupPayload> & { _id: string }) {
         try {
-            const { data } = await axiosInstance.put<Group>(`${ROUTE_PREFIX}/`, updatedGroup);
+            const { data } = await axiosInstance.put<Group>(`${ROUTE_PREFIX}/${updatedGroup._id}`, updatedGroup);
             return data;
         } catch (error) {
             console.error('Error updating package:', (error as any).message);

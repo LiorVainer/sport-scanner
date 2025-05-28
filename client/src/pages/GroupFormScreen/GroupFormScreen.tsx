@@ -13,7 +13,8 @@ import { GroupFormDefaultValues, GroupFormSchema, GroupFormValues } from './grou
 import { TextCursorInput } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext.tsx';
 import { GroupService } from '@api/services/group.service.ts';
-import { ROUTES } from '@/constants/routes.const';
+import { CreateGroupPayload } from '@/models/group.model.ts';
+import { ROUTES } from '@/constants/routes.const.ts';
 
 const { RangePicker } = DatePicker;
 
@@ -23,18 +24,31 @@ export const GroupFormScreen = () => {
     const isEditMode = !!groupId;
     const navigate = useNavigate();
 
-    //TODO: Implement Group Fetch From Server
     const { data: group } = useQuery({
         queryKey: ['group', groupId],
         queryFn: async () => GroupService.getById(groupId!),
         enabled: !!groupId,
     });
 
-    //TODO: Implement Group Create / Update with Server
     const { mutateAsync: submitGroupForm } = useMutation({
         mutationKey: ['group', isEditMode ? 'create' : 'update'],
-        mutationFn: async (group: GroupFormValues) =>
-            isEditMode ? GroupService.create(group) : GroupService.create(group),
+        mutationFn: async (formData: GroupFormValues) => {
+            const newGroup: CreateGroupPayload = {
+                title: formData.groupName,
+                users: formData.members.concat(loggedInUser?._id!),
+                dates: {
+                    start: new Date(formData.tripDates[0]),
+                    end: new Date(formData.tripDates[1]),
+                },
+                maxBudget: formData.maxBudget,
+            };
+
+            if (!isEditMode) {
+                return await GroupService.create(newGroup);
+            } else {
+                return await GroupService.update({ ...formData, _id: groupId! });
+            }
+        },
     });
 
     const {
@@ -64,9 +78,9 @@ export const GroupFormScreen = () => {
     );
 
     const onSubmit = async (data: GroupFormValues) => {
-        submitGroupForm(data); // TODO: get the group created?
-        
-        navigate(ROUTES.GROUP_DETAILS, { state: { group } });
+        const group = await submitGroupForm(data); // TODO: get the group created?
+
+        navigate(`${ROUTES.GROUP_DETAILS}/{${group._id}`);
     };
 
     if (isEditMode) {

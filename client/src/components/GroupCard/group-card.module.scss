@@ -8,6 +8,7 @@
   margin-bottom: 32px;
   margin-top: 32px;
   width: 100%;
+  gap: 16px;
 
   &:hover {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
@@ -20,7 +21,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
 }
 
 .groupInfo {
@@ -50,7 +50,7 @@
 
 .avatars {
   display: flex;
-  gap: -8px;
+  align-self: flex-start;
 }
 
 .avatars :global(.ant-avatar) {

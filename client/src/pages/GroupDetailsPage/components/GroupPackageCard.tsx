@@ -2,7 +2,7 @@ import React from 'react';
 import './styles/PackageCard.scss';
 import { PackageWithId } from '@/models/packages/package.model';
 import { useAuth } from '@/context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FireFilled, LikeOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
