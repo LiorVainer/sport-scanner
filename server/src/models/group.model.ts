@@ -20,6 +20,7 @@ export const PopulatedGroupSchema = z.object({
     selectedPackage: PackageSchema.optional().describe('Selected travel package for the group'),
     createdAt: zodDate,
     updatedAt: zodDate,
+    createdBy: PublicUserSchema.describe('User who created the group'),
 });
 
 export const GroupSchema = z.object({
@@ -39,6 +40,7 @@ export const GroupSchema = z.object({
     selectedPackage: StringToObjectId.optional().describe('Selected travel package for the group'),
     createdAt: zodDate,
     updatedAt: zodDate,
+    createdBy: StringToObjectId.describe('User who created the group'),
 });
 
 export const CreateGroupPayloadSchema = GroupSchema.omit({
@@ -46,6 +48,7 @@ export const CreateGroupPayloadSchema = GroupSchema.omit({
     suggestedPackagesVotes: true,
     suggestedPackages: true,
     _id: true,
+    createdBy: true,
     createdAt: true,
     updatedAt: true,
 });

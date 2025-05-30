@@ -15,7 +15,7 @@ export const GroupsScreen = () => {
         queryFn: async () => GroupService.getAll(),
 
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        // staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const handleNewGroup = () => {

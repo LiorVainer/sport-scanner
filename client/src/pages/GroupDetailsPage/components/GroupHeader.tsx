@@ -1,13 +1,23 @@
 import React from 'react';
 import './styles/GroupHeader.scss';
-import { Group } from '@/models/group.model.ts';
+import { Group, PopulatedGroup } from '@/models/group.model.ts';
+import { useNavigate } from 'react-router';
+import { ROUTES } from '@/constants/routes.const';
+import { GroupService } from '@/api/services/group.service';
 
 interface Props {
-    group: Group;
+    group: PopulatedGroup;
 }
 
 const GroupHeader: React.FC<Props> = ({ group }) => {
-    const { users, selectedPackage, title } = group;
+    const navigate = useNavigate();
+    const { users, selectedPackage, title, _id } = group;
+
+    const handleDeleteGroup = async () => {
+        await GroupService.delete(_id);
+        navigate(ROUTES.GROUPS);
+    };
+
     return (
         <div className="group-header-box">
             <div className="top-row">
@@ -24,23 +34,28 @@ const GroupHeader: React.FC<Props> = ({ group }) => {
                     </div>
                 </div>
 
-                {selectedPackage && (
-                    <div className="right">
+                <div className="right">
+                    {selectedPackage && (
                         <div className="info-row">
                             <span className="icon">💰</span>
                             <span className="text">
-                                €{selectedPackage.totalPrice.min} - €{selectedPackage.totalPrice.max}
+                                €{selectedPackage?.totalPrice.min} - €{selectedPackage?.totalPrice.max}
                             </span>
                             <span className="icon">📅</span>
                             <span className="text">
-                                {selectedPackage.startDate} → {selectedPackage.endDate}
+                                {selectedPackage?.startDate} → {selectedPackage?.endDate}
                             </span>
                         </div>
-                        <div className="add-members-row">
-                            <button className="add-btn">👥 Add Members</button>
-                        </div>
+                    )}
+                    <div className="group-actions-row">
+                        <button onClick={handleDeleteGroup} className="delete-btn">
+                            🗑️ Delete Group
+                        </button>
+                        <button onClick={() => navigate(`${ROUTES.EDIT_GROUP}/${_id}`)} className="edit-btn">
+                            ✏️ Edit Group Details
+                        </button>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

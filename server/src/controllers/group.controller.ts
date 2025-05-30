@@ -3,12 +3,11 @@ import { GroupService } from '../services/group.service';
 import { CreateGroupPayload } from '../models/group.model';
 
 export const groupController = {
-    // Create a new group
     createGroup: async (req: Request<any, any, CreateGroupPayload>, res: Response) => {
         try {
             const groupData = req.body;
-
-            const newGroup = await GroupService.createGroup(groupData);
+            const userId = req.userId;
+            const newGroup = await GroupService.createGroup(groupData, userId);
             res.status(201).send(newGroup);
         } catch (error) {
             res.status(500).send({ message: 'Error creating group', error });
@@ -46,8 +45,8 @@ export const groupController = {
         try {
             const { id } = req.params;
             const updateData = req.body;
-
-            const updatedGroup = await GroupService.updateGroup(id, updateData);
+            
+            const updatedGroup = await GroupService.updateGroup(id, { ...updateData, createdBy: req.userId });
 
             if (!updatedGroup) {
                 res.status(404).send({ message: 'Group not found' });

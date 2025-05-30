@@ -1,15 +1,19 @@
 import mongoose from 'mongoose';
-import { CreateGroupPayload, Group } from '../models/group.model';
+import { CreateGroupPayload, Group, UpdateGroupPayloadSchema } from '../models/group.model';
 import { GroupRepository } from '../repositories/group.repository';
 
 export const GroupService = {
-    async createGroup(groupData: CreateGroupPayload) {
+    async createGroup(groupData: CreateGroupPayload, userId?: string) {
         try {
-            const newGroup = await GroupRepository.create(groupData);
+            const newGroup = await GroupRepository.create({
+                ...groupData,
+                createdBy: userId ? new mongoose.Types.ObjectId(userId) : undefined,
+            });
             const populatedGroup = await GroupRepository.findById(newGroup._id)
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!populatedGroup) {
@@ -29,6 +33,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!group) return null;
@@ -45,6 +50,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
         } catch (error) {
             console.error(`Error fetching groups for user ${userId}:`, error);
@@ -54,10 +60,17 @@ export const GroupService = {
 
     async updateGroup(id: string, updateData: Partial<Group>) {
         try {
-            const updatedGroup = await GroupRepository.findByIdAndUpdate(id, updateData, { new: true })
+            const { data: parsedBody, error } = UpdateGroupPayloadSchema.safeParse(updateData);
+            if (error) {
+                throw new Error(`Invalid update data: ${error.message}`);
+            }
+            const updatedGroup = await GroupRepository.findByIdAndUpdate(id, parsedBody, {
+                new: true,
+            })
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -88,6 +101,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -104,6 +118,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
         } catch (error) {
             console.error(`Error fetching groups for package ${packageId}:`, error);
@@ -120,6 +135,7 @@ export const GroupService = {
             )
                 .populate('users')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -140,6 +156,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -160,6 +177,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -183,6 +201,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;
@@ -202,6 +221,7 @@ export const GroupService = {
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
+                .populate('createdBy')
                 .lean();
 
             if (!updatedGroup) return null;

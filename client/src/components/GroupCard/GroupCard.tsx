@@ -1,6 +1,6 @@
 import { Avatar, Tooltip, Typography } from 'antd';
 import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
-import { Group } from '@/models/group.model';
+import { PopulatedGroup } from '@/models/group.model';
 import { MatchDetails } from '@/components/MatchDetails/MatchDetails';
 import styles from './group-card.module.scss';
 import { ROUTES } from '@/constants/routes.const.ts';
@@ -12,7 +12,7 @@ import { Package } from '@/models/packages/package.model.ts';
 const { Title, Text } = Typography;
 
 interface GroupCardProps {
-    group: Group;
+    group: PopulatedGroup;
 }
 
 export const GroupCard = ({ group }: GroupCardProps) => {

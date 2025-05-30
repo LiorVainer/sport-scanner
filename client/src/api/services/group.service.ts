@@ -1,12 +1,12 @@
 import { axiosInstance } from '../config/axios-instance';
-import { CreateGroupPayload, Group, UpdateGroupPayload } from '@/models/group.model.ts';
+import { CreateGroupPayload, Group, PopulatedGroup, UpdateGroupPayload } from '@/models/group.model.ts';
 
 export const ROUTE_PREFIX = '/groups';
 
 export const GroupService = {
     async getById(groupId: string) {
         try {
-            const { data } = await axiosInstance.get<Group>(`${ROUTE_PREFIX}/${groupId}`);
+            const { data } = await axiosInstance.get<PopulatedGroup>(`${ROUTE_PREFIX}/${groupId}`);
 
             return data;
         } catch (error) {
@@ -17,7 +17,7 @@ export const GroupService = {
 
     async getAll() {
         try {
-            const { data } = await axiosInstance.get<Group[]>(`${ROUTE_PREFIX}/`);
+            const { data } = await axiosInstance.get<PopulatedGroup[]>(`${ROUTE_PREFIX}/`);
 
             return data;
         } catch (error) {
@@ -36,12 +36,22 @@ export const GroupService = {
         }
     },
 
-    async update(updatedGroup: Partial<UpdateGroupPayload> & { _id: string }) {
+    async update(groupId: string, updatedGroup: Partial<UpdateGroupPayload>) {
         try {
-            const { data } = await axiosInstance.put<Group>(`${ROUTE_PREFIX}/${updatedGroup._id}`, updatedGroup);
+            const { data } = await axiosInstance.put<Group>(`${ROUTE_PREFIX}/${groupId}`, updatedGroup);
             return data;
         } catch (error) {
             console.error('Error updating package:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async delete(groupId: string) {
+        try {
+            const { data } = await axiosInstance.delete<Group>(`${ROUTE_PREFIX}/${groupId}`);
+            return data;
+        } catch (error) {
+            console.error('Error deleting package:', (error as any).message);
             throw error;
         }
     },

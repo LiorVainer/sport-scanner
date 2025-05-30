@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { CalendarOutlined, DollarOutlined, EditOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import classes from './group-form-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -34,11 +34,11 @@ export const GroupFormScreen = () => {
         mutationKey: ['group', isEditMode ? 'create' : 'update'],
         mutationFn: async (formData: GroupFormValues) => {
             const newGroup: CreateGroupPayload = {
-                title: formData.groupName,
-                users: formData.members.concat(loggedInUser?._id!),
+                title: formData.title,
+                users: formData.users,
                 dates: {
-                    start: new Date(formData.tripDates[0]),
-                    end: new Date(formData.tripDates[1]),
+                    start: new Date(formData.dates[0]),
+                    end: new Date(formData.dates[1]),
                 },
                 maxBudget: formData.maxBudget,
             };
@@ -46,7 +46,7 @@ export const GroupFormScreen = () => {
             if (!isEditMode) {
                 return await GroupService.create(newGroup);
             } else {
-                return await GroupService.update({ ...formData, _id: groupId! });
+                return await GroupService.update(group?._id!, newGroup);
             }
         },
     });
@@ -55,10 +55,23 @@ export const GroupFormScreen = () => {
         control,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm<GroupFormValues>({
         resolver: zodResolver(GroupFormSchema),
-        defaultValues: group ?? GroupFormDefaultValues,
+        defaultValues: GroupFormDefaultValues, // always provide initial values
     });
+
+    // Reset when group data is loaded
+    useEffect(() => {
+        if (group) {
+            reset({
+                title: group.title,
+                users: group.users.map((user) => user._id), //! NEED TO SHOW NAMES 
+                dates: [new Date(group.dates.start).toISOString(), new Date(group.dates.end).toISOString()],
+                maxBudget: group.maxBudget,
+            });
+        }
+    }, [group, reset]);
 
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -80,13 +93,13 @@ export const GroupFormScreen = () => {
     const onSubmit = async (data: GroupFormValues) => {
         const group = await submitGroupForm(data); // TODO: get the group created?
 
-        navigate(`${ROUTES.GROUP_DETAILS}/{${group._id}`);
+        navigate(`${ROUTES.GROUP_DETAILS}/${group._id}`);
     };
 
     if (isEditMode) {
-        const isUserInGroup = group?.users?.find((user) => user._id === loggedInUser?._id);
+        const isUserCreatedTheGroup = group?.createdBy._id === loggedInUser?._id;
 
-        if (isUserInGroup) {
+        if (!isUserCreatedTheGroup) {
             return (
                 <div className={classes.container}>
                     <h1>You Are Not Part Of This Group</h1>
@@ -105,13 +118,13 @@ export const GroupFormScreen = () => {
                         <TextCursorInput size={18} className={classes.icon} /> Group Name
                     </label>
                     <Controller
-                        name="groupName"
+                        name="title"
                         control={control}
                         render={({ field }) => (
                             <Input {...field} className={classes.input} placeholder="Enter your group name" />
                         )}
                     />
-                    {errors.groupName && <p className={classes.error}>{errors.groupName.message}</p>}
+                    {errors.title && <p className={classes.error}>{errors.title.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -119,7 +132,7 @@ export const GroupFormScreen = () => {
                         <UsergroupAddOutlined className={classes.icon} /> Group Members
                     </label>
                     <Controller
-                        name="members"
+                        name="users"
                         control={control}
                         render={({ field }) => (
                             <Select
@@ -135,7 +148,7 @@ export const GroupFormScreen = () => {
                             />
                         )}
                     />
-                    {errors.members && <p className={classes.error}>{errors.members.message}</p>}
+                    {errors.users && <p className={classes.error}>{errors.users.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -143,7 +156,7 @@ export const GroupFormScreen = () => {
                         <CalendarOutlined className={classes.icon} /> Preferred Trip Dates
                     </label>
                     <Controller
-                        name="tripDates"
+                        name="dates"
                         control={control}
                         render={({ field }) => (
                             <RangePicker
@@ -165,7 +178,7 @@ export const GroupFormScreen = () => {
                             />
                         )}
                     />
-                    {errors.tripDates && <p className={classes.error}>{errors.tripDates.message}</p>}
+                    {errors.dates && <p className={classes.error}>{errors.dates.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -192,7 +205,7 @@ export const GroupFormScreen = () => {
                 </div>
 
                 <Button type="primary" htmlType="submit" icon={<EditOutlined />} className={classes.submitButton}>
-                    Create Group
+                    {isEditMode ? 'Update Group' : 'Create Group'}
                 </Button>
             </form>
         </div>

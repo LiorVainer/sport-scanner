@@ -23,6 +23,7 @@ export const GroupMongoSchema = new Schema<Group>(
         },
         suggestedPackages: [{ type: Schema.Types.ObjectId, ref: 'Packages', required: false }],
         selectedPackage: { type: Schema.Types.ObjectId, ref: 'Packages', required: false },
+        createdBy: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

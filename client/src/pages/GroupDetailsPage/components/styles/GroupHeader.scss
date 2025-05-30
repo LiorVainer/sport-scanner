@@ -1,109 +1,120 @@
 .group-header-box {
-  background: white;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-
-  .top-row {
+    background: white;
+    padding: 24px;
     display: flex;
-    justify-content: space-between;
-    align-items: stretch;
+    flex-direction: column;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 
-    .left {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-
-      h2 {
-        font-size: 18px;
-        font-weight: 600;
-      }
-
-      .members-label {
-        font-size: 14px;
-        font-weight: 500;
-      }
-
-      .avatars {
+    .top-row {
         display: flex;
-        align-items: center;
-        gap: 12px;
+        justify-content: space-between;
+        align-items: stretch;
 
-        .avatar-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          font-size: 12px;
+        .left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
 
-          img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-          }
+            h2 {
+                font-size: 18px;
+                font-weight: 600;
+            }
 
-          span {
-            margin-top: 4px;
-            max-width: 48px;
-            text-align: center;
-          }
+            .members-label {
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .avatars {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .avatar-block {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    font-size: 12px;
+
+                    img {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                    }
+
+                    span {
+                        margin-top: 4px;
+                        max-width: 48px;
+                        text-align: center;
+                    }
+                }
+
+                .add-avatar {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    background: #e0e0e0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+            }
         }
 
-        .add-avatar {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: #e0e0e0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
-          font-weight: bold;
-          cursor: pointer;
+        .right {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            .info-row {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                font-weight: 500;
+                color: #333;
+                gap: 16px;
+
+                .icon {
+                    font-size: 16px;
+                }
+
+                .text {
+                    white-space: nowrap;
+                }
+            }
+
+            .group-actions-row {
+                display: flex;
+                gap: 12px;
+                margin-top: auto;
+
+                .edit-btn,
+                .delete-btn {
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .edit-btn {
+                    background: #007bff;
+                    color: white;
+                }
+
+                .delete-btn {
+                    background: #dc3545; // Bootstrap red
+                    color: white;
+                }
+            }
         }
-      }
     }
-
-    .right {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: flex-end;
-
-      .info-row {
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        font-weight: 500;
-        color: #333;
-        gap: 16px;
-
-        .icon {
-          font-size: 16px;
-        }
-
-        .text {
-          white-space: nowrap;
-        }
-      }
-
-      .add-members-row {
-        margin-top: auto;
-
-        .add-btn {
-          background: #007bff;
-          color: white;
-          padding: 6px 12px;
-          border-radius: 6px;
-          font-size: 14px;
-          font-weight: 600;
-          border: none;
-          cursor: pointer;
-        }
-      }
-    }
-  }
 }
