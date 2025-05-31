@@ -31,11 +31,11 @@ export const GroupFormScreen = () => {
     });
 
     const { mutateAsync: submitGroupForm } = useMutation({
-        mutationKey: ['group', isEditMode ? 'create' : 'update'],
+        mutationKey: ['group', isEditMode ? 'update' : 'create'],
         mutationFn: async (formData: GroupFormValues) => {
             const newGroup: CreateGroupPayload = {
                 title: formData.title,
-                users: formData.users,
+                users: formData.users.map(({ value }) => value),
                 dates: {
                     start: new Date(formData.dates[0]),
                     end: new Date(formData.dates[1]),
@@ -66,7 +66,12 @@ export const GroupFormScreen = () => {
         if (group) {
             reset({
                 title: group.title,
-                users: group.users.map((user) => user._id), //! NEED TO SHOW NAMES 
+                users: group.users
+                    .filter((user) => user._id !== loggedInUser?._id)
+                    .map((user) => ({
+                        value: user._id,
+                        label: user.username,
+                    })),
                 dates: [new Date(group.dates.start).toISOString(), new Date(group.dates.end).toISOString()],
                 maxBudget: group.maxBudget,
             });
@@ -83,17 +88,23 @@ export const GroupFormScreen = () => {
 
     const userOptions = useMemo(
         () =>
-            usersData.map((user) => ({
-                label: user.username,
-                value: user._id,
-            })),
+            usersData
+                .filter((user) => user._id !== loggedInUser?._id)
+                .map((user) => ({
+                    label: user.username,
+                    value: user._id,
+                })),
         [usersData]
     );
 
     const onSubmit = async (data: GroupFormValues) => {
-        const group = await submitGroupForm(data); // TODO: get the group created?
+        const group = await submitGroupForm(data);
 
         navigate(`${ROUTES.GROUP_DETAILS}/${group._id}`);
+    };
+
+    const onError = (errors: any) => {
+        console.error('Validation errors:', errors);
     };
 
     if (isEditMode) {
@@ -112,7 +123,7 @@ export const GroupFormScreen = () => {
         <div className={classes.container}>
             <h1>{isEditMode ? 'Edit Group' : 'Create Your Group for the Ultimate Sports Experience'}</h1>
 
-            <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <form onSubmit={handleSubmit(onSubmit, onError)} className={classes.form}>
                 <div className={classes.formItem}>
                     <label className={classes.formTitle}>
                         <TextCursorInput size={18} className={classes.icon} /> Group Name
@@ -144,6 +155,7 @@ export const GroupFormScreen = () => {
                                 className={classes.input}
                                 onSearch={(value) => setSearchTerm(value)}
                                 filterOption={false}
+                                labelInValue
                                 options={userOptions}
                             />
                         )}

@@ -5,6 +5,12 @@ import { GroupRepository } from '../repositories/group.repository';
 export const GroupService = {
     async createGroup(groupData: CreateGroupPayload, userId?: string) {
         try {
+            const { users } = groupData;
+
+            if (!users.includes(new mongoose.Types.ObjectId(userId))) {
+                users.push(new mongoose.Types.ObjectId(userId));
+            }
+
             const newGroup = await GroupRepository.create({
                 ...groupData,
                 createdBy: userId ? new mongoose.Types.ObjectId(userId) : undefined,
@@ -58,12 +64,18 @@ export const GroupService = {
         }
     },
 
-    async updateGroup(id: string, updateData: Partial<Group>) {
+    async updateGroup(id: string, updateData: Partial<Group>,userId?: string) {
         try {
             const { data: parsedBody, error } = UpdateGroupPayloadSchema.safeParse(updateData);
             if (error) {
                 throw new Error(`Invalid update data: ${error.message}`);
             }
+
+            const { users } = parsedBody;
+            if (users && !users.includes(new mongoose.Types.ObjectId(userId))) {
+                users.push(new mongoose.Types.ObjectId(userId));
+            }
+
             const updatedGroup = await GroupRepository.findByIdAndUpdate(id, parsedBody, {
                 new: true,
             })

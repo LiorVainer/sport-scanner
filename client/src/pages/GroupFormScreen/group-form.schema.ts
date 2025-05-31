@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const GroupFormSchema = z.object({
     title: z.string().min(1, 'title is required'),
-    users: z.array(z.string()).min(1, 'At least one user is required'),
+    users: z.array(z.object({ value: z.string(), label: z.string() })).min(1, 'At least one user is required'),
     dates: z.tuple([z.string().min(1), z.string().min(1)]).refine(([start, end]) => !!start && !!end, {
         message: 'date range is required',
     }),
