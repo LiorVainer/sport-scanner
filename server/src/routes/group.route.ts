@@ -374,7 +374,7 @@ router.post('/:groupId/vote/:packageId', authMiddleware, groupController.voteFor
  * @swagger
  * /groups/{groupId}/vote:
  *   delete:
- *     summary: Remove a vote from a group
+ *     summary: unvote for a package in a group
  *     tags: [Groups]
  *     security:
  *       - BearerAuth: []
@@ -385,9 +385,9 @@ router.post('/:groupId/vote/:packageId', authMiddleware, groupController.voteFor
  *         schema:
  *           type: string
  *         description: Group ID
- *     responses:
+ *    responses:
  *       200:
- *         description: Vote removed successfully
+ *         description: UnVoted for package successfully
  *       401:
  *         description: Authentication required
  *       404:
@@ -395,6 +395,6 @@ router.post('/:groupId/vote/:packageId', authMiddleware, groupController.voteFor
  *       500:
  *         description: Server error
  */
-router.delete('/:groupId/vote', authMiddleware, groupController.removeVote);
+router.delete('/:groupId/vote', authMiddleware, groupController.unVoteForPackage);
 
 export default router;

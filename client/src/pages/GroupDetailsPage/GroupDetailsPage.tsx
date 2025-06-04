@@ -1,14 +1,13 @@
-import React from 'react';
 import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
 import GroupPackageCard from './components/GroupPackageCard';
 import PackageVoting from './components/PackageVoting';
 import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GroupService } from '@/api/services/group.service';
 
-const GroupDetailsPage: React.FC = () => {
+const GroupDetailsPage = () => {
     const { groupId } = useParams<{ groupId: string }>();
 
     const { data: group, isLoading } = useQuery({
@@ -27,6 +26,7 @@ const GroupDetailsPage: React.FC = () => {
     if (!group) {
         return <div>Group data not available.</div>;
     }
+
     const { selectedPackage, suggestedPackages, users, suggestedPackagesVotes } = group;
 
     const voteCounts =
@@ -44,8 +44,24 @@ const GroupDetailsPage: React.FC = () => {
         return 0;
     });
 
-    const handleVote = (userId: string, packageId: number) => {
-        // TODO: Implement vote handling logic
+    const queryClient = useQueryClient();
+
+    const voteMutation = useMutation({
+        mutationFn: ({ packageId, operation }: { packageId: string; operation: 'vote' | 'unvote' }) => {
+            return operation === 'vote'
+                ? GroupService.vote(groupId!, packageId)
+                : GroupService.unVote(groupId!);
+        },
+        onSuccess: (updatedGroup) => {
+            queryClient.setQueryData(['group', groupId], updatedGroup);
+        },
+        onError: (error) => {
+            console.error('Error while voting:', error);
+        },
+    });
+
+    const handleVoting = (packageId: string, operation: 'vote' | 'unvote') => {
+        voteMutation.mutate({ packageId, operation });
     };
 
     return (
@@ -65,7 +81,7 @@ const GroupDetailsPage: React.FC = () => {
                                         ? Object.entries(suggestedPackagesVotes).some(([_, v]) => v === pkg._id)
                                         : false
                                 }
-                                onVote={(userId) => handleVote(userId, Number(pkg._id))}
+                                handleVoting={(operation: 'vote' | 'unvote') => handleVoting(pkg._id, operation)}
                             />
                         ))}
                 </div>

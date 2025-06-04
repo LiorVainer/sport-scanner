@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { PublicUserSchema } from './user.model';
 import { zodDate } from '@/utils/zod.utils.ts';
-import { PackageSchema } from './packages/package.model';
+import { PackageWithIdSchema } from './packages/package.model';
 
 export const GroupSchema = z.object({
     _id: z.string(),
@@ -36,8 +36,8 @@ export const PopulatedGroupSchema = z.object({
         .record(z.string(), z.string())
         .optional()
         .describe('Votes for the selected package, mapping user IDs to package IDs'),
-    suggestedPackages: PackageSchema.array().describe('List of suggested travel packages').default([]),
-    selectedPackage: PackageSchema.optional().describe('Selected travel package for the group'),
+    suggestedPackages: PackageWithIdSchema.array().describe('List of suggested travel packages').default([]),
+    selectedPackage: PackageWithIdSchema.optional().describe('Selected travel package for the group'),
     createdAt: zodDate,
     updatedAt: zodDate,
     createdBy: PublicUserSchema.describe('User who created the group'),

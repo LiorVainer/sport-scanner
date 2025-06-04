@@ -64,7 +64,7 @@ export const GroupService = {
         }
     },
 
-    async updateGroup(id: string, updateData: Partial<Group>,userId?: string) {
+    async updateGroup(id: string, updateData: Partial<Group>, userId?: string) {
         try {
             const { data: parsedBody, error } = UpdateGroupPayloadSchema.safeParse(updateData);
             if (error) {
@@ -224,10 +224,11 @@ export const GroupService = {
         }
     },
 
-    async removeVote(groupId: string, userId: string) {
+    async unVoteForPackage(groupId: string, userId: string) {
         try {
             const updateKey = `suggestedPackagesVotes.${userId}`;
-            const updateOperation = { $unset: { [updateKey]: 1 } };
+
+            const updateOperation = { $unset: { [updateKey]: "" } };
 
             const updatedGroup = await GroupRepository.findByIdAndUpdate(groupId, updateOperation, { new: true })
                 .populate('users')
