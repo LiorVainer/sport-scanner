@@ -37,11 +37,10 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
                         `Generated ${newProgressStep.packages.length} packages for you in ${(newProgressStep.durationMs / 1000).toFixed(2)} seconds`
                     );
                     setHideProgressTimeline(true);
+                    console.log('Generated packages:', newProgressStep.packages);
+                    setPackages(newProgressStep.packages);
                 }
             }),
-        onSuccess: (data) => {
-            setPackages(data);
-        },
         retry: false,
     });
 

@@ -55,4 +55,16 @@ export const GroupService = {
             throw error;
         }
     },
+
+    async generateSuggestedPackages(groupId: string) {
+        try {
+            const { data } = await axiosInstance.post<PopulatedGroup>(
+                `${ROUTE_PREFIX}/${groupId}/generate-suggested-packages`
+            );
+            return data;
+        } catch (error) {
+            console.error('Error generating suggested packages:', (error as any).message);
+            throw error;
+        }
+    },
 } satisfies Record<string, (...args: any[]) => Promise<any>>;

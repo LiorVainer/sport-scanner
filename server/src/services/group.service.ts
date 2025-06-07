@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import { CreateGroupPayload, Group, UpdateGroupPayloadSchema } from '../models/group.model';
 import { GroupRepository } from '../repositories/group.repository';
+import { packageService } from './package.service';
+import { PackageRepository } from '../repositories/package.repository';
+import { PublicUser } from '../models/user.model';
+import { PackagesGenerationParams } from '../models/packages/package-generate-params.model';
 
 export const GroupService = {
     async createGroup(groupData: CreateGroupPayload, userId?: string) {
@@ -64,7 +68,7 @@ export const GroupService = {
         }
     },
 
-    async updateGroup(id: string, updateData: Partial<Group>,userId?: string) {
+    async updateGroup(id: string, updateData: Partial<Group>, userId?: string) {
         try {
             const { data: parsedBody, error } = UpdateGroupPayloadSchema.safeParse(updateData);
             if (error) {
@@ -240,6 +244,70 @@ export const GroupService = {
             return updatedGroup;
         } catch (error) {
             console.error(`Error removing vote for user ${userId} in group ${groupId}:`, error);
+            throw error;
+        }
+    },
+
+    async generateSuggestedPackagesForGroup(groupId: string) {
+        try {
+            const group = await GroupRepository.findById(groupId).populate('users').lean();
+
+            if (!group) {
+                console.error(`Group ${groupId} not found`);
+                return null;
+            }
+
+            const groupUsers = group.users as unknown as PublicUser[];
+
+            if (!groupUsers.length) {
+                console.error(`No users found for group ${groupId}`);
+                return null;
+            }
+
+            const allFavoriteTeams = groupUsers.flatMap((user) => user.favoriteTeams || []);
+
+            const userWithHomeAirport = groupUsers.find((user) => user.homeAirport);
+            const originIATA = userWithHomeAirport?.homeAirport?.iataCode || 'TLV';
+
+            if (allFavoriteTeams.length === 0) {
+                console.error(`No favorite teams found for users in group ${groupId}`);
+                return null;
+            }
+
+            const searchParams: PackagesGenerationParams = {
+                teams: allFavoriteTeams.map((team) => ({ id: team.id, name: team.name })),
+                originIATA,
+                date: {
+                    from: group.dates.start,
+                    to: group.dates.end,
+                },
+                price: {
+                    min: 0,
+                    max: group.maxBudget,
+                },
+            };
+
+            const generatedPackages = await packageService.generatePackages({
+                searchParams,
+                maxAmountOfPackages: 3,
+            });
+
+            if (!generatedPackages || generatedPackages.length === 0) {
+                console.error(`No packages generated for group ${groupId}`);
+                return null;
+            }
+
+            const savedPackages = await PackageRepository.insertMany(generatedPackages);
+            const packageIds = savedPackages.map((pkg) => pkg._id);
+
+            return await GroupRepository.findByIdAndUpdate(groupId, { suggestedPackages: packageIds }, { new: true })
+                .populate('users')
+                .populate('selectedPackage')
+                .populate('suggestedPackages')
+                .populate('createdBy')
+                .lean();
+        } catch (error) {
+            console.error(`Error generating packages for group ${groupId}:`, error);
             throw error;
         }
     },

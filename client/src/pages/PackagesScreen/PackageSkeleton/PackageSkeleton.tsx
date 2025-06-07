@@ -1,37 +1,53 @@
-import {Skeleton} from 'antd';
+import { Skeleton } from 'antd';
+import clsx from 'clsx';
 import styles from './package-skeleton.module.scss';
 
-export const PackageSkeleton = () => {
-    return (
-        <>
-            {Array.from({length: 3}).map((_, index) => (
-                <div className={styles.skeletonCard} key={index}>
-                    <div className={styles.skeletonMatches}>
+interface PackageSkeletonProps {
+    variant?: 'full' | 'compact';
+}
 
-                        <div className={styles.matchItem}>
-                            <div className={styles.matchTop}>
-                                <Skeleton.Input style={{height: 20, width: 30}} active/>
-                                <Skeleton.Input style={{height: 20, width: 30}} active/>
-                            </div>
-                            <div className={styles.matchItemMain}>
-                                <div className={styles.teamsLogos}>
-                                    <Skeleton.Avatar shape="square" size={100} active/>
-                                    <Skeleton.Avatar shape="square" size={100} active/>
-                                </div>
-                                <div className={styles.matchHeader}>
-                                    <Skeleton.Input style={{height: 20, width: 100}} active/>
-                                    <Skeleton.Input style={{height: 20, width: 250}} active/>
-                                    <Skeleton.Input style={{height: 20, width: 200, marginTop: 20}} active/>
-                                </div>
-                            </div>
+export const PackageSkeleton = ({ variant = 'full' }: PackageSkeletonProps) => {
+    const isCompact = variant === 'compact';
+    const avatarSize = isCompact ? 60 : 100;
+    const inputHeight = isCompact ? 16 : 20;
+    const smallW = isCompact ? 24 : 30;
+    const medW = isCompact ? 80 : 100;
+    const largeW = isCompact ? 150 : 250;
+    const footerW1 = isCompact ? 120 : 200;
+    const footerW2 = isCompact ? 90 : 120;
+
+    return (
+        <div className={clsx(styles.skeletonCard, isCompact && styles.compactCard)}>
+            <div className={clsx(styles.skeletonMatches, isCompact && styles.compactMatches)}>
+                <div className={styles.matchItem}>
+                    <div className={styles.matchTop}>
+                        <Skeleton.Input active style={{ height: inputHeight, width: smallW }} />
+                        <Skeleton.Input active style={{ height: inputHeight, width: smallW }} />
+                    </div>
+                    <div className={styles.matchItemMain}>
+                        <div className={styles.teamsLogos}>
+                            <Skeleton.Avatar shape="square" size={avatarSize} active />
+                            <Skeleton.Avatar shape="square" size={avatarSize} active />
+                        </div>
+                        <div className={styles.matchHeader}>
+                            <Skeleton.Input active style={{ height: inputHeight, width: medW }} />
+                            <Skeleton.Input active style={{ height: inputHeight, width: largeW }} />
+                            <Skeleton.Input
+                                active
+                                style={{
+                                    height: inputHeight,
+                                    width: largeW - 50,
+                                    marginTop: isCompact ? 12 : 20,
+                                }}
+                            />
                         </div>
                     </div>
-                    <div className={styles.skeletonFooter}>
-                        <Skeleton.Button style={{width: 200}} active/>
-                        <Skeleton.Button style={{width: 120, marginLeft: 'auto'}} active/>
-                    </div>
                 </div>
-            ))}
-        </>
+            </div>
+            <div className={clsx(styles.skeletonFooter, isCompact && styles.compactFooter)}>
+                <Skeleton.Button active style={{ width: footerW1 }} />
+                <Skeleton.Button active style={{ width: footerW2, marginLeft: 'auto' }} />
+            </div>
+        </div>
     );
 };

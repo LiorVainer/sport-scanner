@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
-import GroupPackageCard from './components/GroupPackageCard';
 import PackageVoting from './components/PackageVoting';
 import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GroupService } from '@/api/services/group.service';
+import { PackageCard } from '@components/PackageCard';
+import { PackageSkeleton } from '@pages/PackagesScreen/PackageSkeleton';
+import { Button } from 'antd';
+import { Shuffle, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 const GroupDetailsPage: React.FC = () => {
     const { groupId } = useParams<{ groupId: string }>();
+    const queryClient = useQueryClient();
 
     const { data: group, isLoading } = useQuery({
         queryKey: ['group', groupId],
@@ -19,6 +23,32 @@ const GroupDetailsPage: React.FC = () => {
         },
         enabled: !!groupId,
     });
+
+    const { mutateAsync: generateSuggestedPackages, isPending: isGeneratingSuggestedPackages } = useMutation({
+        mutationKey: ['generate-group-suggested-packages', groupId],
+        mutationFn: async () => {
+            if (!groupId) throw new Error('Group ID is required');
+            return GroupService.generateSuggestedPackages(groupId);
+        },
+        onSuccess: () => {
+            void queryClient.refetchQueries({ queryKey: ['group', groupId] });
+        },
+        retry: 0,
+    });
+
+    const generationTriggered = useRef(false);
+
+    useEffect(() => {
+        if (
+            groupId &&
+            !generationTriggered.current &&
+            group &&
+            (!group?.suggestedPackages || group.suggestedPackages.length === 0)
+        ) {
+            generationTriggered.current = true;
+            void generateSuggestedPackages();
+        }
+    }, [groupId, group?.suggestedPackages, generateSuggestedPackages]);
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -44,30 +74,47 @@ const GroupDetailsPage: React.FC = () => {
         return 0;
     });
 
-    const handleVote = (userId: string, packageId: number) => {
-        // TODO: Implement vote handling logic
-    };
-
     return (
         <div className="group-details">
             <div className="content-wrapper">
                 <GroupHeader group={group} />
-                <h3 className="section-title">Tailored Packages for Your Group</h3>
-                <div className="packages-grid">
-                    {suggestedPackages &&
-                        suggestedPackages.length > 0 &&
-                        suggestedPackages.map((pkg) => (
-                            <GroupPackageCard
-                                key={pkg._id}
-                                pkg={pkg}
-                                isVoted={
-                                    suggestedPackagesVotes
-                                        ? Object.entries(suggestedPackagesVotes).some(([_, v]) => v === pkg._id)
-                                        : false
-                                }
-                                onVote={(userId) => handleVote(userId, Number(pkg._id))}
-                            />
-                        ))}
+
+                <div className="suggested-packages-container">
+                    <div className="suggested-packages-header">
+                        <h3 className="section-title">Tailored Packages for Your Group</h3>
+                        <Button
+                            className="regenerate-packages-button"
+                            icon={<Shuffle size={16} />}
+                            type="primary"
+                            onClick={() => generateSuggestedPackages()}
+                        >
+                            Suggest New Packages
+                        </Button>
+                    </div>
+                    <div className="packages-grid">
+                        {isGeneratingSuggestedPackages
+                            ? Array.from({ length: 4 }).map((_, index) => (
+                                  <PackageSkeleton key={index} variant={'compact'} />
+                              ))
+                            : suggestedPackages &&
+                              suggestedPackages.length > 0 &&
+                              suggestedPackages.map((pkg) => {
+                                  const hasVoted = false;
+                                  return (
+                                      <div className="package-new-card" key={pkg._id}>
+                                          <Button
+                                              className="vote-button"
+                                              type="primary"
+                                              icon={hasVoted ? <ThumbsDown size={16} /> : <ThumbsUp size={16} />}
+                                              onClick={() => {}}
+                                          >
+                                              {hasVoted ? 'Unvote' : 'Vote'}
+                                          </Button>
+                                          <PackageCard variant="compact" singlePackage={pkg} />
+                                      </div>
+                                  );
+                              })}
+                    </div>
                 </div>
                 <PackageVoting percentages={votePercentages} />
                 {selectedPackage && <ChosenPackageTimeline pkg={selectedPackage} backRoute="/group/group_id" />}
