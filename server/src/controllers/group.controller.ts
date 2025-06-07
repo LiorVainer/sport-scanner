@@ -193,12 +193,12 @@ export const groupController = {
         }
     },
 
-    removeVote: async (req: Request, res: Response) => {
+    unVoteForPackage: async (req: Request, res: Response) => {
         try {
             const { groupId } = req.params;
             const userId = req.userId!;
 
-            const updatedGroup = await GroupService.removeVote(groupId, userId);
+            const updatedGroup = await GroupService.unVoteForPackage(groupId, userId);
 
             if (!updatedGroup) {
                 res.status(404).send({ message: 'Group not found' });
@@ -207,7 +207,7 @@ export const groupController = {
 
             res.status(200).send(updatedGroup);
         } catch (error) {
-            res.status(500).send({ message: 'Error removing vote', error });
+            res.status(500).send({ message: 'Error unVoting for package', error });
         }
     },
 };

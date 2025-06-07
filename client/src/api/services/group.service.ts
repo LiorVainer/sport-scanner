@@ -56,6 +56,26 @@ export const GroupService = {
         }
     },
 
+    async vote(groupId: string, packageId: string) {
+        try {
+            const { data } = await axiosInstance.post<PopulatedGroup>(`${ROUTE_PREFIX}/${groupId}/vote/${packageId}`);
+            return data;
+        } catch (error) {
+            console.error('Error voting for package:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async unVote(groupId: string) {
+        try {
+            const { data } = await axiosInstance.delete<PopulatedGroup>(`${ROUTE_PREFIX}/${groupId}/vote`);
+            return data;
+        } catch (error) {
+            console.error('Error unvoting for package:', (error as any).message);
+            throw error;
+        }
+    },
+
     async generateSuggestedPackages(groupId: string) {
         try {
             const { data } = await axiosInstance.post<PopulatedGroup>(

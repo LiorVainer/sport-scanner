@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
 import PackageVoting from './components/PackageVoting';
@@ -8,12 +8,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GroupService } from '@/api/services/group.service';
 import { PackageCard } from '@components/PackageCard';
 import { PackageSkeleton } from '@pages/PackagesScreen/PackageSkeleton';
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import { Shuffle, ThumbsDown, ThumbsUp } from 'lucide-react';
 
-const GroupDetailsPage: React.FC = () => {
+const GroupDetailsPage = () => {
     const { groupId } = useParams<{ groupId: string }>();
     const queryClient = useQueryClient();
+    const generationTriggered = useRef(false);
 
     const { data: group, isLoading } = useQuery({
         queryKey: ['group', groupId],
@@ -24,7 +25,7 @@ const GroupDetailsPage: React.FC = () => {
         enabled: !!groupId,
     });
 
-    const { mutateAsync: generateSuggestedPackages, isPending: isGeneratingSuggestedPackages } = useMutation({
+    const generatePackagesMutation = useMutation({
         mutationKey: ['generate-group-suggested-packages', groupId],
         mutationFn: async () => {
             if (!groupId) throw new Error('Group ID is required');
@@ -36,19 +37,33 @@ const GroupDetailsPage: React.FC = () => {
         retry: 0,
     });
 
-    const generationTriggered = useRef(false);
-
     useEffect(() => {
         if (
             groupId &&
-            !generationTriggered.current &&
             group &&
-            (!group?.suggestedPackages || group.suggestedPackages.length === 0)
+            !generationTriggered.current &&
+            (!group.suggestedPackages || group.suggestedPackages.length === 0)
         ) {
             generationTriggered.current = true;
-            void generateSuggestedPackages();
+            generatePackagesMutation.mutate();
         }
-    }, [groupId, group?.suggestedPackages, generateSuggestedPackages]);
+    }, [groupId, group]);
+
+    const voteMutation = useMutation({
+        mutationFn: ({ packageId, operation }: { packageId: string; operation: 'vote' | 'unvote' }) => {
+            return operation === 'vote' ? GroupService.vote(groupId!, packageId) : GroupService.unVote(groupId!);
+        },
+        onSuccess: (updatedGroup) => {
+            queryClient.setQueryData(['group', groupId], updatedGroup);
+        },
+        onError: (error) => {
+            console.error('Error while voting:', error);
+        },
+    });
+
+    const handleVoting = (packageId: string, operation: 'vote' | 'unvote') => {
+        voteMutation.mutate({ packageId, operation });
+    };
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -57,6 +72,7 @@ const GroupDetailsPage: React.FC = () => {
     if (!group) {
         return <div>Group data not available.</div>;
     }
+
     const { selectedPackage, suggestedPackages, users, suggestedPackagesVotes } = group;
 
     const voteCounts =
@@ -66,13 +82,14 @@ const GroupDetailsPage: React.FC = () => {
             return acc;
         }, {});
 
-    const votePercentages = suggestedPackages.map((pkg) => {
-        if (voteCounts) {
-            const count = voteCounts[pkg._id] || 0;
-            return Math.round((count / users.length) * 100);
-        }
-        return 0;
-    });
+    const votePercentages =
+        suggestedPackages?.map((pkg) => {
+            if (voteCounts) {
+                const count = voteCounts[pkg._id] || 0;
+                return Math.round((count / users.length) * 100);
+            }
+            return 0;
+        }) || [];
 
     return (
         <div className="group-details">
@@ -86,38 +103,48 @@ const GroupDetailsPage: React.FC = () => {
                             className="regenerate-packages-button"
                             icon={<Shuffle size={16} />}
                             type="primary"
-                            onClick={() => generateSuggestedPackages()}
+                            loading={generatePackagesMutation.isPending}
+                            onClick={() => generatePackagesMutation.mutate()}
                         >
                             Suggest New Packages
                         </Button>
                     </div>
+
                     <div className="packages-grid">
-                        {isGeneratingSuggestedPackages
+                        {generatePackagesMutation.isPending
                             ? Array.from({ length: 4 }).map((_, index) => (
-                                  <PackageSkeleton key={index} variant={'compact'} />
+                                  <PackageSkeleton key={index} variant="compact" />
                               ))
-                            : suggestedPackages &&
-                              suggestedPackages.length > 0 &&
-                              suggestedPackages.map((pkg) => {
-                                  const hasVoted = false;
+                            : suggestedPackages?.length > 0 &&
+                              suggestedPackages.map((pkg, index) => {
+                                  const hasVoted = suggestedPackagesVotes
+                                      ? Object.values(suggestedPackagesVotes).includes(pkg._id)
+                                      : false;
                                   return (
                                       <div className="package-new-card" key={pkg._id}>
-                                          <Button
-                                              className="vote-button"
-                                              type="primary"
-                                              icon={hasVoted ? <ThumbsDown size={16} /> : <ThumbsUp size={16} />}
-                                              onClick={() => {}}
-                                          >
-                                              {hasVoted ? 'Unvote' : 'Vote'}
-                                          </Button>
+                                          <div className="package-card-header">
+                                              <Typography className="package-index">{`Package ${index + 1}`}</Typography>
+                                              <Button
+                                                  className="vote-button"
+                                                  type="primary"
+                                                  icon={hasVoted ? <ThumbsDown size={16} /> : <ThumbsUp size={16} />}
+                                                  onClick={() => handleVoting(pkg._id, hasVoted ? 'unvote' : 'vote')}
+                                              >
+                                                  {hasVoted ? 'Unvote' : 'Vote'}
+                                              </Button>
+                                          </div>
                                           <PackageCard variant="compact" singlePackage={pkg} />
                                       </div>
                                   );
                               })}
                     </div>
                 </div>
-                <PackageVoting percentages={votePercentages} />
-                {selectedPackage && <ChosenPackageTimeline pkg={selectedPackage} backRoute="/group/group_id" />}
+
+                {!generatePackagesMutation.isPending && suggestedPackages?.length > 0 && (
+                    <PackageVoting percentages={votePercentages} />
+                )}
+
+                {selectedPackage && <ChosenPackageTimeline pkg={selectedPackage} backRoute={`/group/${groupId}`} />}
             </div>
         </div>
     );

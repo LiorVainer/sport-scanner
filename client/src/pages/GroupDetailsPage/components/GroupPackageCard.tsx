@@ -1,7 +1,6 @@
 import React from 'react';
 import './styles/PackageCard.scss';
 import { PackageWithId } from '@/models/packages/package.model';
-import { useAuth } from '@/context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FireFilled, LikeOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
@@ -9,14 +8,12 @@ import { ROUTES } from '@/constants/routes.const.ts';
 
 interface Props {
     pkg: PackageWithId;
-    onVote: (userId: string) => void;
+    handleVoting: (operation: 'vote' | 'unvote') => void;
     isVoted: boolean;
     index: number;
 }
 
-const GroupPackageCard: React.FC<Props> = ({ pkg, onVote, isVoted, index }) => {
-    const { loggedInUser } = useAuth();
-    const currentUserId = loggedInUser?._id;
+const GroupPackageCard: React.FC<Props> = ({ pkg, handleVoting, isVoted, index }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -34,12 +31,11 @@ const GroupPackageCard: React.FC<Props> = ({ pkg, onVote, isVoted, index }) => {
                     className={`vote-btn ${isVoted ? 'voted' : ''}`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        if (!currentUserId) return;
-                        onVote(currentUserId);
+                        handleVoting(isVoted ? 'unvote' : 'vote');
                     }}
                 >
                     {isVoted ? <FireFilled style={{ marginRight: 6 }} /> : <LikeOutlined style={{ marginRight: 6 }} />}
-                    {isVoted ? 'Unvote' : 'Vote'}
+                    {isVoted ? 'unvote' : 'vote'}
                 </button>
             </div>
 
