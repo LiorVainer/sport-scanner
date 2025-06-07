@@ -6,10 +6,12 @@ import { FlightOffer, FlightOffersArraySchema } from '../models/flights/flight-o
 import { CitySearchParams } from '../models/geo.model';
 import { logger } from '../logs/logger';
 import { ProcessTypes } from '../models/log.model';
+import { tryCatch } from '../utils/try-catch.utils';
 
 const AmadeusClient = new Amadeus({
     clientId: ENV?.AMADEUS_API_KEY,
     clientSecret: ENV?.AMADEUS_API_SECRET,
+    hostname: ENV?.AMADEUS_API_TIER,
 });
 
 export const AmadeusService = {
@@ -23,12 +25,27 @@ export const AmadeusService = {
             searchParams: flightOffersSearchParams,
         });
 
-        const { data } = await AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams);
+        const { data: response, error } = await tryCatch(
+            AmadeusClient.shopping.flightOffersSearch.post(flightOffersSearchParams)
+        );
+
+        if (error) {
+            logger.remote.error(`Amadeus flight search error`, {
+                processType: ProcessTypes.SEARCH_FLIGHTS,
+                error,
+                searchParams: flightOffersSearchParams,
+            });
+
+            throw error;
+        }
+
+        const { data, request } = response;
 
         logger.remote.success(`Amadeus flight search response`, {
             processType: ProcessTypes.SEARCH_FLIGHTS,
             response: data,
             searchParams: flightOffersSearchParams,
+            request,
         });
 
         return FlightOffersArraySchema.optional().parse(data);
@@ -57,41 +74,49 @@ export const AmadeusService = {
         }
     },
 
-    buildFlightSearchRequest: (params: FlightSearchParams): FlightOffersSearchPostParams => ({
-        originDestinations: [
-            {
-                id: '1',
-                originLocationCode: params.origin,
-                destinationLocationCode: params.destination,
-                departureDateTimeRange: {
-                    date: params.dateFrom,
+    buildFlightSearchRequest: (params: FlightSearchParams): FlightOffersSearchPostParams => {
+        const originDestinationForOrigin = {
+            id: '1',
+            originLocationCode: params.origin,
+            destinationLocationCode: params.destination,
+            departureDateTimeRange: {
+                date: params.dateFrom,
+            },
+        };
+
+        const originDestinations = params.isRoundTrip
+            ? [
+                  originDestinationForOrigin,
+                  {
+                      id: '2',
+                      originLocationCode: params.destination,
+                      destinationLocationCode: params.origin,
+                      departureDateTimeRange: {
+                          date: params.dateTo,
+                      },
+                  },
+              ]
+            : [originDestinationForOrigin];
+
+        return {
+            originDestinations,
+            travelers: [
+                {
+                    id: '1',
+                    travelerType: 'ADULT',
+                },
+            ],
+            sources: ['GDS'],
+            currencyCode: ENV.CURRENCY_CODE as CurrencyCode,
+            searchCriteria: {
+                maxPrice: params.maxPrice,
+                maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_REQUEST,
+                flightFilters: {
+                    returnToDepartureAirport: params.isRoundTrip,
                 },
             },
-            {
-                id: '2',
-                originLocationCode: params.destination,
-                destinationLocationCode: params.origin,
-                departureDateTimeRange: {
-                    date: params.dateTo,
-                },
-            },
-        ],
-        travelers: [
-            {
-                id: '1',
-                travelerType: 'ADULT',
-            },
-        ],
-        sources: ['GDS'],
-        currencyCode: ENV.CURRENCY_CODE as CurrencyCode,
-        searchCriteria: {
-            maxPrice: params.maxPrice,
-            maxFlightOffers: ENV.MAX_FLIGHT_OFFERS_PER_REQUEST,
-            flightFilters: {
-                returnToDepartureAirport: params.isRoundTrip,
-            },
-        },
-    }),
+        };
+    },
 
     findPriceRange: (offers: FlightOffer[]) => {
         if (!offers.length) {

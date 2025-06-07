@@ -6,18 +6,19 @@ import styles from './package-details-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils';
 import { PackageDocument, PackageTimelineItemType } from '@/models/packages/package.model.ts';
 import { FlightCard } from './FlightCard/FlightCard';
-import { ROUTES } from '@/constants/routes.const.ts';
 import { useQuery } from '@tanstack/react-query';
 import { PackageService } from '@/api/services/package.service';
 import { UsersService } from '@/api/services/users.service';
 import { DestinationCard } from '@pages/PackageDetailsScreen/DestinationCard';
+import { useNavigate } from 'react-router';
 
 const { Title, Text } = Typography;
 
 export const PackageDetailsScreen = () => {
     const { packageId } = useParams<{ packageId: string }>();
     const location = useLocation();
-    const backRoute = (location.state as { backRoute?: string })?.backRoute || `${ROUTES.HOME}`;
+    const backRoute = (location.state as { backRoute?: string })?.backRoute;
+    const navigate = useNavigate();
 
     const {
         data: singlePackage,
@@ -71,9 +72,15 @@ export const PackageDetailsScreen = () => {
             ) : (
                 <>
                     <div className={styles.packageHeader}>
-                        <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
-                            <ArrowLeftOutlined className={styles.backIcon} />
-                        </Link>
+                        {backRoute ? (
+                            <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
+                                <ArrowLeftOutlined className={styles.backIcon} />
+                            </Link>
+                        ) : (
+                            <div className={styles.backArrow} onClick={() => navigate(-1)}>
+                                <ArrowLeftOutlined className={styles.backIcon} />
+                            </div>
+                        )}
 
                         <div className={styles.packageInfo}>
                             <Title className={styles.packageTitle}>{singlePackage.title}</Title>

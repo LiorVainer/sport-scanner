@@ -31,11 +31,9 @@ export const PackagesScreen = () => {
     return (
         <Screen className={styles.page}>
             <PackagesGenerationProgressTimeline />
-            {isLoading ? (
-                <PackageSkeleton />
-            ) : (
-                packages?.map((singlePackage) => <PackageCard singlePackage={singlePackage} />)
-            )}
+            {isLoading
+                ? Array.from({ length: 3 }).map((_, index) => <PackageSkeleton key={index} />)
+                : packages?.map((singlePackage) => <PackageCard singlePackage={singlePackage} />)}
         </Screen>
     );
 };

@@ -64,7 +64,7 @@ export const EnvSchema = z.object({
     // =======================
     AMADEUS_API_KEY: z.string(),
     AMADEUS_API_SECRET: z.string(),
-    AMADEUS_API_URL: z.string().url({ message: 'AMADEUS_API_URL must be a valid URL' }),
+    AMADEUS_API_TIER: z.enum(['test', 'production']).default('test'),
 
     // =======================
     // 🔍 Google OAuth Configuration
@@ -92,10 +92,15 @@ export const EnvSchema = z.object({
     // =======================
     // 🔄 Flight & Fixture Search Configuration
     // =======================
-    FLIGHT_DATE_OFFSET_DAYS: z.coerce
+    FLIGHT_DATE_OFFSET_DAYS_BEFORE_FIXTURE: z.coerce
         .number()
         .int()
-        .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS must be a positive integer' }),
+        .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS_BEFORE_FIXTURE must be a positive integer' }),
+
+    FLIGHT_DATE_OFFSET_DAYS_BACK_HOME: z.coerce
+        .number()
+        .int()
+        .min(1, { message: 'FLIGHT_DATE_OFFSET_DAYS_BACK_HOME must be a positive integer' }),
 
     FLIGHT_SEARCH_CONCURRENCY_LIMIT: z.coerce
         .number()
