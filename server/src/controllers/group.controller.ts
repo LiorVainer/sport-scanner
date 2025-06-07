@@ -150,6 +150,31 @@ export const groupController = {
         }
     },
 
+    generateSuggestedPackages: async (req: Request, res: Response) => {
+        try {
+            const { groupId } = req.params;
+
+            // Call the service method to generate packages based on group members' preferred teams
+            const updatedGroup = await GroupService.generateSuggestedPackagesForGroup(groupId);
+
+            if (!updatedGroup) {
+                res.status(404).send({
+                    message:
+                        'Could not generate packages for the group. Ensure the group exists and members have favorite teams selected.',
+                });
+                return;
+            }
+
+            res.status(200).send(updatedGroup);
+        } catch (error) {
+            console.error('Error generating suggested packages:', error);
+            res.status(500).send({
+                message: 'Error generating suggested packages for group',
+                error: error instanceof Error ? error.message : String(error),
+            });
+        }
+    },
+
     voteForPackage: async (req: Request, res: Response) => {
         try {
             const { groupId, packageId } = req.params;

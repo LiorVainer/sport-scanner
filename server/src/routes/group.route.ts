@@ -370,6 +370,8 @@ router.delete('/:groupId/suggested-package/:packageId', authMiddleware, groupCon
  */
 router.post('/:groupId/vote/:packageId', authMiddleware, groupController.voteForPackage);
 
+router.post('/:groupId/generate-suggested-packages', authMiddleware, groupController.generateSuggestedPackages);
+
 /**
  * @swagger
  * /groups/{groupId}/vote:

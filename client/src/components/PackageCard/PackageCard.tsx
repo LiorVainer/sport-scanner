@@ -1,6 +1,5 @@
 import styles from './package-card.module.scss';
 import { PackageFooter } from '@pages/PackagesScreen/PackageFooter';
-import { ROUTES } from '@/constants/routes.const.ts';
 import { useMemo } from 'react';
 import { Destination, Package } from '@/models/packages/package.model';
 import { DestinationSection } from '@components/DestinationSection';
@@ -24,7 +23,7 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full' }: Pack
                     <DestinationSection destination={destination} variant={variant} />
                 ))}
             </div>
-            <PackageFooter singlePackage={singlePackage} backRoute={backRoute ?? ROUTES.PACKAGES} />
+            <PackageFooter singlePackage={singlePackage} backRoute={backRoute} />
         </div>
     );
 };

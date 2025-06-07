@@ -4,19 +4,21 @@ import { PackageWithId } from '@/models/packages/package.model';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FireFilled, LikeOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
+import { ROUTES } from '@/constants/routes.const.ts';
 
 interface Props {
     pkg: PackageWithId;
     handleVoting: (operation: 'vote' | 'unvote') => void;
     isVoted: boolean;
+    index: number;
 }
 
-const GroupPackageCard: React.FC<Props> = ({ pkg, handleVoting, isVoted }) => {
+const GroupPackageCard: React.FC<Props> = ({ pkg, handleVoting, isVoted, index }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleDetailsClick = () => {
-        navigate(`/package/${pkg._id}`, {
+        navigate(`/${ROUTES.PACKAGES}/${pkg._id}`, {
             state: { backRoute: location.pathname },
         });
     };
@@ -24,7 +26,7 @@ const GroupPackageCard: React.FC<Props> = ({ pkg, handleVoting, isVoted }) => {
     return (
         <div className="package-card">
             <div className="card-header">
-                <div className="package-label">Package {pkg._id}</div>
+                <div className="package-label">Package {index}</div>
                 <button
                     className={`vote-btn ${isVoted ? 'voted' : ''}`}
                     onClick={(e) => {

@@ -55,4 +55,5 @@ export const TopFootballCountries: string[] = ['Spain', 'England', 'Germany', 'I
 export const MAX_TEAMS_LIMIT = 5;
 
 export const MIN_PRICE = 100;
-export const MAX_PRICE = 1000;
+export const MAX_PRICE = 20000;
+export const DEFAULT_MAX_PRICE = 1000;

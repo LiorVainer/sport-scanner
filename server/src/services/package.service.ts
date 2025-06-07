@@ -17,7 +17,12 @@ import { Timer } from '../logs/timer';
 
 import { tryCatch } from '../utils/try-catch.utils';
 import { FlightSearchParams } from '../models/flights/flights-search-params.model';
-import { packageToPackageWithMetadata, partitionPackagesByRules } from '../utils/package.utils';
+import {
+    fixDateGaps,
+    packageToPackageWithMetadata,
+    partitionPackagesByRules,
+    withTotalPriceMin,
+} from '../utils/package.utils';
 import { generateFlightSearchParamsForFixtures } from '../converters/fixtures-to-flights';
 import { packagesLogger } from '../logs/packages.logger';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
@@ -111,11 +116,14 @@ class PackageService {
         }
 
         const { result: generatedPackagesResult, contextMessages } = generatedPackagesResponse;
+        const rawPackages = generatedPackagesResult.data;
+
+        const noGapsPackages = rawPackages.map(fixDateGaps);
 
         emit?.({
             step: GeneratePackagesSteps.AI_GENERATED_PACKAGES,
-            message: `AI generated ${generatedPackagesResult.data.length} packages.`,
-            aiGeneratedCount: generatedPackagesResult.data.length,
+            message: `AI generated ${noGapsPackages.length} packages.`,
+            aiGeneratedCount: noGapsPackages.length,
         });
 
         emit?.({
@@ -124,7 +132,7 @@ class PackageService {
         });
 
         const { valid: validPackages, invalid: invalidPackages } = await this.filterAiGeneratedPackagesByRules(
-            generatedPackagesResult.data,
+            noGapsPackages,
             searchParams,
             timer
         );
@@ -150,6 +158,7 @@ class PackageService {
         }
 
         const validPackagesWithMetadata = await this.generateMetadataForGeneratedPackages(validPackages, timer, emit);
+        const fixedValidMinPricePackages = validPackagesWithMetadata.map(withTotalPriceMin);
 
         if (flightSearchErrors.length) {
             packagesLogger.warn(`⚠️ ${flightSearchErrors.length} flight searches failed`, { flightSearchErrors });
@@ -157,8 +166,8 @@ class PackageService {
 
         emit?.({
             step: GeneratePackagesSteps.FINISHED_GENERATING_PACKAGES,
-            message: `✅ Finished generating ${validPackagesWithMetadata.length} valid packages.`,
-            packages: validPackagesWithMetadata,
+            message: `✅ Finished generating ${fixedValidMinPricePackages.length} valid packages.`,
+            packages: fixedValidMinPricePackages,
             durationMs: timer.total(),
         });
 
@@ -176,16 +185,16 @@ class PackageService {
             fixtures,
             flightsCount: allFlightOffers.length,
             packagesGeneratedCount: generatedPackagesResult.data.length,
-            packagesValidCount: validPackagesWithMetadata.length,
+            packagesValidCount: fixedValidMinPricePackages.length,
             requestParams: searchParams,
             errors: flightSearchErrors.length ? { flightSearchErrors } : undefined,
             aiTokensUsage: {
                 packageGeneration: generatedPackagesResult.usage,
             },
-            packagesGenerated: validPackagesWithMetadata,
+            packagesGenerated: fixedValidMinPricePackages,
         });
 
-        return validPackagesWithMetadata;
+        return fixedValidMinPricePackages;
     };
 
     transformFreeTextIntoPackagesGenerationParams = async (freeText: string) => {
@@ -398,7 +407,7 @@ class PackageService {
             packagesLogger.warn(
                 `❌ Error fetching flight offers for ${params.origin} → ${params.destination} on ${params.dateFrom}: ${error?.description?.[0]?.detail}`,
                 {
-                    error: error?.description?.[0]?.detail,
+                    error: error,
                     searchParams: params,
                 }
             );
