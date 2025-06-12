@@ -1,5 +1,13 @@
-import { Package, PackageMetadata, PackageWithMetadata } from '../models/packages/package.model';
+import {
+    DestinationItem,
+    FlightItem,
+    Package,
+    PackageMetadata,
+    PackageWithMetadata,
+} from '../models/packages/package.model';
 import { isBefore, parseISO } from 'date-fns';
+import { packagesLogger } from '../logs/packages.logger';
+import moment from 'moment';
 
 type InvalidPackage = {
     reason: string;
@@ -17,12 +25,13 @@ export const partitionPackagesByRules = (packages: Package[], originIataCode: st
     const invalid: InvalidPackage[] = [];
 
     for (const pkg of packages) {
-        const error = getInvalidReason(pkg, originIataCode);
-        if (error) {
-            invalid.push({ ...error, package: pkg });
+        const validationError = getInvalidReason(pkg, originIataCode);
+        if (validationError) {
+            packagesLogger.info(`Package validation failed`, { validationError, package: pkg });
+            invalid.push({ ...validationError, package: pkg });
         } else {
-            valid.push(pkg);
         }
+        valid.push(pkg);
     }
 
     return { valid, invalid };
@@ -166,3 +175,47 @@ export const packageToPackageWithMetadata = (pkg: Package): PackageWithMetadata 
     const metadata = calculateMetadata(pkg);
     return { ...pkg, metadata };
 };
+
+export const fixDateGaps = (pkg: Package): Package => {
+    const fixedTimeline = pkg.timeline.map((item, idx, arr) => {
+        if (item.type === 'destination') {
+            const prev = arr[idx - 1] as FlightItem | undefined;
+            const next = arr[idx + 1] as FlightItem | undefined;
+            if (prev?.type === 'flight' && next?.type === 'flight') {
+                return {
+                    ...item,
+                    startDate: moment(prev.arrivalDate).add(1, 'hours').toISOString(),
+                    endDate: moment(next.departureDate).subtract(1, 'hours').toISOString(),
+                } as DestinationItem;
+            }
+        }
+        return item;
+    });
+
+    return { ...pkg, timeline: fixedTimeline };
+};
+
+export function calculateTotalPriceMin(pkg: Package): number {
+    const flightsTotal = pkg.timeline
+        .filter((item): item is FlightItem => item.type === 'flight')
+        .reduce((sum, f) => sum + f.price, 0);
+
+    const matchesTotal = pkg.timeline
+        .filter((item): item is DestinationItem => item.type === 'destination')
+        .flatMap((dest) => dest.matches.map((match) => match.price.min))
+        .reduce((sum, minPrice) => sum + minPrice, 0);
+
+    return Number((flightsTotal + matchesTotal).toFixed(2));
+}
+
+// Optionally, update a package object with the computed field:
+export function withTotalPriceMin(pkg: Package): Package {
+    const min = calculateTotalPriceMin(pkg);
+    return {
+        ...pkg,
+        totalPrice: {
+            ...pkg.totalPrice,
+            min,
+        },
+    };
+}

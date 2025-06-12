@@ -1,13 +1,16 @@
 @use '../../theme/theme' as *;
 
 .loadingContainer {
-    display: flex;
-    padding-inline: 30rem;
-    gap: 2rem;
-    padding-block: 5rem;
+  display: flex;
+  padding-inline: 30rem;
+  gap: 2rem;
+  padding-block: 5rem;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .loadingText {
-    font-size: 1.1rem;
-    color: #374151;
+  font-size: 1.1rem;
+  color: #374151;
 }

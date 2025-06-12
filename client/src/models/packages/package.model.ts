@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { PriceRangeSchema } from '../price-range.model';
 import { FixtureInfoSchema } from '../soccer/fixture.model';
 import { LeagueSchema, VenueSchema } from '@/models/soccer/soccer.model.ts';
+import { SchemaDateDescription } from '@/constants/date.const.ts';
 
 export const CityInfoSchema = z.object({
     name: z.string().describe('City name'),
@@ -20,10 +21,19 @@ export const FlightSchema = z.object({
     id: z.number(),
     origin: CityInfoSchema,
     destination: CityInfoSchema,
-    price: z.number(),
-    departureDate: z.string(),
+    price: z
+        .number()
+        .min(0)
+        .describe(
+            'Price of the flight in the specified currency. It should be a positive number. No flight is free. If you think a flight is free, it is probably a mistake. and a segment of a larger trip.'
+        ),
+    departureDate: z.string().describe(SchemaDateDescription),
     purpose: FlightPurposeSchema,
-    searchFlightTicketsLink: z.string(),
+    searchFlightTicketsLink: z
+        .string()
+        .describe(
+            `“Skyscanner flight‐search URL in the form ‘https://www.skyscanner.com/transport/flights/{origin}/{destination}/{departureDateYYMMDD}/{returnDateYYMMDD}/’. Dates must be formatted as two‐digit year, month, day (e.g. 20 June 2025 → 250620). Example: ‘https://www.skyscanner.com/transport/flights/tlv/mad/250620/250722/’ means Tel Aviv (TLV) → Madrid (MAD), depart 20/06/2025, return 22/07/2025.”`
+        ),
 }).describe(`
   Represents a complete flight between two cities in the timeline.
   This may internally include segments (e.g. TLV → FCO → MUC), but
@@ -60,8 +70,8 @@ export const DestinationSchema = z.object({
         .describe('Type of the timeline item, always "destination" for this schema'),
     city: z.string().describe('City name of the destination'),
     cityIataCode: z.string().length(3).describe('IATA code of the destination city'),
-    startDate: z.string().describe('Start date of the stay in the destination'),
-    endDate: z.string().describe('End date of the stay in the destination'),
+    startDate: z.string().describe('Start date of the stay in the destination ' + SchemaDateDescription),
+    endDate: z.string().describe('End date of the stay in the destination ' + SchemaDateDescription),
     matches: z.array(MatchSchema).describe('List of matches happening in this destination'),
 });
 
@@ -114,8 +124,14 @@ export const PackageSchema = z
                 'Title of the travel package. Make it catchy and attractive. If the package includes one match, include the team names and the league.'
             ),
         description: z.string().describe('Description of what the package includes: matches, flights, dates.'),
-        startDate: z.string().describe('Start date of the package. This is the earliest flight or match date.'),
-        endDate: z.string().describe('End date of the package. This is the latest return flight or match date.'),
+        startDate: z
+            .string()
+            .describe('Start date of the package. This is the earliest flight or match date. ' + SchemaDateDescription),
+        endDate: z
+            .string()
+            .describe(
+                'End date of the package. This is the latest return flight or match date. ' + SchemaDateDescription
+            ),
         location: z.string().describe('Primary location of the package, typically the first destination city.'),
         flightsPrice: z.number().describe(
             `Total combined price of all flights in the package. 

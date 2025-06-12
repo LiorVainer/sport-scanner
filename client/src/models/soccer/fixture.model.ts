@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { LeagueSchema, TeamSchema, VenueSchema } from './soccer.model';
 import { PriceRangeSchema } from '../price-range.model';
+import { SchemaDateDescription } from '@/constants/date.const.ts';
 
 export const FixtureQueryParamsSchema = z.object({
     id: z.number().optional(),
@@ -35,7 +36,7 @@ export const FixtureInfoSchema = z
     .object({
         id: z.number().describe('Unique fixture ID'),
         timezone: z.string().describe('Timezone of the fixture start time'),
-        date: z.string().describe('Fixture start date and time (ISO string)'),
+        date: z.string().describe('Fixture start date and time' + SchemaDateDescription),
         timestamp: z.number().describe('Unix timestamp of fixture date'),
         venue: VenueSchema.describe('Venue where the fixture is played'),
     })

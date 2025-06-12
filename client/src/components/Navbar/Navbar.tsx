@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
-import classes from './navbar.module.scss';
-import { Link } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFutbol } from '@fortawesome/free-solid-svg-icons';
+import { Modal } from 'antd';
+import clsx from 'clsx';
+import classes from './navbar.module.scss';
 
 import { EditProfileModal } from '../EditProfileModal';
 import { NavbarUserDropdown } from '../NavbarUserDropdown';
-import { ROUTES } from '@/constants/routes.const';
-import { Modal } from 'antd';
 import PreferencesBody from '@/pages/UserPreferences/PreferencesBody';
 import { useAuth } from '@/context/AuthContext';
+import { ROUTES } from '@/constants/routes.const';
 
-export const Navbar = () => {
+export const Navbar: React.FC = () => {
     const { loggedInUser } = useAuth();
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState<boolean>(false);
+    const { pathname } = useLocation();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState(false);
 
     const showModal = () => setIsModalOpen(true);
     const showPreferencesModal = () => setIsPreferencesModalOpen(true);
@@ -25,7 +27,7 @@ export const Navbar = () => {
         if (loggedInUser?.isFirstVisit) {
             showPreferencesModal();
         }
-    }, []);
+    }, [loggedInUser]);
 
     return (
         <nav className={classes.navbar}>
@@ -35,18 +37,34 @@ export const Navbar = () => {
             </Link>
 
             <div className={classes.right}>
-                <div className={classes.navLinks}>
-                    <Link to={ROUTES.GROUPS}>Groups</Link>
-                </div>
-                <div className={classes.navLinks}>
-                    <Link to={ROUTES.HISTORY}>History</Link>
-                </div>
-                <div className={classes.navLinks}>
-                    <Link to={ROUTES.SAVED_PACKAGES}>Saved</Link>
-                </div>
+                <Link
+                    to={ROUTES.GROUPS}
+                    className={clsx(classes.navLinks, {
+                        [classes.activeLink]: pathname.includes(ROUTES.GROUPS),
+                    })}
+                >
+                    Groups
+                </Link>
+
+                <Link
+                    to={ROUTES.HISTORY}
+                    className={clsx(classes.navLinks, {
+                        [classes.activeLink]: pathname.includes(ROUTES.HISTORY),
+                    })}
+                >
+                    History
+                </Link>
+
+                <Link
+                    to={ROUTES.SAVED_PACKAGES}
+                    className={clsx(classes.navLinks, {
+                        [classes.activeLink]: pathname.includes(ROUTES.SAVED_PACKAGES),
+                    })}
+                >
+                    Saved
+                </Link>
 
                 <NavbarUserDropdown showModal={showModal} showPreferencesModal={showPreferencesModal} />
-
                 <EditProfileModal isOpen={isModalOpen} handleCancel={handleCancel} />
 
                 <Modal
@@ -54,6 +72,7 @@ export const Navbar = () => {
                     onCancel={handlePreferencesCancel}
                     footer={null}
                     centered
+                    width={700}
                     className={classes.preferencesModal}
                     destroyOnClose
                 >

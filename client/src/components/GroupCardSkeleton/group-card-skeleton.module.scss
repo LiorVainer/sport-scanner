@@ -1,0 +1,28 @@
+@use '../../theme/theme' as theme;
+
+/* group-card.module.scss additions */
+.avatars {
+  /* ensure avatars stacking looks good during load */
+  display: flex;
+
+  /* override inline avatar margin if needed */
+  .ant-skeleton-avatar {
+    border: 2px solid #fff;
+  }
+}
+
+.selectedPackage {
+  /* keep same padding/layout but adjust for skeleton */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: theme.gray-scale(90%) solid 1px;
+  border-radius: theme.$card-border-radius;
+  padding: 1rem;
+
+  .matchList {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
