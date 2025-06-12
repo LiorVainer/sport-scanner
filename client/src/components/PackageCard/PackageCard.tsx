@@ -1,4 +1,5 @@
 import styles from './package-card.module.scss';
+
 import { PackageFooter } from '@pages/PackagesScreen/PackageFooter';
 import { useMemo } from 'react';
 import { Destination, Package } from '@/models/packages/package.model';
@@ -17,13 +18,20 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full' }: Pack
     );
 
     return (
-        <div className={styles.packageCard}>
-            <div className={styles.destinations}>
-                {destinations.map((destination) => (
-                    <DestinationSection destination={destination} variant={variant} />
-                ))}
+        <div className={styles.packageCardContainer}>
+            <div className={styles.packageHeader}>
+                <h4 className={styles.packageTitle}>⚽ {singlePackage.title}</h4>
             </div>
-            <PackageFooter singlePackage={singlePackage} backRoute={backRoute} />
+            <div className={styles.packageCard}>
+                <div className={styles.content}>
+                    <div className={styles.destinations}>
+                        {destinations.map((destination) => (
+                            <DestinationSection destination={destination} variant={variant} />
+                        ))}
+                    </div>
+                </div>
+                <PackageFooter singlePackage={singlePackage} backRoute={backRoute} />
+            </div>
         </div>
     );
 };

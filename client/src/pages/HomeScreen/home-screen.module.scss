@@ -9,7 +9,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  flex: 1;
 
   @media (max-width: 1600px) {
     padding-inline: 3rem;
@@ -18,7 +18,7 @@
 }
 
 .searchBarContainer {
-  flex: 5;
+  flex: 4;
   width: 100%;
 }
 

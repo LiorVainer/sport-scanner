@@ -1,13 +1,31 @@
 import classes from './user-suggested-packages.module.scss';
-import { Package } from '@/models/packages/package.model.ts';
 import { PackageCard } from '@components/PackageCard';
 import { ROUTES } from '@/constants/routes.const.ts';
+import { useQuery } from '@tanstack/react-query';
+import { UsersService } from '../../api/services/users.service';
+import { PackageSkeleton } from '../../pages/PackagesScreen/PackageSkeleton';
 
-export interface UserSuggestedPackagesProps {
-    userSuggestedPackages: Package[];
-}
+export interface UserSuggestedPackagesProps {}
 
-export const UserSuggestedPackages = ({ userSuggestedPackages }: UserSuggestedPackagesProps) => {
+export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
+    const { data: userSuggestedPackages = [], isPending } = useQuery({
+        queryKey: ['users', 'suggestedPackages'],
+        queryFn: () => UsersService.getUsersSuggestedPackages(),
+    });
+
+    if (isPending) {
+        return (
+            <div className={classes.container}>
+                <h2>Suggested Packages For You</h2>
+                <div className={classes.suggestedPackagesContainer}>
+                    {Array.from({ length: 3 }).map((_, index) => (
+                        <PackageSkeleton key={index} variant={'compact'} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={classes.container}>
             {userSuggestedPackages.length > 0 ? (

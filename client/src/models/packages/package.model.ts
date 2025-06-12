@@ -23,7 +23,7 @@ export const FlightSchema = z.object({
     destination: CityInfoSchema,
     price: z
         .number()
-        .min(10)
+        .min(0)
         .describe(
             'Price of the flight in the specified currency. It should be a positive number. No flight is free. If you think a flight is free, it is probably a mistake. and a segment of a larger trip.'
         ),

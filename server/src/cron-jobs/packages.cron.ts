@@ -11,7 +11,6 @@ import {
 import moment from 'moment';
 import Bluebird from 'bluebird';
 import { userSuggestedPackagesGenerationLogger } from '../logs/cron.logger';
-import { DB } from './db.cron';
 import { ProcessTypes } from '../models/log.model';
 import { CronTime } from 'cron-time-generator';
 
@@ -22,7 +21,7 @@ const MAX_PACKAGES_PER_USER_WITH_OFFSET =
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_PER_USER +
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_OFFSET;
 
-const schedule = ENV.NODE_ENV === 'development' ? CronTime.everyHour() : CronTime.everyDay();
+const schedule = ENV.NODE_ENV === 'development' ? CronTime.everyHourAt(53) : CronTime.everyDay();
 
 /**
  * Cron Job that runs once a day at midnight (00:00).
@@ -35,8 +34,6 @@ cron.schedule(schedule, async () => {
     timer.start(ProcessTypes.USER_SUGGESTED_PACKAGES_GENERATION);
 
     try {
-        await DB.connect(userSuggestedPackagesGenerationLogger);
-
         // Fetch all users with favorite teams, leagues, and home airport
         const users = await UserRepository.find({
             $or: [{ favoriteTeams: { $ne: [] } }, { favoriteLeagues: { $ne: [] } }],
@@ -165,6 +162,5 @@ cron.schedule(schedule, async () => {
                 totalDuration: timer.stepDuration(ProcessTypes.USER_SUGGESTED_PACKAGES_GENERATION),
             }
         );
-        await DB.disconnect(userSuggestedPackagesGenerationLogger);
     }
 });

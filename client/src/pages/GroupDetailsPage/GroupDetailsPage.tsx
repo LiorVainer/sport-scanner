@@ -2,19 +2,21 @@ import { useEffect, useRef } from 'react';
 import './GroupDetailsPage.scss';
 import GroupHeader from './components/GroupHeader';
 import PackageVoting from './components/PackageVoting';
-import ChosenPackageTimeline from './components/ChosenPackageTimeline';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GroupService } from '@/api/services/group.service';
 import { PackageCard } from '@components/PackageCard';
 import { PackageSkeleton } from '@pages/PackagesScreen/PackageSkeleton';
-import { Button, Typography } from 'antd';
+import { Button } from 'antd';
 import { Shuffle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { GroupChosenPackage } from '@pages/GroupDetailsPage/components/GroupChosenPackage.tsx';
+import { useAuth } from '@/context/AuthContext.tsx';
 
 const GroupDetailsPage = () => {
     const { groupId } = useParams<{ groupId: string }>();
     const queryClient = useQueryClient();
     const generationTriggered = useRef(false);
+    const { loggedInUser } = useAuth();
 
     const { data: group, isLoading } = useQuery({
         queryKey: ['group', groupId],
@@ -117,13 +119,13 @@ const GroupDetailsPage = () => {
                               ))
                             : suggestedPackages?.length > 0 &&
                               suggestedPackages.map((pkg, index) => {
-                                  const hasVoted = suggestedPackagesVotes
-                                      ? Object.values(suggestedPackagesVotes).includes(pkg._id)
-                                      : false;
+                                  const hasVoted =
+                                      loggedInUser && suggestedPackagesVotes?.[loggedInUser?._id] === pkg._id;
+
                                   return (
                                       <div className="package-new-card" key={pkg._id}>
                                           <div className="package-card-header">
-                                              <Typography className="package-index">{`Package ${index + 1}`}</Typography>
+                                              <h3 className="package-index">{`Package ${index + 1}`}</h3>
                                               <Button
                                                   className="vote-button"
                                                   type="primary"
@@ -133,7 +135,9 @@ const GroupDetailsPage = () => {
                                                   {hasVoted ? 'Unvote' : 'Vote'}
                                               </Button>
                                           </div>
-                                          <PackageCard variant="compact" singlePackage={pkg} />
+                                          <div className="package-card-content">
+                                              <PackageCard variant="compact" singlePackage={pkg} />
+                                          </div>
                                       </div>
                                   );
                               })}
@@ -144,7 +148,7 @@ const GroupDetailsPage = () => {
                     <PackageVoting percentages={votePercentages} />
                 )}
 
-                {selectedPackage && <ChosenPackageTimeline pkg={selectedPackage} backRoute={`/group/${groupId}`} />}
+                {selectedPackage && <GroupChosenPackage pkg={selectedPackage} backRoute={`/group/${groupId}`} />}
             </div>
         </div>
     );

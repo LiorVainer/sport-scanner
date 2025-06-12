@@ -8,13 +8,14 @@ import { PopulatedHistory } from '@/models/history.model';
 import { PackageCard } from '@/components/PackageCard';
 
 type Props = {
+    title?: string;
     queryKey: string[];
     queryFn: () => Promise<PopulatedSavedPackage[] | PopulatedHistory[]>;
     emptyComponent: React.ReactNode;
     backRoute: string;
 };
 
-export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyComponent, backRoute }) => {
+export const UserPackagesScreen: React.FC<Props> = ({ title, queryKey, queryFn, emptyComponent, backRoute }) => {
     const {
         data: userPackages,
         isLoading,
@@ -32,7 +33,9 @@ export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyCo
     if (isLoading) {
         return (
             <Screen className={styles.page}>
-                <PackageSkeleton />
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <PackageSkeleton key={index} />
+                ))}
             </Screen>
         );
     }
@@ -43,6 +46,11 @@ export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyCo
 
     return (
         <Screen className={styles.page}>
+            {title && (
+                <div className={styles.header}>
+                    <h1>{title}</h1>
+                </div>
+            )}
             {userPackages.map(({ _id: date, packages }) => (
                 <div className={styles.packageContainer} key={date}>
                     <h3 className={styles.dateHeader}>{date}</h3>

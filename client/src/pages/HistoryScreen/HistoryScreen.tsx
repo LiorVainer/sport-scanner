@@ -6,6 +6,7 @@ import { UserPackagesScreen } from '../UserPackagesScreen/UserPackagesScreen';
 export const HistoryScreen = () => {
     return (
         <UserPackagesScreen
+            title={'Packages Seen History'}
             queryKey={['usersHistory']}
             queryFn={UsersService.getUsersHistory}
             emptyComponent={<NoHistory />}

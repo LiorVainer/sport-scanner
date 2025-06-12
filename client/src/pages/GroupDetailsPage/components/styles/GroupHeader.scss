@@ -72,13 +72,13 @@
       justify-content: space-between;
       align-items: flex-end;
 
-      .info-row {
+      .info {
         display: flex;
         align-items: center;
         font-size: 14px;
         font-weight: 500;
         color: #333;
-        gap: 16px;
+        gap: 1.2rem;
 
         .icon {
           font-size: 16px;
@@ -93,7 +93,7 @@
         display: flex;
         gap: 12px;
         margin-top: auto;
-        
+
       }
     }
   }

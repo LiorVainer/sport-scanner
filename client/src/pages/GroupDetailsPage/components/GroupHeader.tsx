@@ -7,6 +7,8 @@ import { GroupService } from '@/api/services/group.service';
 import { Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import classes from '@pages/GroupsScreen/groups-screen.module.scss';
+import { formattedDate } from '@/utils/date.utils.ts';
+import { Calendar, CircleDollarSignIcon } from 'lucide-react';
 
 interface Props {
     group: PopulatedGroup;
@@ -20,7 +22,7 @@ const getUserAvatarDisplayName = (username: string) => {
 
 const GroupHeader: React.FC<Props> = ({ group }) => {
     const navigate = useNavigate();
-    const { users, selectedPackage, title, _id } = group;
+    const { users, title, _id } = group;
 
     const handleDeleteGroup = async () => {
         await GroupService.delete(_id);
@@ -44,18 +46,18 @@ const GroupHeader: React.FC<Props> = ({ group }) => {
                 </div>
 
                 <div className="right">
-                    {selectedPackage && (
-                        <div className="info-row">
-                            <span className="icon">💰</span>
+                    <div className="info">
+                        <div className="header-details">
+                            <CircleDollarSignIcon className={'group-header-icon'} />
+                            <span className="text">up to ${group.maxBudget}</span>
+                        </div>
+                        <div className="header-details">
+                            <Calendar className={'group-header-icon'} />
                             <span className="text">
-                                €{selectedPackage?.totalPrice.min} - €{selectedPackage?.totalPrice.max}
-                            </span>
-                            <span className="icon">📅</span>
-                            <span className="text">
-                                {selectedPackage?.startDate} → {selectedPackage?.endDate}
+                                {formattedDate(group.dates.start)} → {formattedDate(group.dates.end)}
                             </span>
                         </div>
-                    )}
+                    </div>
                     <div className="group-actions-row">
                         <Button
                             type="primary"

@@ -27,12 +27,15 @@ Each package must include:
 - 📆 No gap‐day rule: there must be no unallocated days between destination endDate and the next flight’s departureDate.
 - Packages must start with a flight from the user's origin (e.g. TLV)
 - Packages must end with a return flight to the user's origin (e.g. TLV)
+- 🚀 First flight departs from user's origin.
+- ↩️ Last flight returns to user's origin.
 - No flights to cities with no matches
 - Each city visited must be a match city
 - Each destination in the timeline must contain one or more matches
 - Every match must be reachable by a flight that arrives **before** kickoff
 - Flights must follow chronological order
 - Flight will be considered as "connecting" only if it is between two different fixtures and destinations that are in the timeline of the package
+- 🔗 Link integrity: each flight.destination == next item.city; each destination.city == next flight.origin.
 - Matches must be between 'startDate' and 'endDate' of its destination staying dates
 
 🎯 Package Variety Rule:

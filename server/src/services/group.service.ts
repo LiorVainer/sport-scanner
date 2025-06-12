@@ -205,48 +205,74 @@ export const GroupService = {
     },
 
     async voteForPackage(groupId: string, userId: string, packageId: string) {
-        try {
-            // Create a properly typed update object for MongoDB
-            const updateKey = `suggestedPackagesVotes.${userId}`;
-            const updateValue = new mongoose.Types.ObjectId(packageId);
+        // 1. record the user’s vote
+        const voteKey = `suggestedPackagesVotes.${userId}`;
+        const voted = await GroupRepository.findByIdAndUpdate(
+            groupId,
+            { $set: { [voteKey]: new mongoose.Types.ObjectId(packageId) } },
+            { new: true }
+        ).lean();
+        if (!voted) return null;
 
-            // Use MongoDB's dot notation in a type-safe way
-            const updateOperation = { $set: { [updateKey]: updateValue } };
+        // 2. recompute winner
+        const votesMap = voted.suggestedPackagesVotes ?? {};
+        const counts: Record<string, number> = {};
+        Object.values(votesMap).forEach((pkgOid) => {
+            const idStr = pkgOid.toString();
+            counts[idStr] = (counts[idStr] || 0) + 1;
+        });
 
-            const updatedGroup = await GroupRepository.findByIdAndUpdate(groupId, updateOperation, { new: true })
-                .populate('users')
-                .populate('selectedPackage')
-                .populate('suggestedPackages')
-                .populate('createdBy')
-                .lean();
+        // find the packageId with highest votes (ties pick first)
+        const winnerId = Object.entries(counts)
+            .sort(([, a], [, b]) => b - a)
+            .map(([id]) => id)[0];
 
-            if (!updatedGroup) return null;
-            return updatedGroup;
-        } catch (error) {
-            console.error(`Error voting for package ${packageId} by user ${userId} in group ${groupId}:`, error);
-            throw error;
-        }
+        // 3. update selectedPackage
+        const updated = await GroupRepository.findByIdAndUpdate(
+            groupId,
+            { selectedPackage: winnerId ? new mongoose.Types.ObjectId(winnerId) : undefined },
+            { new: true }
+        )
+            .populate('users')
+            .populate('selectedPackage')
+            .populate('suggestedPackages')
+            .populate('createdBy')
+            .lean();
+        return updated;
     },
 
     async unVoteForPackage(groupId: string, userId: string) {
-        try {
-            const updateKey = `suggestedPackagesVotes.${userId}`;
+        // 1. remove the vote
+        const voteKey = `suggestedPackagesVotes.${userId}`;
+        const unvoted = await GroupRepository.findByIdAndUpdate(
+            groupId,
+            { $unset: { [voteKey]: '' } },
+            { new: true }
+        ).lean();
+        if (!unvoted) return null;
 
-            const updateOperation = { $unset: { [updateKey]: "" } };
+        // 2. recompute winner (same logic as above)
+        const votesMap = unvoted.suggestedPackagesVotes ?? {};
+        const counts: Record<string, number> = {};
+        Object.values(votesMap).forEach((pkgOid) => {
+            const idStr = pkgOid.toString();
+            counts[idStr] = (counts[idStr] || 0) + 1;
+        });
+        const entries = Object.entries(counts);
+        const winnerId = entries.length > 0 ? entries.sort(([, a], [, b]) => b - a)[0][0] : null;
 
-            const updatedGroup = await GroupRepository.findByIdAndUpdate(groupId, updateOperation, { new: true })
-                .populate('users')
-                .populate('selectedPackage')
-                .populate('suggestedPackages')
-                .populate('createdBy')
-                .lean();
-
-            if (!updatedGroup) return null;
-            return updatedGroup;
-        } catch (error) {
-            console.error(`Error removing vote for user ${userId} in group ${groupId}:`, error);
-            throw error;
-        }
+        // 3. update selectedPackage (or clear if no votes remain)
+        const updated = await GroupRepository.findByIdAndUpdate(
+            groupId,
+            { selectedPackage: winnerId ? new mongoose.Types.ObjectId(winnerId) : undefined },
+            { new: true }
+        )
+            .populate('users')
+            .populate('selectedPackage')
+            .populate('suggestedPackages')
+            .populate('createdBy')
+            .lean();
+        return updated;
     },
 
     async generateSuggestedPackagesForGroup(groupId: string) {
