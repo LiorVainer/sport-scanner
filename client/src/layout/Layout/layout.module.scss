@@ -1,6 +1,16 @@
+@use '../../theme/theme' as *;
+
 .layout {
   display: flex;
   flex-direction: column;
   grid-template-rows: 1fr 9fr;
   height: 100vh;
+  background-color: $background;
+  overflow: hidden;
+}
+
+.outletWrapper {
+  height: 100%;
+  scrollbar-gutter: stable;
+  overflow-y: auto;
 }

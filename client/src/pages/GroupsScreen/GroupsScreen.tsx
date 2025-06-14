@@ -6,6 +6,7 @@ import classes from './groups-screen.module.scss';
 import { GroupCard } from '@/components/GroupCard/GroupCard';
 import { useQuery } from '@tanstack/react-query';
 import { GroupService } from '@api/services/group.service.ts';
+import { Screen } from '@components/Screen';
 import { GroupCardSkeleton } from '@components/GroupCardSkeleton/GroupCardSkeleton.tsx';
 
 export const GroupsScreen = () => {
@@ -25,17 +26,17 @@ export const GroupsScreen = () => {
 
     if (groups && groups.length === 0) {
         return (
-            <div className={classes.container}>
+            <Screen className={classes.container}>
                 <h1>No Groups Found</h1>
                 <Button type="primary" icon={<EditOutlined />} onClick={handleNewGroup} className={classes.addButton}>
                     Create New Group
                 </Button>
-            </div>
+            </Screen>
         );
     }
 
     return (
-        <div className={classes.container}>
+        <Screen className={classes.container}>
             <div className={classes.header}>
                 <h1>Your Groups</h1>
                 <Button type="primary" icon={<EditOutlined />} onClick={handleNewGroup} className={classes.addButton}>
@@ -46,6 +47,6 @@ export const GroupsScreen = () => {
             {!isLoading && groups
                 ? groups.map((group, idx) => <GroupCard key={idx} group={group} />)
                 : Array.from({ length: 3 }).map((_, index) => <GroupCardSkeleton key={index} />)}
-        </div>
+        </Screen>
     );
 };

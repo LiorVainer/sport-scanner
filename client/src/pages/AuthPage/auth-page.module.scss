@@ -23,6 +23,46 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  background: linear-gradient(45deg, darker($background, 20%), lighter($background, 20%), darker($background, 20%)); // blue to cyan
+}
+
+.screenHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 4rem;
+  font-family: 'Assistant', sans-serif;
+
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: $action;
+
+  & > h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(90deg, $accent, $action);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+    color: transparent;
+  }
+
+
+  & > svg {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.description {
+  font-size: 1.2rem;
 }
 
 .authBox {

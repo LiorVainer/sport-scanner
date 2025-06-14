@@ -1,10 +1,11 @@
 import SearchBar from '../../components/SearchBar/SearchBar';
 import classes from './home-screen.module.scss';
 import { UserSuggestedPackages } from '@components/UserSuggestedPackages';
+import { Screen } from '@components/Screen';
 
 const HomeScreen = () => {
     return (
-        <div className={classes.container}>
+        <Screen className={classes.container}>
             <div className={classes.searchBarContainer}>
                 <SearchBar />
             </div>
@@ -12,7 +13,7 @@ const HomeScreen = () => {
             <div className={classes.userSuggestedPackagesContainer}>
                 <UserSuggestedPackages />
             </div>
-        </div>
+        </Screen>
     );
 };
 

@@ -16,7 +16,7 @@ export interface RouterProps {}
 
 export const Router = (_props: RouterProps) => {
     return (
-        <Routes>
+        <Routes location={location} key={location.pathname}>
             <Route path={ROUTES.AUTH} element={<AuthPage />} />
             <Route element={<ProtectedRoutes />}>
                 <Route element={<Layout />}>

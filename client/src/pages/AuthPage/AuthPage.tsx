@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SportScannerLogo from '@/assets/logo.svg?react';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { motion } from 'framer-motion';
 import { Avatar, Button, Form, Input, Typography, Upload } from 'antd';
@@ -99,15 +100,29 @@ export const AuthPage = () => {
 
     return (
         <Screen className={styles.screen}>
-            {/*<div>Welcome to Sport Scanner</div>*/}
+            <motion.div
+                className={styles.screenHeader}
+                layout
+                transition={{
+                    layout: {
+                        duration: 0.4,
+                        ease: [0.25, 0.1, 0.25, 1], // ease-in-out cubic bezier
+                    },
+                }}
+            >
+                <div className={styles.titleContainer}>
+                    <h1>Welcome to Sport Scanner</h1>
+                    <SportScannerLogo className={styles.logo} />
+                </div>
+                <p className={styles.description}>
+                    Follow your favorite teams around the world with custom sports trips made just for you.
+                </p>
+            </motion.div>
             <motion.div
                 className={styles.authBox}
                 layout
                 transition={{ type: 'spring', stiffness: 120, damping: 20, duration: 0.3 }}
             >
-                <div className={styles.header}>
-                    <h3>{isSignUp ? 'Sign Up' : 'Sign In'}</h3>
-                </div>
                 <motion.div
                     key={isSignUp ? 'signUp' : 'signIn'}
                     initial={direction === 'right' ? 'hiddenRight' : 'hiddenLeft'}
