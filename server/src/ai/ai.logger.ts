@@ -9,6 +9,7 @@ import fs from 'fs';
 import { DATE_AND_TIME_JSON_FORMAT, formatDate } from '../utils/date.utils';
 import { AIServiceMethodToKebabCase } from './ai.const';
 import { CoreMessage } from 'ai';
+import { isProduction } from '../app';
 
 const BASE_OUTPUT_FOLDER_PATH = './output';
 
@@ -25,6 +26,10 @@ class AILoggerProvider {
             finishReason,
         }: SaveObjectMethodOutputToFileParams<T>
     ) {
+        if (isProduction) {
+            return;
+        }
+
         const { userPrompt, systemMessages, executionTimeInSeconds } = this.generateLogMetadata(
             messages,
             prompt,
@@ -57,6 +62,10 @@ class AILoggerProvider {
         method: AIServiceMethod,
         { messages, responseText, prompt, execution, outputFolderPath, finishReason }: SaveTextMethodOutputToFileParams
     ) {
+        if (isProduction) {
+            return;
+        }
+
         const { userPrompt, systemMessages, executionTimeInSeconds } = this.generateLogMetadata(
             messages,
             prompt,

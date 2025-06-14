@@ -5,7 +5,7 @@ import { app, initServer } from './server';
 import { ENV } from './env/env.config';
 import { initializeSocket } from './socket';
 
-const isProduction = ENV.NODE_ENV === 'production';
+export const isProduction = ENV.NODE_ENV === 'production';
 
 let server: http.Server | https.Server;
 
