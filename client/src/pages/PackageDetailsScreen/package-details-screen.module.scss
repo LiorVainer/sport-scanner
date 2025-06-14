@@ -109,3 +109,35 @@
   font-weight: 500;
   padding: 1.3rem;
 }
+
+
+.packageTitleSkeleton {
+  width: 300px !important;
+  height: 48px;
+}
+
+.packageDescriptionSkeleton {
+  width: 400px;
+}
+
+.dateSkeleton {
+  width: 120px;
+
+}
+
+.priceSkeleton {
+  width: 80px;
+}
+
+.saveButtonSkeleton {
+  width: 200px;
+  height: 45px;
+}
+
+
+.packageDetailsContainerSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}

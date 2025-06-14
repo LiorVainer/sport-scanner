@@ -33,6 +33,11 @@ export const UserPackagesScreen: React.FC<Props> = ({ title, queryKey, queryFn, 
     if (isLoading) {
         return (
             <Screen className={styles.page}>
+                {title && (
+                    <div className={styles.header}>
+                        <h1>{title}</h1>
+                    </div>
+                )}
                 {Array.from({ length: 4 }).map((_, index) => (
                     <PackageSkeleton key={index} />
                 ))}

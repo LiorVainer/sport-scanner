@@ -387,7 +387,7 @@ router.post('/:groupId/generate-suggested-packages', authMiddleware, groupContro
  *         schema:
  *           type: string
  *         description: Group ID
- *    responses:
+ *     responses:
  *       200:
  *         description: UnVoted for package successfully
  *       401:

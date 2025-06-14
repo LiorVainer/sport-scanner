@@ -33,7 +33,12 @@ export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
                     <h2>Suggested Packages For You</h2>
                     <div className={classes.suggestedPackagesContainer}>
                         {userSuggestedPackages?.map((singlePackage) => (
-                            <PackageCard singlePackage={singlePackage} variant="compact" backRoute={ROUTES.HOME} />
+                            <PackageCard
+                                singlePackage={singlePackage}
+                                variant="compact"
+                                backRoute={ROUTES.HOME}
+                                isFullHeight
+                            />
                         ))}
                     </div>
                 </>

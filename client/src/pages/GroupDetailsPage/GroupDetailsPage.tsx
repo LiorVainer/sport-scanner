@@ -11,6 +11,7 @@ import { Button } from 'antd';
 import { Shuffle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { GroupChosenPackage } from '@pages/GroupDetailsPage/components/GroupChosenPackage.tsx';
 import { useAuth } from '@/context/AuthContext.tsx';
+import { GroupDetailsPageSkeleton } from 'src/pages/GroupDetailsPage/components/skeleton/GroupDetailsPageSkeleton';
 
 const GroupDetailsPage = () => {
     const { groupId } = useParams<{ groupId: string }>();
@@ -68,7 +69,7 @@ const GroupDetailsPage = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <GroupDetailsPageSkeleton />;
     }
 
     if (!group) {
@@ -113,7 +114,7 @@ const GroupDetailsPage = () => {
                     </div>
 
                     <div className="packages-grid">
-                        {generatePackagesMutation.isPending
+                        {generatePackagesMutation.isPending || isLoading
                             ? Array.from({ length: 4 }).map((_, index) => (
                                   <PackageSkeleton key={index} variant="compact" />
                               ))
@@ -136,7 +137,7 @@ const GroupDetailsPage = () => {
                                               </Button>
                                           </div>
                                           <div className="package-card-content">
-                                              <PackageCard variant="compact" singlePackage={pkg} />
+                                              <PackageCard variant="compact" singlePackage={pkg} isFullHeight />
                                           </div>
                                       </div>
                                   );

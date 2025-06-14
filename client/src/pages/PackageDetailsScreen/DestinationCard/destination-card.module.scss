@@ -47,7 +47,7 @@
 }
 
 .city {
-  @include dark-chip
+  @include dark-chip;
 }
 
 .divider {
@@ -64,4 +64,19 @@
   flex-direction: column;
   //@include card;
   gap: 2rem;
+}
+
+.citySkeleton {
+  width: 80px;
+  height: 20px;
+}
+
+.dateSkeleton {
+  width: 100px;
+  height: 20px;
+}
+
+.matchesCountSkeleton {
+  width: 120px;
+  height: 20px;
 }

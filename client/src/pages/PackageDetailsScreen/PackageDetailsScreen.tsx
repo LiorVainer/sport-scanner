@@ -11,6 +11,7 @@ import { PackageService } from '@/api/services/package.service';
 import { UsersService } from '@/api/services/users.service';
 import { DestinationCard } from '@pages/PackageDetailsScreen/DestinationCard';
 import { useNavigate } from 'react-router';
+import { PackageDetailsScreenSkeleton } from '@pages/PackageDetailsScreen/PackageDetailsScreenSkeleton';
 
 const { Title, Text } = Typography;
 
@@ -60,7 +61,7 @@ export const PackageDetailsScreen = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <PackageDetailsScreenSkeleton />;
     }
 
     return (
