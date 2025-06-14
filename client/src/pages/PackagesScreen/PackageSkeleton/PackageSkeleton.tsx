@@ -4,49 +4,42 @@ import styles from './package-skeleton.module.scss';
 
 interface PackageSkeletonProps {
     variant?: 'full' | 'compact';
+    isFullHeight?: boolean;
 }
 
-export const PackageSkeleton = ({ variant = 'full' }: PackageSkeletonProps) => {
+export const PackageSkeleton = ({ variant = 'full', isFullHeight = false }: PackageSkeletonProps) => {
     const isCompact = variant === 'compact';
     const avatarSize = isCompact ? 60 : 100;
-    const inputHeight = isCompact ? 16 : 20;
-    const smallW = isCompact ? 24 : 30;
-    const medW = isCompact ? 80 : 100;
-    const largeW = isCompact ? 150 : 250;
-    const footerW1 = isCompact ? 120 : 200;
-    const footerW2 = isCompact ? 90 : 120;
+    const lineHeight = isCompact ? 16 : 20;
+    const titleWidth = isCompact ? 180 : 240;
 
     return (
-        <div className={clsx(styles.skeletonCard, isCompact && styles.compactCard)}>
-            <div className={clsx(styles.skeletonMatches, isCompact && styles.compactMatches)}>
-                <div className={styles.matchItem}>
-                    <div className={styles.matchTop}>
-                        <Skeleton.Input active style={{ height: inputHeight, width: smallW }} />
-                        <Skeleton.Input active style={{ height: inputHeight, width: smallW }} />
-                    </div>
-                    <div className={styles.matchItemMain}>
-                        <div className={styles.teamsLogos}>
-                            <Skeleton.Avatar shape="square" size={avatarSize} active />
-                            <Skeleton.Avatar shape="square" size={avatarSize} active />
-                        </div>
-                        <div className={styles.matchHeader}>
-                            <Skeleton.Input active style={{ height: inputHeight, width: medW }} />
-                            <Skeleton.Input active style={{ height: inputHeight, width: largeW }} />
-                            <Skeleton.Input
-                                active
-                                style={{
-                                    height: inputHeight,
-                                    width: largeW - 50,
-                                    marginTop: isCompact ? 12 : 20,
-                                }}
-                            />
-                        </div>
+        <div className={clsx(styles.packageCardContainer, { [styles.fullHeight]: isFullHeight })}>
+            {/* Sticky Header Skeleton */}
+            <div className={styles.packageHeader}>
+                <Skeleton.Input active style={{ width: titleWidth, height: 20, marginTop: 4 }} size="small" />
+            </div>
+
+            <div className={styles.packageCard}>
+                <div className={styles.content}>
+                    <div className={styles.destinations}>
+                        {Array.from({ length: 2 }).map((_, idx) => (
+                            <div key={idx} className={styles.destinationSection}>
+                                <Skeleton.Avatar shape="square" size={avatarSize} active />
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                    <Skeleton.Input active style={{ width: 150, height: lineHeight }} />
+                                    <Skeleton.Input active style={{ width: 100, height: lineHeight }} />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </div>
-            <div className={clsx(styles.skeletonFooter, isCompact && styles.compactFooter)}>
-                <Skeleton.Button active style={{ width: footerW1 }} />
-                <Skeleton.Button active style={{ width: footerW2, marginLeft: 'auto' }} />
+
+                {/* Footer Skeleton */}
+                <div className={styles.skeletonFooter}>
+                    <Skeleton.Button active style={{ width: 140 }} />
+                    <Skeleton.Button active style={{ width: 100, marginLeft: 'auto' }} />
+                </div>
             </div>
         </div>
     );

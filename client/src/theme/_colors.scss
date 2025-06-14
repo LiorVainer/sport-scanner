@@ -1,4 +1,6 @@
 @use "sass:math";
+@use "sass:color";
+
 $action: hsl(210, 80%, 50%);
 $divider: hsl(216, 7%, 87%);
 $background: hsl(210, 28%, 93%);
@@ -12,25 +14,25 @@ $red: hsl(0, 86%, 47%);
 
 
 @function gray-scale($lightness, $opacity: 1) {
-  @if math.unit($lightness) == "" { 
+  @if math.unit($lightness) == "" {
     $lightness: $lightness * 1%;
   }
   @return hsla(0, 0%, $lightness, $opacity);
 }
 
 @function darker($color, $amount) {
-    @return adjust-color($color, $lightness: -$amount);
+  @return color.adjust($color, $lightness: -$amount);
 }
 
 @function lighter($color, $amount) {
-    @return adjust-color($color, $lightness: $amount);
+  @return color.adjust($color, $lightness: $amount);
 }
 
 :export {
-    primary: $primary;
-    action: $action;
-    divider: $divider;
-    background: $background;
-    accent: $accent;
-    error: $error;
+  primary: $primary;
+  action: $action;
+  divider: $divider;
+  background: $background;
+  accent: $accent;
+  error: $error;
 }

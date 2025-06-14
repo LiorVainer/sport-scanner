@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFutbol } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import classes from './navbar.module.scss';
+import SportScannerLogo from '@/assets/logo.svg?react';
 
 import { EditProfileModal } from '../EditProfileModal';
 import { NavbarUserDropdown } from '../NavbarUserDropdown';
@@ -32,7 +31,7 @@ export const Navbar: React.FC = () => {
     return (
         <nav className={classes.navbar}>
             <Link to={ROUTES.HOME} className={classes.brand}>
-                <FontAwesomeIcon icon={faFutbol} />
+                <SportScannerLogo className={classes.logo} />
                 <h1 className={classes.title}>Sport Scanner</h1>
             </Link>
 

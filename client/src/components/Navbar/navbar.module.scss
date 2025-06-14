@@ -15,29 +15,38 @@ $link-hover-color: $accent;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
+
 
 .brand {
   display: flex;
   align-items: center;
   cursor: pointer;
 
-  .icon {
-    font-size: 1.25rem;
-    margin-right: 0.5rem;
-  }
 
   gap: 0.5rem;
 
   & > svg {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $accent;
   }
 
   .title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: $text-color;
+    //font-size: 1.25rem;
+    //font-weight: bold;
+    //color: $text-color;
+
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(90deg, $accent 0%, $action 110%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+    color: transparent;
   }
 }
 
