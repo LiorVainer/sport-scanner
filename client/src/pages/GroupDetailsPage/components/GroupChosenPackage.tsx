@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles/ChosenPackageTimeline.scss';
+import './styles/GroupChosenPackage.scss';
 import { PackageCard } from '@/components/PackageCard';
 import { Package } from '@/models/packages/package.model';
 
@@ -8,7 +8,7 @@ interface Props {
     backRoute?: string;
 }
 
-const ChosenPackageTimeline: React.FC<Props> = ({ pkg, backRoute }) => {
+export const GroupChosenPackage: React.FC<Props> = ({ pkg, backRoute }) => {
     return (
         <div className="chosen-package">
             <h3>Chosen Package By Group</h3>
@@ -19,5 +19,3 @@ const ChosenPackageTimeline: React.FC<Props> = ({ pkg, backRoute }) => {
         </div>
     );
 };
-
-export default ChosenPackageTimeline;

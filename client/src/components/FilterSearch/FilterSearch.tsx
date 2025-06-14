@@ -25,14 +25,15 @@ import {
     PackagesGenerationFormValuesSchema,
 } from '@/models/packages/package-generate-params.model.ts';
 import {
+    DEFAULT_MAX_PRICE,
     DEFAULT_TEAMS,
     MAX_AIRPORT_SEARCH_KEYWORD_LEN,
+    MAX_PRICE,
     MAX_TEAMS_LIMIT,
     MIN_COUNTRY_SEARCH_KEYWORD_LEN,
+    MIN_PRICE,
     MIN_SEARCH_KEYWORD_LEN,
     TopFootballCountries,
-    MAX_PRICE,
-    MIN_PRICE,
 } from './filter-search.const';
 
 const { RangePicker } = DatePicker;
@@ -220,7 +221,10 @@ const FilterSearch = () => {
                                             range
                                             min={MIN_PRICE}
                                             max={MAX_PRICE}
-                                            value={[field.value?.min ?? MIN_PRICE, field.value?.max ?? MAX_PRICE]}
+                                            value={[
+                                                field.value?.min ?? MIN_PRICE,
+                                                field.value?.max ?? DEFAULT_MAX_PRICE,
+                                            ]}
                                             onChange={(val) => field.onChange({ min: val[0], max: val[1] })}
                                             tooltip={{ formatter: (val) => `$${val}` }}
                                         />

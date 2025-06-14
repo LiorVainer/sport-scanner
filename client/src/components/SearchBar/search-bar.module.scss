@@ -23,7 +23,7 @@
   background-size: cover;
   background-position: center;
   border-radius: $system-border-radius;
-  gap: 4rem;
+  gap: 2rem;
   padding: 6rem;
   overflow: hidden;
   width: 100%;
@@ -79,7 +79,7 @@
   display: flex;
   gap: 0.5rem;
   z-index: 1;
-  padding: 0.25rem 0.5rem;
+  padding: 0.3rem;
   justify-content: center;
 }
 
@@ -91,6 +91,7 @@
   cursor: pointer;
   font-size: medium;
   transition: 0.3s ease;
+  width: 200px;
 
   &.active {
     background: white;

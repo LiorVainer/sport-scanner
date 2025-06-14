@@ -1,29 +1,27 @@
 import { Avatar, Tooltip, Typography } from 'antd';
 import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
-import { Group } from '@/models/group.model';
+import { PopulatedGroup } from '@/models/group.model';
 import { MatchDetails } from '@/components/MatchDetails/MatchDetails';
 import styles from './group-card.module.scss';
 import { ROUTES } from '@/constants/routes.const.ts';
 import { PackageFooter } from '@pages/PackagesScreen/PackageFooter';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { useNavigate } from 'react-router-dom';
+import { Package } from '@/models/packages/package.model.ts';
 
 const { Title, Text } = Typography;
 
 interface GroupCardProps {
-    group: Group;
-    backRoute?: string;
+    group: PopulatedGroup;
 }
 
-export const GroupCard = ({ group, backRoute }: GroupCardProps) => {
+export const GroupCard = ({ group }: GroupCardProps) => {
     const { title, users, selectedPackage, maxBudget, dates } = group;
-    const { timeline } = selectedPackage;
-    const destinations = timeline.filter((item) => item.type === 'destination');
-    const matches = destinations.flatMap((dest) => dest.matches || []);
+
     const navigate = useNavigate();
 
     const handleGroupClick = () => {
-        navigate(ROUTES.GROUP_DETAILS, { state: { group } });
+        navigate(`${ROUTES.GROUP_DETAILS}/${group._id}`, { state: { group } });
     };
 
     return (
@@ -49,27 +47,42 @@ export const GroupCard = ({ group, backRoute }: GroupCardProps) => {
                 </div>
             </div>
 
-            <div className={styles.selectedPackage}>
-                <div className={styles.matchList}>
-                    {matches.length === 0 && <Text>No matches scheduled</Text>}
+            {selectedPackage && <SelectedGroupPackage selectedPackage={selectedPackage} />}
+        </div>
+    );
+};
 
-                    {matches.length === 1 && <MatchDetails variant={'compact'} match={matches[0]} />}
+export type SelectedGroupPackageProps = {
+    selectedPackage: Package;
+};
 
-                    {matches.length === 2 && (
-                        <>
-                            <MatchDetails variant={'compact'} match={matches[0]} />
-                            <span className={styles.arrow}>→</span>
-                            <MatchDetails variant={'compact'} match={matches[1]} />
-                        </>
-                    )}
-                </div>
+export const SelectedGroupPackage = ({ selectedPackage }: SelectedGroupPackageProps) => {
+    const { timeline } = selectedPackage;
+    const destinations = timeline.filter((item) => item.type === 'destination');
+    const matches = destinations.flatMap((dest) => dest.matches || []);
+
+    return (
+        <div className={styles.selectedPackage}>
+            <div className={styles.matchList}>
+                {matches.length === 0 && <Text>No matches scheduled</Text>}
+
+                {matches.length === 1 && <MatchDetails variant={'compact'} match={matches[0]} />}
+
+                {matches.length === 2 && (
+                    <>
+                        <MatchDetails variant={'compact'} match={matches[0]} />
+                        <span className={styles.arrow}>→</span>
+                        <MatchDetails variant={'compact'} match={matches[1]} />
+                    </>
+                )}
+            </div>
+            {selectedPackage && (
                 <PackageFooter
                     variant={'compact'}
                     singlePackage={selectedPackage}
-                    backRoute={backRoute ?? ROUTES.PACKAGES}
                     actionLabel={'See Selected Package'}
                 />
-            </div>
+            )}
         </div>
     );
 };

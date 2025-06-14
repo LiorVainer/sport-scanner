@@ -28,7 +28,7 @@ export const Router = (_props: RouterProps) => {
                     <Route path={ROUTES.GROUPS} element={<GroupsScreen />} />
                     <Route path={`${ROUTES.EDIT_GROUP}/:groupId`} element={<GroupFormScreen />} />
                     <Route path={ROUTES.ADD_GROUP} element={<GroupFormScreen />} />
-                    <Route path={ROUTES.GROUP_DETAILS} element={<GroupDetailsPage />} />
+                    <Route path={`${ROUTES.GROUP_DETAILS}/:groupId`} element={<GroupDetailsPage />} />
                 </Route>
             </Route>
         </Routes>

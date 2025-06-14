@@ -7,7 +7,7 @@ import { LoadingContainer } from '@components/LoadingContainer';
 export const ProtectedRoutes = () => {
     const { loggedInUser, isLoading } = useAuth();
 
-    if (isLoading) return <LoadingContainer loadingText={`Loading User's Data`} />;
+    if (isLoading) return <LoadingContainer loadingText={`Loading User Data`} />;
 
     return loggedInUser ? <Outlet /> : <Navigate to={ROUTES.AUTH} replace />;
 };
