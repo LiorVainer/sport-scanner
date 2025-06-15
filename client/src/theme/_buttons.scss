@@ -110,10 +110,18 @@ $action-border-radius: 0.5rem;
   border-radius: s.$system-border-radius;
   border: none;
   cursor: pointer;
-  transition: background-position 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 
   &:hover {
     background-position: right center;
+    filter: brightness(1.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-position: left center;
+    transform: none;
   }
 }
 
@@ -155,7 +163,7 @@ $action-border-radius: 0.5rem;
   }
 
   &:hover {
-    transform: scale(1.05);
+    filter: brightness(0.9);
   }
 
   &:disabled {

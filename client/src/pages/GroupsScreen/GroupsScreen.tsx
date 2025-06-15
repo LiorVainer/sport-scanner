@@ -1,5 +1,4 @@
 import { ROUTES } from '@/constants/routes.const';
-import { Button } from 'antd';
 import { useNavigate } from 'react-router';
 import { EditOutlined } from '@ant-design/icons';
 import classes from './groups-screen.module.scss';
@@ -31,9 +30,10 @@ export const GroupsScreen = () => {
         return (
             <Screen className={classes.container}>
                 <h1>No Groups Found</h1>
-                <Button type="primary" icon={<EditOutlined />} onClick={handleNewGroup} className={classes.addButton}>
+                <button onClick={handleNewGroup} className={classes.addButton}>
+                    <EditOutlined />
                     Create New Group
-                </Button>
+                </button>
             </Screen>
         );
     }
@@ -45,9 +45,10 @@ export const GroupsScreen = () => {
                     <FontAwesomeIcon icon={faPeopleGroup} />
                     <h1>Your Groups</h1>
                 </div>
-                <Button type="primary" icon={<EditOutlined />} onClick={handleNewGroup} className={classes.addButton}>
+                <button onClick={handleNewGroup} className={classes.addButton}>
+                    <EditOutlined />
                     Create New Group
-                </Button>
+                </button>
             </div>
 
             {!isLoading && groups

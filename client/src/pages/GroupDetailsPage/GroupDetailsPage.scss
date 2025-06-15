@@ -45,6 +45,13 @@
     width: 100%;
   }
 
+  .regenerate-packages-button {
+    @include gradient-filled-button($gradient: $stubhub-gradient);
+    justify-content: space-between;
+    font-size: 0.9rem;
+    width: 235px;
+  }
+
   .packages-grid {
     display: grid;
     gap: 2.5rem;
@@ -76,19 +83,31 @@
 }
 
 .package-card-header {
+  @include card;
+  flex-direction: row;
+  align-items: stretch;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
   background-color: #ffffff;
-  border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   padding: 1.25rem;
 }
 
+.package-card-header-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.package-votes {
+  color: gray-scale(40%);
+  font-weight: 500;
+}
 
 .package-index {
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1;
   padding: 6px 15px;
   border-radius: 6px;
@@ -99,4 +118,6 @@
 
 .vote-button {
   z-index: 10;
+  @include gradient-outlined-button;
+  font-size: 0.9rem;
 }

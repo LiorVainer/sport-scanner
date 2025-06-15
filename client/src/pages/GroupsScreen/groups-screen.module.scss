@@ -42,3 +42,14 @@
     font-size: 1.8rem;
   }
 }
+
+.addButton {
+  @include theme.gradient-filled-button($gradient: theme.$stubhub-gradient);
+  font-size: 0.9rem;
+}
+
+.deleteButton {
+  @include theme.gradient-outlined-button($gradient: theme.$danger-gradient);
+  color: theme.$danger-dark;
+  font-size: 0.9rem;
+}

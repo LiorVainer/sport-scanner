@@ -1,4 +1,4 @@
-import { Button, Spin, Timeline } from 'antd';
+import { Spin, Timeline } from 'antd';
 import styles from './packages-generation-progress-timeline.module.scss';
 import { usePackages } from '@/context/PackagesContext.tsx';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
@@ -17,13 +17,9 @@ export const PackagesGenerationProgressTimeline = () => {
                     </h4>
                     {isLoading && <Spin />}
                 </div>
-                <Button
-                    type="primary"
-                    className={styles.hideButton}
-                    onClick={() => setHideProgressTimeline(!hideProgressTimeline)}
-                >
+                <button className={styles.hideButton} onClick={() => setHideProgressTimeline(!hideProgressTimeline)}>
                     {hideProgressTimeline ? 'Show' : 'Hide'} Progress
-                </Button>
+                </button>
             </div>
 
             {!hideProgressTimeline && (

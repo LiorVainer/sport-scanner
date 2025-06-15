@@ -1,4 +1,4 @@
-import { Skeleton } from 'antd';
+import { Skeleton, Timeline } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, CalendarOutlined, PushpinOutlined } from '@ant-design/icons';
 import styles from '../package-details-screen.module.scss';
 import originalStyles from '../package-details-screen.module.scss';
@@ -35,25 +35,35 @@ export const PackageDetailsScreenSkeleton = () => {
                 </div>
             </div>
 
-            <div className={styles.cardsSection}>
+            <Timeline className={styles.cardsSection}>
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
                 ))}
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <DestinationCardSkeleton key={`dest-${i}`} />
-                ))}
-
-                {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
-                ))}
-                {Array.from({ length: 1 }).map((_, i) => (
-                    <DestinationCardSkeleton key={`dest-${i}`} />
+                    <Timeline.Item>
+                        <DestinationCardSkeleton key={`dest-${i}`} />
+                    </Timeline.Item>
                 ))}
 
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
                 ))}
-            </div>
+                {Array.from({ length: 1 }).map((_, i) => (
+                    <Timeline.Item>
+                        <DestinationCardSkeleton key={`dest-${i}`} />
+                    </Timeline.Item>
+                ))}
+
+                {Array.from({ length: 1 }).map((_, i) => (
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
+                ))}
+            </Timeline>
         </div>
     );
 };

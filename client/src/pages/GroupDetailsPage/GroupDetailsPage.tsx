@@ -7,11 +7,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GroupService } from '@/api/services/group.service';
 import { PackageCard } from '@components/PackageCard';
 import { PackageSkeleton } from '@pages/PackagesScreen/PackageSkeleton';
-import { Button } from 'antd';
+import { Spin } from 'antd';
 import { Shuffle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { GroupChosenPackage } from '@pages/GroupDetailsPage/components/GroupChosenPackage.tsx';
 import { useAuth } from '@/context/AuthContext.tsx';
 import { GroupDetailsPageSkeleton } from 'src/pages/GroupDetailsPage/components/skeleton/GroupDetailsPageSkeleton';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const GroupDetailsPage = () => {
     const { groupId } = useParams<{ groupId: string }>();
@@ -102,15 +103,18 @@ const GroupDetailsPage = () => {
                 <div className="suggested-packages-container">
                     <div className="suggested-packages-header">
                         <h3 className="section-title">Tailored Packages for Your Group</h3>
-                        <Button
+                        <button
                             className="regenerate-packages-button"
-                            icon={<Shuffle size={16} />}
-                            type="primary"
-                            loading={generatePackagesMutation.isPending}
                             onClick={() => generatePackagesMutation.mutate()}
+                            disabled={generatePackagesMutation.isPending}
                         >
+                            {generatePackagesMutation.isPending ? (
+                                <Spin indicator={<LoadingOutlined style={{ color: 'white' }} spin />} />
+                            ) : (
+                                <Shuffle size={16} style={{ marginRight: 8 }} />
+                            )}
                             Suggest New Packages
-                        </Button>
+                        </button>
                     </div>
 
                     <div className="packages-grid">
@@ -126,15 +130,21 @@ const GroupDetailsPage = () => {
                                   return (
                                       <div className="package-new-card" key={pkg._id}>
                                           <div className="package-card-header">
-                                              <h3 className="package-index">{`Package ${index + 1}`}</h3>
-                                              <Button
+                                              <div className="package-card-header-left">
+                                                  <h3 className="package-index">{`Package ${index + 1}`}</h3>
+                                                  {voteCounts && (
+                                                      <h4 className={'package-votes'}>
+                                                          ({voteCounts[pkg._id] ?? 0} votes)
+                                                      </h4>
+                                                  )}
+                                              </div>
+                                              <button
                                                   className="vote-button"
-                                                  type="primary"
-                                                  icon={hasVoted ? <ThumbsDown size={16} /> : <ThumbsUp size={16} />}
                                                   onClick={() => handleVoting(pkg._id, hasVoted ? 'unvote' : 'vote')}
                                               >
+                                                  {hasVoted ? <ThumbsDown size={16} /> : <ThumbsUp size={16} />}
                                                   {hasVoted ? 'Unvote' : 'Vote'}
-                                              </Button>
+                                              </button>
                                           </div>
                                           <div className="package-card-content">
                                               <PackageCard variant="compact" singlePackage={pkg} isFullHeight />

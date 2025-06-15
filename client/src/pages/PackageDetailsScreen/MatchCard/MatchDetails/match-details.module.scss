@@ -157,6 +157,8 @@
 }
 
 .matchTicketButton {
+  @include font;
+  
   @include gradient-filled-button;
   font-weight: 600;
   width: 200px;
