@@ -118,7 +118,6 @@
 
 .saveButton {
   @include gradient-filled-button($gradient: $stubhub-gradient);
-  width: 200px;
   @include font;
   font-weight: 600;
 }

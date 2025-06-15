@@ -47,9 +47,14 @@
 
   .regenerate-packages-button {
     @include gradient-filled-button($gradient: $stubhub-gradient);
-    justify-content: space-between;
     font-size: 0.9rem;
-    width: 235px;
+    gap: 0.5rem;
+
+    & > svg {
+      width: 18px;
+      height: 18px;
+    }
+
   }
 
   .packages-grid {
