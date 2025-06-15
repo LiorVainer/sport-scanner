@@ -5,6 +5,43 @@
 }
 
 
+:global(.ant-form-item ) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100% !important;
+}
+
+:global {
+  .ant-form {
+    width: 100% !important;
+  }
+
+  .ant-form-item-row {
+    width: 100% !important;
+  }
+
+  .ant-input-outlined {
+    border-radius: $system-border-radius !important;
+    padding: 0.5rem 0.8rem !important;
+  }
+}
+
+:global(.ant-input-affix-wrapper ) {
+  border-radius: $system-border-radius !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+:global(.ant-form-item-control-input-content) {
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 .uploadFormItem :global(.ant-form-item-explain-error) {
   text-align: center !important;
   display: block;
@@ -73,10 +110,10 @@
   align-items: center;
   text-align: center;
   gap: 2rem;
-  padding-inline: 3rem;
-  padding-block: 3rem;
   background-color: #fff;
   border-radius: 10px;
+  @include card;
+  padding: 4rem;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   width: 30rem;
 }
@@ -87,6 +124,7 @@
   width: 100%;
   gap: 10px;
   align-items: center;
+  justify-content: center;
 }
 
 .inputField {
@@ -95,6 +133,7 @@
 
 .submitButton {
   width: 10rem;
+  @include gradient-filled-button;
 }
 
 .switchText {
