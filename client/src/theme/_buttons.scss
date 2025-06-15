@@ -111,6 +111,10 @@ $action-border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  & > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
 
   &:hover {
     background-position: right center;

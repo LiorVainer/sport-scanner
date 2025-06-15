@@ -109,23 +109,9 @@
 }
 
 .searchButton {
-  padding-inline: 2rem;
-  height: 40px;
-  background-size: 200% 100%;
-  background: linear-gradient(90deg, $accent 0%, $action 100%) left center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1rem;
-  gap: 0.5rem;
-  color: #fff;
-  border-radius: $system-border-radius;
-  border: none;
-  cursor: pointer;
-  transition: all 0.4s ease;
+  @include gradient-filled-button;
 
   &:hover {
-    background-position: right center;
     transform: scale(1.05);
   }
 }

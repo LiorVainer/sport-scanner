@@ -1,7 +1,9 @@
+@use '../../../theme/theme' as *;
+
 .packageCardContainer {
   display: flex;
   flex-direction: column;
-  border-radius: 1rem;
+  border-radius: $card-border-radius;
   width: 100%;
   background-color: #fff;
   overflow: hidden;
