@@ -50,7 +50,7 @@
 @mixin gradient-filled-chip($height: 40px, $padding-inline: 1.5rem) {
   padding-inline: $padding-inline;
   height: $height;
-  background: linear-gradient(90deg, $accent 0%, $action 100%);
+  background: $system-gradient;
   background-size: 200% 100%;
   display: flex;
   justify-content: center;

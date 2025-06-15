@@ -22,14 +22,16 @@
 }
 
 .fixtureItem {
+  @include card;
   display: grid;
   justify-content: space-between;
   align-items: center;
   grid-template-columns: 1fr 1.7fr 1fr;
   padding-block: 0.5rem;
   padding-inline: 1rem 2rem;
-  border-radius: 8px;
-  background-color: #f6f6f6;
+  
+
+  flex-direction: row;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 

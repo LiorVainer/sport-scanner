@@ -66,13 +66,17 @@ export const UserPackagesScreen: React.FC<Props> = ({
                     <h1>{title}</h1>
                 </div>
             )}
-            {userPackages.map(({ _id: date, packages }) => (
-                <div className={styles.packageContainer} key={date}>
-                    <h3 className={styles.dateHeader}>{date}</h3>
-                    {packages.map((singlePackage) => (
-                        <PackageCard singlePackage={singlePackage} backRoute={backRoute} />
-                    ))}
-                </div>
+            {userPackages.map(({ _id: date, packages }, index) => (
+                <>
+                    <div className={styles.packageSection} key={date}>
+                        <h3 className={styles.dateHeader}>{date}</h3>
+                        <div className={styles.packageContainer} key={date}>
+                            {packages.map((singlePackage) => (
+                                <PackageCard singlePackage={singlePackage} backRoute={backRoute} />
+                            ))}
+                        </div>
+                    </div>
+                </>
             ))}
         </Screen>
     );

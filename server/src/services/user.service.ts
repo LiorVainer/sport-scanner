@@ -26,6 +26,8 @@ export const UserService = {
     },
 
     async addToUsersHistory(userId: string, packageId: string): Promise<History> {
+        await HistoryRepository.deleteMany({ userId, packageId });
+
         return await HistoryRepository.create({
             packageId,
             userId,
@@ -57,10 +59,7 @@ export const UserService = {
     },
 
     async getUsers(username?: string): Promise<User[]> {
-        const filter = username
-          ? { username: { $regex: username, $options: 'i' } }
-          : {};
+        const filter = username ? { username: { $regex: username, $options: 'i' } } : {};
         return await UserRepository.find(filter).select('username _id');
     },
-      
 };

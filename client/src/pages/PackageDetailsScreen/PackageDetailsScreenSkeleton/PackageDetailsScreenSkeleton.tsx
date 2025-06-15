@@ -15,7 +15,7 @@ export const PackageDetailsScreenSkeleton = () => {
 
                 <div className={styles.packageInfo}>
                     <Skeleton.Input active className={styles.packageTitleSkeleton} />
-                    <Skeleton paragraph={{ rows: 2, className: styles.packageDescriptionSkeleton }} active />
+                    <Skeleton paragraph={{ rows: 1, className: styles.packageDescriptionSkeleton }} active />
                 </div>
 
                 <div className={styles.packageDetails}>

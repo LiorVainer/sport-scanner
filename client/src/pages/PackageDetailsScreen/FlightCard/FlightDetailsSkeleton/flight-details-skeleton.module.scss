@@ -4,9 +4,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
   background-color: white;
-  border-radius: 0.5rem;
+  @include card;
+  flex-direction: row;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 

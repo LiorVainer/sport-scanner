@@ -32,9 +32,10 @@ export const PackageSkeleton = ({ variant = 'full', isFullHeight = false, isActi
                             <div key={idx} className={styles.destinationSection}>
                                 <Skeleton.Avatar active={isActive} shape="square" size={avatarSize} />
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                    <Skeleton.Input active={isActive} style={{ width: 150, height: lineHeight }} />
-                                    <Skeleton.Input active={isActive} style={{ width: 100, height: lineHeight }} />
+                                    <Skeleton.Input active={isActive} style={{ width: 80, height: lineHeight }} />
+                                    <Skeleton.Input active={isActive} style={{ width: 80, height: lineHeight }} />
                                 </div>
+                                <Skeleton.Avatar active={isActive} shape="square" size={avatarSize} />
                             </div>
                         ))}
                     </div>
