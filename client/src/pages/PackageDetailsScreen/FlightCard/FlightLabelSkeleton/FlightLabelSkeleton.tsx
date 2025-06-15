@@ -1,6 +1,6 @@
 import { Skeleton, Tag } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import styles from './flight-label-skeleton.module.scss';
+import styles from '../FlightLabel/flight-label.module.scss';
 
 export const FlightLabelSkeleton = () => (
     <div className={styles.flightLabelContainer}>

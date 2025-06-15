@@ -8,5 +8,11 @@
   height: 100%;
 }
 
+@mixin respond-xl($property, $value) {
+  @media (max-width: 1600px) {
+    #{$property}: $value;
+  }
+}
+
 $system-border-radius: 2rem;
-$card-border-radius: 1rem;
+$card-border-radius: 2rem;

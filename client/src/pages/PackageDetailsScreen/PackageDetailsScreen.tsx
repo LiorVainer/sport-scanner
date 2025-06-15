@@ -1,4 +1,4 @@
-import { Button, message, Typography } from 'antd';
+import { message, Typography } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined } from '@ant-design/icons';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
@@ -73,18 +73,19 @@ export const PackageDetailsScreen = () => {
             ) : (
                 <>
                     <div className={styles.packageHeader}>
-                        {backRoute ? (
-                            <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
-                                <ArrowLeftOutlined className={styles.backIcon} />
-                            </Link>
-                        ) : (
-                            <div className={styles.backArrow} onClick={() => navigate(-1)}>
-                                <ArrowLeftOutlined className={styles.backIcon} />
-                            </div>
-                        )}
-
                         <div className={styles.packageInfo}>
-                            <Title className={styles.packageTitle}>{singlePackage.title}</Title>
+                            <div className={styles.titleContainer}>
+                                {backRoute ? (
+                                    <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
+                                        <ArrowLeftOutlined className={styles.backIcon} />
+                                    </Link>
+                                ) : (
+                                    <div className={styles.backArrow} onClick={() => navigate(-1)}>
+                                        <ArrowLeftOutlined className={styles.backIcon} />
+                                    </div>
+                                )}
+                                <h1 className={styles.packageTitle}>{singlePackage.title}</h1>
+                            </div>
                             <Text className={styles.packageDescription}>{singlePackage.description}</Text>
                         </div>
 
@@ -100,13 +101,13 @@ export const PackageDetailsScreen = () => {
                                     from <strong>{singlePackage.totalPrice?.min ?? 'N/A'}$</strong>
                                 </Text>
                             </div>
-                            <Button
-                                type="primary"
+                            <button
                                 className={styles.saveButton}
                                 onClick={isPackageSaved ? removePackage : savePackage}
                             >
-                                <PushpinOutlined /> {isPackageSaved ? 'Remove from Saved' : 'Add To Saved'}
-                            </Button>
+                                <PushpinOutlined />
+                                {isPackageSaved ? 'Remove From Saved' : 'Add To Saved'}
+                            </button>
                         </div>
                     </div>
 

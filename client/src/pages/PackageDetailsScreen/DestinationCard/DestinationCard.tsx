@@ -4,7 +4,7 @@ import { MatchCard } from '@pages/PackageDetailsScreen/MatchCard';
 import { Calendar } from 'lucide-react';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Tag, Typography } from 'antd';
+import { Typography } from 'antd';
 
 const { Text } = Typography;
 
@@ -16,7 +16,7 @@ export const DestinationCard = ({ destination }: DestinationCardProps) => (
     <div className={styles.destinationCard}>
         <div className={styles.header}>
             <div className={styles.left}>
-                <Tag className={styles.city}>{destination.city}</Tag>
+                <div className={styles.city}>{destination.city}</div>
                 <Text className={styles.destinationDates}>
                     <Calendar className={styles.calendarIcon} />
                     {formattedDate(destination.startDate)} <ArrowRightOutlined className={styles.arrowIcon} />

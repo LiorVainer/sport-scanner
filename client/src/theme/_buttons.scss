@@ -1,97 +1,171 @@
 @use './globals' as g;
 @use './colors' as c;
+@use './system' as s;
 @use "sass:color";
 
 $action-border-radius: 0.5rem;
 
 @mixin base-button($back: c.$action, $text: c.$primary) {
-    @include g.font;
+  @include g.font;
 
-    padding: 0.75rem 1.5rem;
-    border-radius: $action-border-radius;
-    border: none;
-    cursor: pointer;
-    @include g.centerflex;
-    color: $text;
-    background-color: $back;
+  padding: 0.75rem 1.5rem;
+  border-radius: $action-border-radius;
+  border: none;
+  cursor: pointer;
+  @include g.centerflex;
+  color: $text;
+  background-color: $back;
 
-    &:disabled {
-        cursor: not-allowed !important;
-        background-color: gray-scale(80%) !important;
+  &:disabled {
+    cursor: not-allowed !important;
+    background-color: gray-scale(80%) !important;
 
-        &:hover {
-            background-color: gray-scale(20%) !important;
-        }
+    &:hover {
+      background-color: gray-scale(20%) !important;
     }
+  }
 }
 
 @mixin outline-button($back: c.$action, $text: c.$primary, $border-width: 1px) {
-    @include base-button($back, $text);
+  @include base-button($back, $text);
 
-    border: $border-width solid $text;
-    transition: all 0.2s ease;
+  border: $border-width solid $text;
+  transition: all 0.2s ease;
 
-    &:hover {
-        // border-color: darken($text, 20);
-        color: $back;
-        background-color: $text;
-    }
+  &:hover {
+    // border-color: darken($text, 20);
+    color: $back;
+    background-color: $text;
+  }
 
-    &:active {
-        border-color: transparent;
-        color: $text;
-        background-color: desaturate(darken($text, 50), 60);
-    }
+  &:active {
+    border-color: transparent;
+    color: $text;
+    background-color: desaturate(darken($text, 50), 60);
+  }
 }
 
 @mixin trans-button($back: c.$action, $text: c.$primary) {
-    @include base-button($back, $text);
-    transition: all 0.2s ease;
+  @include base-button($back, $text);
+  transition: all 0.2s ease;
 
-    &:hover {
-        background-color: color.scale($back, $lightness: -10%);
-    }
+  &:hover {
+    background-color: color.scale($back, $lightness: -10%);
+  }
 
-    &:active {
-        background-color: color.scale($back, $lightness: -20%);
-    }
+  &:active {
+    background-color: color.scale($back, $lightness: -20%);
+  }
 }
 
 @mixin icon-button($back: c.$action, $text: c.$primary) {
-    @include trans-button($back, $text);
-    // aspect-ratio: 1;
+  @include trans-button($back, $text);
+  // aspect-ratio: 1;
 }
 
 @mixin text-button($text: c.$primary) {
-    @include base-button(transparent, $text);
+  @include base-button(transparent, $text);
 
-    background-color: transparent;
-    border: none;
-    padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
 
-    transition: color 0.2s ease;
+  transition: color 0.2s ease;
 
-    &:hover {
-        color: color.scale($text, $lightness: -30%);
-    }
+  &:hover {
+    color: color.scale($text, $lightness: -30%);
+  }
 }
 
 @mixin text-icon-button($back: c.$action, $text: c.$primary) {
-    @include trans-button($back, $text);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
+  @include trans-button($back, $text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 @mixin outlined-text-icon-button($back: c.$action, $text: c.$primary, $border-width: 1px) {
-    @include text-icon-button($back, $text);
-    border: $border-width solid $text;
-    &:disabled {
-        cursor: not-allowed !important;
-        //background-color: gray-scale(80%) !important;
-        &:hover {
-            background-color: gray-scale(20%) !important;
-        }
+  @include text-icon-button($back, $text);
+  border: $border-width solid $text;
+  &:disabled {
+    cursor: not-allowed !important;
+    //background-color: gray-scale(80%) !important;
+    &:hover {
+      background-color: gray-scale(20%) !important;
     }
+  }
 }
+
+@mixin gradient-filled-button($height: 40px, $gradient: linear-gradient(90deg, c.$accent 0%, c.$action 100%)) {
+  padding-inline: 2rem;
+  height: $height;
+  background-size: 200% 100%;
+  background: $gradient left center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  gap: 0.5rem;
+  color: #fff;
+  border-radius: s.$system-border-radius;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-position: right center;
+    transform: scale(1.05);
+  }
+}
+
+@mixin gradient-outlined-button(
+  $height: 40px,
+  $border-radius: s.$system-border-radius,
+  $padding-inline: 1.5rem,
+  $border-width: 2px,
+  $text-color: c.$accent,
+  $gradient: linear-gradient(90deg, c.$accent 0%, c.$action 100%)
+) {
+  position: relative;
+  z-index: 0;
+  padding-inline: $padding-inline;
+  height: $height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  gap: 0.5rem;
+  color: $text-color;
+  background-color: c.$primary;
+  border-radius: $border-radius;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: $border-width;
+    background: $gradient;
+    border-radius: inherit;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+

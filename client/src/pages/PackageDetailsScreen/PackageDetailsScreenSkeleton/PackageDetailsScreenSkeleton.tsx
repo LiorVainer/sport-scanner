@@ -1,4 +1,4 @@
-import { Button, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, CalendarOutlined, PushpinOutlined } from '@ant-design/icons';
 import styles from '../package-details-screen.module.scss';
 import originalStyles from '../package-details-screen.module.scss';
@@ -28,9 +28,10 @@ export const PackageDetailsScreenSkeleton = () => {
                         </div>
                         <Skeleton.Input active className={styles.priceSkeleton} />
                     </div>
-                    <Button type="primary" icon={<PushpinOutlined />} className={originalStyles.saveButton}>
+                    <button className={originalStyles.saveButton}>
+                        <PushpinOutlined />
                         Add To Saved
-                    </Button>
+                    </button>
                 </div>
             </div>
 

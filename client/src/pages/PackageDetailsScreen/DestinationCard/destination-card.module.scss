@@ -47,7 +47,14 @@
 }
 
 .city {
-  @include dark-chip;
+  @include gradient-outlined-box(
+          $border-radius: $card-border-radius,
+          $height: 40px,
+          $padding-inline: 1.5rem,
+          $gradient: $stubhub-gradient
+  );
+  color: $stubhub-dark;
+  font-weight: bold;
 }
 
 .divider {
@@ -68,12 +75,10 @@
 
 .citySkeleton {
   width: 80px;
-  height: 20px;
 }
 
 .dateSkeleton {
   width: 100px;
-  height: 20px;
 }
 
 .matchesCountSkeleton {

@@ -1,4 +1,4 @@
-import { Button, Typography } from 'antd';
+import { Typography } from 'antd';
 import { ArrowRightOutlined, ExportOutlined } from '@ant-design/icons';
 import styles from './flight-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
@@ -47,14 +47,10 @@ export const FlightDetails = ({ flight }: FlightDetailsProps) => {
                     </Text>
                 </div>
                 <a href={searchFlightTicketsLink} target="_blank" rel="noopener noreferrer">
-                    <Button
-                        type="primary"
-                        color={'purple'}
-                        icon={<ExportOutlined />}
-                        className={styles.flightTicketButton}
-                    >
+                    <button className={styles.flightTicketButton}>
+                        <ExportOutlined />
                         Flight Tickets
-                    </Button>
+                    </button>
                 </a>
             </div>
         </div>

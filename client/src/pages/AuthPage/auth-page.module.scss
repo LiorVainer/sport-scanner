@@ -46,7 +46,7 @@
     font-size: 2.5rem;
     font-weight: 600;
     margin: 0;
-    background: linear-gradient(90deg, $accent, $action);
+    background: $system-gradient;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 

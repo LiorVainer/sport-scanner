@@ -1,28 +1,31 @@
+@use '../../../../theme/theme' as *;
+
 .flightLabelContainer {
-    display: flex;
-    align-items: center;
-    background-color: #f0f2f5;
-    border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.5rem;
 }
 
 .flightTag {
-    margin-right: 1.25rem;
-    font-size: 20px;
-    line-height: 20px;
-    font-weight: 600;
-    padding: 0.4rem 0.6rem;
-    border-radius: 10px;
-    background-color: #2f4f6f;
-    color: white;
+  @include gradient-outlined-box(
+          $border-radius: 3rem,
+          $height: 40px,
+          $padding-inline: 1.5rem
+  );
+  font-weight: bold;
 }
 
 .flightRoute {
-    font-size: 22px;
-    color: #000;
-    font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 22px;
+  color: #000;
+  font-weight: 700;
 }
 
 .arrowIcon {
-    color: #000;
-    font-size: 20px;
+  color: #000;
+  font-size: 20px;
 }

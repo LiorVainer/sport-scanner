@@ -1,4 +1,4 @@
-import { Button, Tag, Typography } from 'antd';
+import { Tag, Typography } from 'antd';
 import { EnvironmentOutlined, ExportOutlined } from '@ant-design/icons';
 import styles from './match-details.module.scss';
 import { formattedDate } from '@/utils/date.utils';
@@ -57,9 +57,10 @@ export const MatchDetails = ({ match }: MatchDetailsProps) => {
                         </Text>
                     </div>
                     <a href={searchMatchTicketsLink} target="_blank" rel="noopener noreferrer">
-                        <Button type="primary" icon={<ExportOutlined />} className={styles.matchTicketButton}>
+                        <button className={styles.matchTicketButton}>
+                            <ExportOutlined />
                             Match Tickets
-                        </Button>
+                        </button>
                     </a>
                 </div>
             </div>

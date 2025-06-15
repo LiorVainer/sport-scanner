@@ -1,8 +1,12 @@
+@use '../../theme/theme' as theme;
+
 .page {
   display: flex;
   flex-direction: column;
   padding: 5rem 25%;
   gap: 2rem;
+
+  @include theme.respond-xl(padding, 5rem 10rem);
 }
 
 .packageContainer {

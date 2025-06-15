@@ -157,12 +157,5 @@
 }
 
 .matchTicketButton {
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 1.3rem 2.27rem;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
+  @include gradient-filled-button($gradient: $stubhub-gradient);
 }
