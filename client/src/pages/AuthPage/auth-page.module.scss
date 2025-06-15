@@ -5,28 +5,6 @@
 }
 
 
-:global(.ant-form-item ) {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100% !important;
-}
-
-:global {
-  .ant-form {
-    width: 100% !important;
-  }
-
-  .ant-form-item-row {
-    width: 100% !important;
-  }
-
-  .ant-input-outlined {
-    border-radius: $system-border-radius !important;
-    padding: 0.5rem 0.8rem !important;
-  }
-}
-
 :global(.ant-input-affix-wrapper ) {
   border-radius: $system-border-radius !important;
   width: 100%;
@@ -61,6 +39,29 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(45deg, darker($background, 20%), lighter($background, 20%), darker($background, 20%)); // blue to cyan
+
+  :global {
+    .ant-form {
+      width: 100% !important;
+    }
+
+    .ant-form-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100% !important;
+    }
+
+
+    .ant-form-item-row {
+      width: 100% !important;
+    }
+
+    .ant-input-outlined {
+      border-radius: $system-border-radius !important;
+      padding: 0.5rem 0.8rem !important;
+    }
+  }
 }
 
 .screenHeader {
