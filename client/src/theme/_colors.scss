@@ -13,9 +13,12 @@ $stubhub-light: #8c51f1;
 $error: hsla(0, 84%, 20%, 1);
 $error-light: hsla(0, 84%, 85%, 1);
 $red: hsl(0, 86%, 47%);
+$favorite-light: hsl(42, 75%, 53%);
+$favorite-dark: hsl(36, 68%, 32%);
 
 $stubhub-gradient: linear-gradient(90deg, $stubhub-dark 0%, $stubhub-light 100%);
 $system-gradient: linear-gradient(90deg, $accent, $action);
+$favorite-gradient: linear-gradient(90deg, $favorite-dark, $favorite-light);
 
 
 @mixin gradient($start, $end, $deg: 90deg) {

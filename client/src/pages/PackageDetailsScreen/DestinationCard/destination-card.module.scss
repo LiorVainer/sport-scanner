@@ -34,7 +34,7 @@
 
   .destinationMatches {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.2rem;
@@ -48,18 +48,16 @@
 
 .city {
   @include gradient-outlined-box(
-          $border-radius: $card-border-radius,
-          $height: 40px,
-          $padding-inline: 1.5rem,
-          $gradient: $stubhub-gradient
+          $border-radius: 3rem,
   );
-  color: $stubhub-dark;
+  color: $accent;
   font-weight: bold;
+  gap: 0.8rem;
 }
 
 .divider {
-  height: 1px;
-  background-color: #e0e0e0;
+  height: 0.5px;
+  background-color: $accent;
   margin: 0.25rem 0 0.75rem;
   width: 100%;
   border-radius: 1px;

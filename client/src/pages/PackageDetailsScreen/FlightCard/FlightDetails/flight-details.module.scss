@@ -78,7 +78,8 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  @include gradient-filled-button()
+  @include gradient-filled-button();
+  width: 200px;
 }
 
 .airplaneIcon {

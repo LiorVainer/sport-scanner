@@ -10,10 +10,9 @@
 .flightTag {
   @include gradient-outlined-box(
           $border-radius: 3rem,
-          $height: 40px,
-          $padding-inline: 1.5rem
   );
   font-weight: bold;
+  gap: 0.7rem;
 }
 
 .flightRoute {

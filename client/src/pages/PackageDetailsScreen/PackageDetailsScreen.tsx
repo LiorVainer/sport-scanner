@@ -1,4 +1,4 @@
-import { message, Typography } from 'antd';
+import { message, Timeline, Typography } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined } from '@ant-design/icons';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
@@ -13,7 +13,7 @@ import { DestinationCard } from '@pages/PackageDetailsScreen/DestinationCard';
 import { useNavigate } from 'react-router';
 import { PackageDetailsScreenSkeleton } from '@pages/PackageDetailsScreen/PackageDetailsScreenSkeleton';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export const PackageDetailsScreen = () => {
     const { packageId } = useParams<{ packageId: string }>();
@@ -112,19 +112,32 @@ export const PackageDetailsScreen = () => {
                     </div>
 
                     <div className={styles.cardsSection}>
-                        {singlePackage.timeline.map((item, timelineIndex) => {
-                            switch (item.type) {
-                                case PackageTimelineItemType.FLIGHT: {
-                                    return <FlightCard key={`flight-${timelineIndex}`} flight={item} />;
+                        <Timeline className={styles.cardsSection}>
+                            {singlePackage.timeline.map((item, timelineIndex) => {
+                                switch (item.type) {
+                                    case PackageTimelineItemType.FLIGHT: {
+                                        return (
+                                            <Timeline.Item className={styles.timelineItem}>
+                                                <FlightCard key={`flight-${timelineIndex}`} flight={item} />
+                                            </Timeline.Item>
+                                        );
+                                    }
+
+                                    case PackageTimelineItemType.DESTINATION:
+                                        return (
+                                            <Timeline.Item className={styles.timelineItem}>
+                                                <DestinationCard
+                                                    key={`destination-${timelineIndex}`}
+                                                    destination={item}
+                                                />
+                                            </Timeline.Item>
+                                        );
+
+                                    default:
+                                        return null;
                                 }
-
-                                case PackageTimelineItemType.DESTINATION:
-                                    return <DestinationCard key={`destination-${timelineIndex}`} destination={item} />;
-
-                                default:
-                                    return null;
-                            }
-                        })}
+                            })}
+                        </Timeline>
                     </div>
                 </>
             )}

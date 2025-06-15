@@ -5,9 +5,10 @@ import styles from './package-skeleton.module.scss';
 interface PackageSkeletonProps {
     variant?: 'full' | 'compact';
     isFullHeight?: boolean;
+    isActive?: boolean;
 }
 
-export const PackageSkeleton = ({ variant = 'full', isFullHeight = false }: PackageSkeletonProps) => {
+export const PackageSkeleton = ({ variant = 'full', isFullHeight = false, isActive = true }: PackageSkeletonProps) => {
     const isCompact = variant === 'compact';
     const avatarSize = isCompact ? 60 : 100;
     const lineHeight = isCompact ? 16 : 20;
@@ -17,7 +18,11 @@ export const PackageSkeleton = ({ variant = 'full', isFullHeight = false }: Pack
         <div className={clsx(styles.packageCardContainer, { [styles.fullHeight]: isFullHeight })}>
             {/* Sticky Header Skeleton */}
             <div className={styles.packageHeader}>
-                <Skeleton.Input active style={{ width: titleWidth, height: 20, marginTop: 4 }} size="small" />
+                <Skeleton.Input
+                    active={isActive}
+                    style={{ width: titleWidth, height: 20, marginTop: 4 }}
+                    size="small"
+                />
             </div>
 
             <div className={styles.packageCard}>
@@ -25,10 +30,10 @@ export const PackageSkeleton = ({ variant = 'full', isFullHeight = false }: Pack
                     <div className={styles.destinations}>
                         {Array.from({ length: 2 }).map((_, idx) => (
                             <div key={idx} className={styles.destinationSection}>
-                                <Skeleton.Avatar shape="square" size={avatarSize} active />
+                                <Skeleton.Avatar active={isActive} shape="square" size={avatarSize} />
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                    <Skeleton.Input active style={{ width: 150, height: lineHeight }} />
-                                    <Skeleton.Input active style={{ width: 100, height: lineHeight }} />
+                                    <Skeleton.Input active={isActive} style={{ width: 150, height: lineHeight }} />
+                                    <Skeleton.Input active={isActive} style={{ width: 100, height: lineHeight }} />
                                 </div>
                             </div>
                         ))}
@@ -37,8 +42,8 @@ export const PackageSkeleton = ({ variant = 'full', isFullHeight = false }: Pack
 
                 {/* Footer Skeleton */}
                 <div className={styles.skeletonFooter}>
-                    <Skeleton.Button active style={{ width: 140 }} />
-                    <Skeleton.Button active style={{ width: 100, marginLeft: 'auto' }} />
+                    <Skeleton.Button active={isActive} style={{ width: 140 }} />
+                    <Skeleton.Button active={isActive} style={{ width: 100, marginLeft: 'auto' }} />
                 </div>
             </div>
         </div>

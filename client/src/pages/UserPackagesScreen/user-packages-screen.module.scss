@@ -9,6 +9,16 @@
   @include theme.respond-xl(padding, 5rem 10rem);
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .titleIcon {
+    font-size: 1.5rem;
+  }
+}
+
 .packageContainer {
   display: flex;
   flex-direction: column;

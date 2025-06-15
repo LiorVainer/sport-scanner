@@ -2,7 +2,7 @@
 @use './colors' as *;
 
 @mixin font {
-  font-family: 'Assistant', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
 }
 
 /**
@@ -69,15 +69,13 @@
 
 @mixin gradient-outlined-box(
   $border-radius: 0,
-  $height: 40px,
-  $padding-inline: 1.5rem,
+  $padding: 0.5rem 1.5rem,
   $border-width: 2px,
   $gradient: linear-gradient(90deg, $accent 0%, $action 100%),
 ) {
   position: relative;
   z-index: 0;
-  padding-inline: $padding-inline;
-  height: $height;
+  padding: $padding;
   display: flex;
   align-items: center;
   justify-content: center;

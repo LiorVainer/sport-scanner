@@ -2,8 +2,8 @@
 
 .container {
   background-color: #fff;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: theme.$card-border-radius;
+  padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   width: 100%;
   gap: 16px;

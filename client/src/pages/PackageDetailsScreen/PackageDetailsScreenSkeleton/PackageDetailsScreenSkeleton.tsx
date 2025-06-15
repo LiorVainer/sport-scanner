@@ -29,7 +29,7 @@ export const PackageDetailsScreenSkeleton = () => {
                         <Skeleton.Input active className={styles.priceSkeleton} />
                     </div>
                     <button className={originalStyles.saveButton}>
-                        <PushpinOutlined />
+                        <PushpinOutlined size={25} />
                         Add To Saved
                     </button>
                 </div>

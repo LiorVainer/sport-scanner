@@ -8,6 +8,9 @@ import { useQuery } from '@tanstack/react-query';
 import { GroupService } from '@api/services/group.service.ts';
 import { Screen } from '@components/Screen';
 import { GroupCardSkeleton } from '@components/GroupCardSkeleton/GroupCardSkeleton.tsx';
+import React from 'react';
+import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export const GroupsScreen = () => {
     const navigate = useNavigate();
@@ -38,7 +41,10 @@ export const GroupsScreen = () => {
     return (
         <Screen className={classes.container}>
             <div className={classes.header}>
-                <h1>Your Groups</h1>
+                <div className={classes.titleContainer}>
+                    <FontAwesomeIcon icon={faPeopleGroup} />
+                    <h1>Your Groups</h1>
+                </div>
                 <Button type="primary" icon={<EditOutlined />} onClick={handleNewGroup} className={classes.addButton}>
                     Create New Group
                 </Button>

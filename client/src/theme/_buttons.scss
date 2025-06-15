@@ -97,9 +97,8 @@ $action-border-radius: 0.5rem;
   }
 }
 
-@mixin gradient-filled-button($height: 40px, $gradient: linear-gradient(90deg, c.$accent 0%, c.$action 100%)) {
-  padding-inline: 2rem;
-  height: $height;
+@mixin gradient-filled-button($padding: 0.5rem 1.5rem, $gradient: linear-gradient(90deg, c.$accent 0%, c.$action 100%)) {
+  padding: $padding;
   background-size: 200% 100%;
   background: $gradient left center;
   display: flex;
@@ -111,26 +110,23 @@ $action-border-radius: 0.5rem;
   border-radius: s.$system-border-radius;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: background-position 0.2s ease-in-out;
 
   &:hover {
     background-position: right center;
-    transform: scale(1.05);
   }
 }
 
 @mixin gradient-outlined-button(
-  $height: 40px,
   $border-radius: s.$system-border-radius,
-  $padding-inline: 1.5rem,
+  $padding: 0.5rem 1.5rem,
   $border-width: 2px,
   $text-color: c.$accent,
   $gradient: linear-gradient(90deg, c.$accent 0%, c.$action 100%)
 ) {
   position: relative;
   z-index: 0;
-  padding-inline: $padding-inline;
-  height: $height;
+  padding: $padding;
   display: flex;
   align-items: center;
   justify-content: center;

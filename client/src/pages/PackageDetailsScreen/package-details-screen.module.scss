@@ -5,7 +5,8 @@
   flex-direction: column;
   align-items: center;
   padding-inline: 15%;
-  padding-block: 4rem;
+  padding-top: 2rem;
+  padding-bottom: 4rem;
   min-height: 100%;
   gap: 2rem;
 }
@@ -17,9 +18,9 @@
   gap: 1.5rem;
   //box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.12);
   flex-direction: row;
-  @include gradient-outlined-box($height: 100%, $border-width: 1.5px);
+  //@include gradient-outlined-box($height: 100%, $border-width: 2px);
   @include card;
-  position: sticky;
+  //position: sticky;
   align-items: stretch;
   top: 2rem;
   flex-direction: row;
@@ -30,9 +31,7 @@
   display: flex;
   align-items: baseline;
   justify-content: flex-start;
-  //position: absolute;
-  //left: -4rem;
-  //top: -0.3rem;
+  margin-top: 0.9rem;
 }
 
 .titleContainer {
@@ -40,16 +39,15 @@
   align-items: flex-start;
   justify-content: center;
   flex: 1;
-  margin-bottom: 0
+  margin-bottom: 0;
+  gap: 1rem;
 }
 
 .backIcon {
-  font-size: 25px;
+  font-size: 20px;
   cursor: pointer;
   align-self: start;
   color: $accent;
-  margin-top: 1rem;
-  margin-right: 2rem;
 }
 
 .packageInfo {
@@ -61,7 +59,7 @@
 }
 
 .packageTitle {
-  font-size: 30px;
+  font-size: 24px;
   line-height: 48px;
   color: $accent !important;
   font-weight: 700;
@@ -81,6 +79,8 @@
   font-size: 16px;
   line-height: 24px;
   color: #3a4d63;
+  margin-bottom: 1rem;
+  margin-inline-start: 1rem;
 }
 
 .packageDetails {
@@ -117,13 +117,10 @@
 }
 
 .saveButton {
-  @include gradient-outlined-button();
-  color: $accent;
-
-
-  font-size: 1rem;
+  @include gradient-filled-button($gradient: $stubhub-gradient);
+  width: 200px;
+  @include font;
   font-weight: 600;
-  padding: 1.3rem;
 }
 
 
