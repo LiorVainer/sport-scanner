@@ -1,8 +1,23 @@
+@use '../../theme/theme' as theme;
+
 .page {
   display: flex;
   flex-direction: column;
   padding: 5rem 25%;
-  gap: 2rem;
+  gap: 4rem;
+
+  @include theme.respond-xl(padding, 5rem 10rem);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: theme.darker(theme.$accent, 10%);
+
+  .titleIcon {
+    font-size: 1.5rem;
+  }
 }
 
 .packageContainer {
@@ -10,6 +25,7 @@
   flex-direction: column;
   align-items: end;
   gap: 3rem;
+  position: relative;
 }
 
 .packageCard {
@@ -26,7 +42,7 @@
 
 .divider {
   height: 1px;
-  background-color: #e0e0e0;
+  background-color: #c3c3c3;
   margin: 0.25rem 0 0.75rem;
   width: 100%;
   border-radius: 1px;
@@ -72,8 +88,25 @@
 }
 
 .dateHeader {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 20px 0 10px;
+  font-size: 16px;
   color: #2a2a2a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  //@include theme.font;
+  font-family: 'Assistant', sans-serif;
+  font-weight: 600;
+  border-radius: theme.$card-border-radius;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  color: theme.$accent;
+
+  position: sticky;
+  top: 2rem;
+  z-index: 1000;
+
+  align-self: flex-start;
+  transform: translateX(calc(100% + 4rem)); // shifts to the right
+  margin-bottom: -2.5rem;
+
+  white-space: nowrap;
+  pointer-events: none;
 }

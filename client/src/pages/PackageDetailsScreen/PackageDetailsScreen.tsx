@@ -1,4 +1,4 @@
-import { Button, message, Typography } from 'antd';
+import { message, Timeline, Typography } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, PushpinOutlined } from '@ant-design/icons';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
@@ -13,7 +13,7 @@ import { DestinationCard } from '@pages/PackageDetailsScreen/DestinationCard';
 import { useNavigate } from 'react-router';
 import { PackageDetailsScreenSkeleton } from '@pages/PackageDetailsScreen/PackageDetailsScreenSkeleton';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export const PackageDetailsScreen = () => {
     const { packageId } = useParams<{ packageId: string }>();
@@ -73,18 +73,19 @@ export const PackageDetailsScreen = () => {
             ) : (
                 <>
                     <div className={styles.packageHeader}>
-                        {backRoute ? (
-                            <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
-                                <ArrowLeftOutlined className={styles.backIcon} />
-                            </Link>
-                        ) : (
-                            <div className={styles.backArrow} onClick={() => navigate(-1)}>
-                                <ArrowLeftOutlined className={styles.backIcon} />
-                            </div>
-                        )}
-
                         <div className={styles.packageInfo}>
-                            <Title className={styles.packageTitle}>{singlePackage.title}</Title>
+                            <div className={styles.titleContainer}>
+                                {backRoute ? (
+                                    <Link className={styles.backArrow} to={`/${backRoute.replace(/^\/?/, '')}`}>
+                                        <ArrowLeftOutlined className={styles.backIcon} />
+                                    </Link>
+                                ) : (
+                                    <div className={styles.backArrow} onClick={() => navigate(-1)}>
+                                        <ArrowLeftOutlined className={styles.backIcon} />
+                                    </div>
+                                )}
+                                <h1 className={styles.packageTitle}>{singlePackage.title}</h1>
+                            </div>
                             <Text className={styles.packageDescription}>{singlePackage.description}</Text>
                         </div>
 
@@ -100,30 +101,43 @@ export const PackageDetailsScreen = () => {
                                     from <strong>{singlePackage.totalPrice?.min ?? 'N/A'}$</strong>
                                 </Text>
                             </div>
-                            <Button
-                                type="primary"
+                            <button
                                 className={styles.saveButton}
                                 onClick={isPackageSaved ? removePackage : savePackage}
                             >
-                                <PushpinOutlined /> {isPackageSaved ? 'Remove from Saved' : 'Add To Saved'}
-                            </Button>
+                                <PushpinOutlined />
+                                {isPackageSaved ? 'Remove From Saved' : 'Add To Saved'}
+                            </button>
                         </div>
                     </div>
 
                     <div className={styles.cardsSection}>
-                        {singlePackage.timeline.map((item, timelineIndex) => {
-                            switch (item.type) {
-                                case PackageTimelineItemType.FLIGHT: {
-                                    return <FlightCard key={`flight-${timelineIndex}`} flight={item} />;
+                        <Timeline className={styles.cardsSection}>
+                            {singlePackage.timeline.map((item, timelineIndex) => {
+                                switch (item.type) {
+                                    case PackageTimelineItemType.FLIGHT: {
+                                        return (
+                                            <Timeline.Item className={styles.timelineItem}>
+                                                <FlightCard key={`flight-${timelineIndex}`} flight={item} />
+                                            </Timeline.Item>
+                                        );
+                                    }
+
+                                    case PackageTimelineItemType.DESTINATION:
+                                        return (
+                                            <Timeline.Item className={styles.timelineItem}>
+                                                <DestinationCard
+                                                    key={`destination-${timelineIndex}`}
+                                                    destination={item}
+                                                />
+                                            </Timeline.Item>
+                                        );
+
+                                    default:
+                                        return null;
                                 }
-
-                                case PackageTimelineItemType.DESTINATION:
-                                    return <DestinationCard key={`destination-${timelineIndex}`} destination={item} />;
-
-                                default:
-                                    return null;
-                            }
-                        })}
+                            })}
+                        </Timeline>
                     </div>
                 </>
             )}

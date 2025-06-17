@@ -58,6 +58,11 @@ const FilterPackagesSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.FILTER_PACKAGES),
 });
 
+const InvalidPackagesFilteredSchema = BaseUpdateSchema.extend({
+    step: z.literal(GeneratePackagesSteps.INVALID_PACKAGES_FILTERED),
+    filteredCount: z.number(),
+});
+
 const GeneratePackagesMetadataSchema = BaseUpdateSchema.extend({
     step: z.literal(GeneratePackagesSteps.GENERATING_PACKAGES_METADATA),
 });
@@ -86,6 +91,7 @@ export const PackagesGenerationProgressUpdateSchema = z.discriminatedUnion('step
     FinishedGeneratingPackagesSchema,
     ErrorProgressSchema,
     GeneratePackagesMetadataSchema,
+    InvalidPackagesFilteredSchema,
 ]);
 
 export type PackagesGenerationProgressUpdate = z.infer<typeof PackagesGenerationProgressUpdateSchema>;

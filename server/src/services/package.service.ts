@@ -152,8 +152,9 @@ class PackageService {
                 logId: 'invalid_packages',
             });
             emit?.({
-                step: GeneratePackagesSteps.FILTER_PACKAGES,
-                message: `Filtered ${invalidPackages.length} invalid packages.`,
+                step: GeneratePackagesSteps.INVALID_PACKAGES_FILTERED,
+                message: `⚠️ Filtered out ${invalidPackages.length} invalid packages.`,
+                filteredCount: invalidPackages.length,
             });
         }
 

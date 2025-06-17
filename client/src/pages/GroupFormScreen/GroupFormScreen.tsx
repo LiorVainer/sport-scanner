@@ -1,9 +1,9 @@
-import { Button, DatePicker, Input, Select } from 'antd';
+import { DatePicker, Input, Select } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { CalendarOutlined, DollarOutlined, EditOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classes from './group-form-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -216,9 +216,10 @@ export const GroupFormScreen = () => {
                     {errors.maxBudget && <p className={classes.error}>{errors.maxBudget.message}</p>}
                 </div>
 
-                <Button type="primary" htmlType="submit" icon={<EditOutlined />} className={classes.submitButton}>
+                <button className={classes.submitButton}>
+                    <EditOutlined />
                     {isEditMode ? 'Update Group' : 'Create Group'}
-                </Button>
+                </button>
             </form>
         </div>
     );

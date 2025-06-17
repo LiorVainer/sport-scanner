@@ -1,8 +1,10 @@
-import { Skeleton, Tag } from 'antd';
+import { Skeleton } from 'antd';
 import { Calendar } from 'lucide-react';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import styles from '../DestinationCard/destination-card.module.scss';
 import { MatchCardSkeleton } from '../MatchCard/MatchCardSkeleton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 type Props = {
     matchesAmount?: number;
@@ -13,7 +15,10 @@ export const DestinationCardSkeleton = ({ matchesAmount }: Props) => {
         <div className={styles.destinationCard}>
             <div className={styles.header}>
                 <div className={styles.left}>
-                    <Tag className={styles.city}>Destination</Tag>
+                    <div className={styles.city}>
+                        <FontAwesomeIcon icon={faLocationDot} />
+                        Destination
+                    </div>
                     <div className={styles.destinationDates}>
                         <Calendar className={styles.calendarIcon} />
                         <Skeleton.Input active className={styles.dateSkeleton} />

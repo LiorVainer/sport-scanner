@@ -1,3 +1,5 @@
+@use '../../../theme/theme' as *;
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -60,4 +62,10 @@
   display: flex;
   align-items: center;
   gap: 0.2rem;
+}
+
+.footerButton {
+  @include gradient-filled-button;
+  font-weight: 500;
+  font-size: 14px;
 }

@@ -33,3 +33,12 @@
 .searchIcon {
   font-size: 28px;
 }
+
+.searchButton {
+  @include gradient-filled-button;
+  width: 150px;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

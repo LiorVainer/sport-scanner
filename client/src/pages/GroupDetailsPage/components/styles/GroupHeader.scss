@@ -1,9 +1,12 @@
+@use '../../../../theme/theme' as *;
+
 .group-header-box {
   background: white;
-  padding: 24px;
+  @include card;
+  padding: 1.5rem;
   display: flex;
+  align-items: stretch;
   flex-direction: column;
-  border-radius: 12px;
   margin-bottom: 24px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 

@@ -2,7 +2,7 @@
 @use './colors' as *;
 
 @mixin font {
-  font-family: 'Assistant', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
 }
 
 /**
@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: space-between;
   background-color: $primary;
-  padding: 1rem;
+  padding: 1.5rem;
   width: 100%;
   border-radius: $card-border-radius;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -46,3 +46,57 @@
   background-color: #f6f6f6;
   color: #2f4f6f;
 }
+
+@mixin gradient-filled-chip($height: 40px, $padding-inline: 1.5rem) {
+  padding-inline: $padding-inline;
+  height: $height;
+  background: $system-gradient;
+  background-size: 200% 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  gap: 0.5rem;
+  color: #fff;
+  border-radius: $system-border-radius;
+  transition: background 0.3s ease;
+}
+
+@mixin gradient-filled-box($border-radius: 0, $height: 40px, $padding-inline: 1.5rem) {
+  @include gradient-filled-chip($height, $padding-inline);
+  border-radius: $border-radius;
+}
+
+@mixin gradient-outlined-box(
+  $border-radius: 0,
+  $padding: 0.5rem 1.5rem,
+  $border-width: 2px,
+  $gradient: linear-gradient(90deg, $accent 0%, $action 100%),
+) {
+  position: relative;
+  z-index: 0;
+  padding: $padding;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: $accent;
+  border-radius: $border-radius;
+  background-color: $primary;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: $border-width;
+    background: $gradient;
+    border-radius: inherit;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+

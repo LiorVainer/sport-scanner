@@ -1,4 +1,4 @@
-import { Button, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import styles from './match-details-skeleton.module.scss';
 import originalStyles from '../MatchDetails/match-details.module.scss';
 import { ExportOutlined } from '@ant-design/icons';
@@ -25,9 +25,10 @@ export const MatchDetailsSkeleton = () => {
                 </div>
                 <div className={styles.matchPriceInfo}>
                     <Skeleton.Input active className={styles.priceTextSkeleton} />
-                    <Button type="primary" icon={<ExportOutlined />} className={originalStyles.matchTicketButton}>
+                    <button className={originalStyles.matchTicketButton}>
+                        <ExportOutlined />
                         Match Tickets
-                    </Button>
+                    </button>
                 </div>
             </div>
         </div>

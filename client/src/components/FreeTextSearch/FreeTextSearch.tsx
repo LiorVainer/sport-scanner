@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Form, Input } from 'antd';
+import { Form, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import classes from './free-text-search.module.scss';
 import { useNavigate } from 'react-router';
@@ -28,20 +28,10 @@ const FreeTextSearch = () => {
                 size="large"
                 className={classes.searchInput}
             />
-            <Button
-                type="primary"
-                icon={
-                    <span className={classes.iconWrapper}>
-                        <SearchOutlined className={classes.searchIcon} />
-                    </span>
-                }
-                shape="round"
-                size="large"
-                htmlType="submit"
-                disabled={!searchText}
-            >
+            <button type="submit" className={classes.searchButton} disabled={!searchText}>
+                <SearchOutlined />
                 Search
-            </Button>
+            </button>
         </Form>
     );
 };

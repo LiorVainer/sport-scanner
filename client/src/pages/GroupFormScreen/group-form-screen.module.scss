@@ -1,19 +1,30 @@
 @use '../../theme/theme' as theme;
 
-
 .container {
   :global {
     .ant-select-selector {
       padding-block: 0.5rem !important;
-      padding-inline: 0.3rem !important;
+      padding-inline: 0.5rem !important;
+      border-radius: theme.$card-border-radius !important;
     }
+
+    .ant-input-affix-wrapper {
+      border-radius: theme.$card-border-radius !important;
+    }
+
+    .ant-input-outlined {
+      border-radius: theme.$card-border-radius !important;
+      padding-inline: 0.5rem !important;
+    }
+
 
     .ant-input {
       padding: 0.5rem 0.8rem !important;
     }
 
     .ant-picker-range {
-      padding: 0.5rem 0.8rem !important;
+      padding: 1rem 1rem !important;
+      border-radius: theme.$card-border-radius !important;
       font-size: 20px !important;
 
       & > .ant-picker-input > input {
@@ -69,6 +80,7 @@
 .submitButton {
   align-self: flex-end;
   margin-top: 2rem;
+  @include theme.gradient-filled-button($gradient: theme.$stubhub-gradient);
 }
 
 .icon {

@@ -1,6 +1,6 @@
 import { ArrowRightOutlined, RightOutlined } from '@ant-design/icons';
 import styles from './package-footer.module.scss';
-import { Button, Typography } from 'antd';
+import { Typography } from 'antd';
 import { formattedDate } from '@/utils/date.utils';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
@@ -69,9 +69,9 @@ export const PackageFooter = ({ singlePackage, backRoute, actionLabel, variant =
                         </Text>
                     </div>
                 </div>
-                <Button type="primary" onClick={addToHistory}>
+                <button onClick={addToHistory} className={styles.footerButton}>
                     {actionLabel ?? 'Continue'} <RightOutlined />
-                </Button>
+                </button>
             </div>
         </div>
     );

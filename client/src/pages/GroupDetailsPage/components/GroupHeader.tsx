@@ -4,7 +4,6 @@ import { PopulatedGroup } from '@/models/group.model.ts';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
 import { GroupService } from '@/api/services/group.service';
-import { Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import classes from '@pages/GroupsScreen/groups-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils.ts';
@@ -59,17 +58,14 @@ const GroupHeader: React.FC<Props> = ({ group }) => {
                         </div>
                     </div>
                     <div className="group-actions-row">
-                        <Button
-                            type="primary"
-                            icon={<EditOutlined />}
-                            onClick={() => navigate(`${ROUTES.EDIT_GROUP}/${_id}`)}
-                            className={classes.addButton}
-                        >
+                        <button onClick={() => navigate(`${ROUTES.EDIT_GROUP}/${_id}`)} className={classes.addButton}>
+                            <EditOutlined />
                             Edit Group
-                        </Button>
-                        <Button danger icon={<DeleteOutlined />} onClick={handleDeleteGroup}>
+                        </button>
+                        <button onClick={handleDeleteGroup} className={classes.deleteButton}>
+                            <DeleteOutlined />
                             Delete Group
-                        </Button>
+                        </button>
                     </div>
                 </div>
             </div>

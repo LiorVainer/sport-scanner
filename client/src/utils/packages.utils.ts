@@ -33,6 +33,9 @@ export const getProgressStepMessage = (progressUpdate: PackagesGenerationProgres
         case GeneratePackagesSteps.FILTER_PACKAGES:
             return '🧪 Filtering packages by quality and rules...';
 
+        case GeneratePackagesSteps.INVALID_PACKAGES_FILTERED:
+            return `🚫 Filtered out ${progressUpdate.filteredCount} packages that didn't meet your criteria.`;
+
         case GeneratePackagesSteps.GENERATING_PACKAGES_METADATA:
             return '🗂️ Adding metadata to packages...';
 

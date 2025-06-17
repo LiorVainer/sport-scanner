@@ -1,4 +1,4 @@
-import { Button, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { ArrowRightOutlined, ExportOutlined } from '@ant-design/icons';
 import { TicketsPlane } from 'lucide-react';
 import styles from './flight-details-skeleton.module.scss';
@@ -23,14 +23,10 @@ export const FlightDetailsSkeleton = () => {
                 <div className={styles.priceContainer}>
                     <Skeleton.Input active className={styles.priceTextSkeleton} />
                 </div>
-                <Button
-                    type="primary"
-                    color={'purple'}
-                    icon={<ExportOutlined />}
-                    className={originStyles.flightTicketButton}
-                >
+                <button className={originStyles.flightTicketButton}>
+                    <ExportOutlined />
                     Flight Tickets
-                </Button>
+                </button>
             </div>
         </div>
     );

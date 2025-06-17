@@ -206,9 +206,9 @@ export const AuthPage = () => {
                         )}
 
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" className={styles.submitButton} block>
+                            <button type="submit" className={styles.submitButton}>
                                 {isSignUp ? 'Register' : 'Sign In'}
-                            </Button>
+                            </button>
                         </Form.Item>
                         <Text>
                             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
@@ -231,6 +231,7 @@ export const AuthPage = () => {
                 </div>
                 <GoogleLogin
                     locale={'en'}
+                    shape={'pill'}
                     onSuccess={handleGoogleLoginSuccess}
                     onError={() => setErrorMessage('Google Login failed')}
                 />

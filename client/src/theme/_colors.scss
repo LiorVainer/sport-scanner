@@ -7,10 +7,27 @@ $background: hsl(210, 28%, 93%);
 $accent: hsl(210, 41%, 31%);
 $primary: hsl(0, 0%, 100%);
 $hover: #eef2ff;
+$stubhub-dark: #381870;
+$stubhub-light: #8c51f1;
 
 $error: hsla(0, 84%, 20%, 1);
 $error-light: hsla(0, 84%, 85%, 1);
-$red: hsl(0, 86%, 47%);
+$danger-light: hsl(0, 88%, 61%);
+$danger: hsl(0, 86%, 30%);
+$danger-dark: hsl(0, 84%, 29%);
+$favorite-light: hsl(42, 75%, 53%);
+$favorite-dark: hsl(36, 68%, 32%);
+
+$stubhub-gradient: linear-gradient(90deg, $stubhub-dark 0%, $stubhub-light 100%);
+$danger-gradient: linear-gradient(90deg, $danger-dark 0%, $danger-light 100%);
+$system-gradient: linear-gradient(90deg, $accent, $action);
+$vertical-system-gradient: linear-gradient(0deg, $accent, $action);
+$favorite-gradient: linear-gradient(90deg, $favorite-dark, $favorite-light);
+
+
+@mixin gradient($start, $end, $deg: 90deg) {
+  background: linear-gradient($deg, $start 0%, $end 100%);
+}
 
 
 @function gray-scale($lightness, $opacity: 1) {

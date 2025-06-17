@@ -1,4 +1,4 @@
-import { Button, Skeleton } from 'antd';
+import { Skeleton, Timeline } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, CalendarOutlined, PushpinOutlined } from '@ant-design/icons';
 import styles from '../package-details-screen.module.scss';
 import originalStyles from '../package-details-screen.module.scss';
@@ -15,7 +15,7 @@ export const PackageDetailsScreenSkeleton = () => {
 
                 <div className={styles.packageInfo}>
                     <Skeleton.Input active className={styles.packageTitleSkeleton} />
-                    <Skeleton paragraph={{ rows: 2, className: styles.packageDescriptionSkeleton }} active />
+                    <Skeleton paragraph={{ rows: 1, className: styles.packageDescriptionSkeleton }} active />
                 </div>
 
                 <div className={styles.packageDetails}>
@@ -28,31 +28,42 @@ export const PackageDetailsScreenSkeleton = () => {
                         </div>
                         <Skeleton.Input active className={styles.priceSkeleton} />
                     </div>
-                    <Button type="primary" icon={<PushpinOutlined />} className={originalStyles.saveButton}>
+                    <button className={originalStyles.saveButton}>
+                        <PushpinOutlined size={25} />
                         Add To Saved
-                    </Button>
+                    </button>
                 </div>
             </div>
 
-            <div className={styles.cardsSection}>
+            <Timeline className={styles.cardsSection}>
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
                 ))}
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <DestinationCardSkeleton key={`dest-${i}`} />
-                ))}
-
-                {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
-                ))}
-                {Array.from({ length: 1 }).map((_, i) => (
-                    <DestinationCardSkeleton key={`dest-${i}`} />
+                    <Timeline.Item>
+                        <DestinationCardSkeleton key={`dest-${i}`} />
+                    </Timeline.Item>
                 ))}
 
                 {Array.from({ length: 1 }).map((_, i) => (
-                    <FlightCardSkeleton key={`flight-${i}`} />
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
                 ))}
-            </div>
+                {Array.from({ length: 1 }).map((_, i) => (
+                    <Timeline.Item>
+                        <DestinationCardSkeleton key={`dest-${i}`} />
+                    </Timeline.Item>
+                ))}
+
+                {Array.from({ length: 1 }).map((_, i) => (
+                    <Timeline.Item>
+                        <FlightCardSkeleton key={`flight-${i}`} />
+                    </Timeline.Item>
+                ))}
+            </Timeline>
         </div>
     );
 };
