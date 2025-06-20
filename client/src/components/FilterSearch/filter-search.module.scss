@@ -102,7 +102,16 @@
   align-items: center;
 
   & > img {
-    width: 18px;
-    height: 18px;
+    max-width: 18px;
+    max-height: 18px;
+    object-fit: contain;
+  }
+}
+
+.searchButton {
+  @include gradient-filled-button;
+
+  &:hover {
+    transform: scale(1.05);
   }
 }

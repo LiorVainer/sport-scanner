@@ -1,25 +1,69 @@
-.group-details {
-  background: #f5f7fa;
+@use '../../theme/theme' as *;
 
-  .content-wrapper {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 32px 24px;
+.group-details {
+  background: $background;
+  padding: 5rem 20%;
+  box-sizing: border-box;
+  flex: 1;
+
+  @media (max-width: 1600px) {
+    padding: 5rem 10rem;
   }
 
-  .section-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-top: 32px;
-    margin-bottom: 16px;
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .suggested-packages-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .suggested-packages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .regenerate-packages-button {
+    @include gradient-filled-button($gradient: $stubhub-gradient);
+    font-size: 0.9rem;
+    gap: 0.5rem;
+
+    & > svg {
+      width: 18px;
+      height: 18px;
+    }
+
   }
 
   .packages-grid {
     display: grid;
-    gap: 24px;
-    margin-bottom: 32px;
+    gap: 2.5rem;
+    align-items: stretch;
+    grid-auto-rows: 1fr;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 
     @media (max-width: 900px) {
       grid-template-columns: repeat(2, 1fr);
@@ -29,4 +73,56 @@
       grid-template-columns: repeat(1, 1fr);
     }
   }
+}
+
+.package-new-card {
+  max-height: 400px;
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+}
+
+.package-card-content {
+  height: 100%;
+  overflow: hidden;
+}
+
+.package-card-header {
+  @include card;
+  flex-direction: row;
+  align-items: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+}
+
+.package-card-header-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.package-votes {
+  color: gray-scale(40%);
+  font-weight: 500;
+}
+
+.package-index {
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 15px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+}
+
+.vote-button {
+  z-index: 10;
+  @include gradient-outlined-button;
+  font-size: 0.9rem;
 }

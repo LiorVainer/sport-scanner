@@ -1,0 +1,93 @@
+@use '../../../../theme/theme' as *;
+
+.metaButtonSkeleton:global(.ant-skeleton) {
+  width: 170px !important;
+}
+
+.matchDetailsContainer {
+  @include card;
+  flex-direction: row;
+}
+
+.matchDetails {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.matchInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: fit-content;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.matchTeamsSkeleton {
+  height: 30px;
+  width: 400px !important;
+}
+
+.matchMeta {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.metaButtonSkeleton {
+  //width: 90px !important;
+  height: 28px;
+}
+
+.matchDatePrice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2rem;
+  align-self: flex-end;
+}
+
+.matchDayContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.dateSkeleton {
+  width: 140px;
+}
+
+.daySkeleton {
+  width: 100px;
+}
+
+.matchPriceInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.priceTextSkeleton {
+  width: 40px;
+}
+
+.priceAmountSkeleton {
+  width: 60px;
+  height: 20px;
+}
+
+.ticketButtonSkeleton {
+  width: 140px;
+  height: 40px;
+}

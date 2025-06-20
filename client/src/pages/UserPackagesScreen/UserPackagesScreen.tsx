@@ -8,13 +8,22 @@ import { PopulatedHistory } from '@/models/history.model';
 import { PackageCard } from '@/components/PackageCard';
 
 type Props = {
+    title?: string;
+    titleIcon?: React.ReactNode;
     queryKey: string[];
     queryFn: () => Promise<PopulatedSavedPackage[] | PopulatedHistory[]>;
     emptyComponent: React.ReactNode;
     backRoute: string;
 };
 
-export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyComponent, backRoute }) => {
+export const UserPackagesScreen: React.FC<Props> = ({
+    title,
+    queryKey,
+    queryFn,
+    emptyComponent,
+    backRoute,
+    titleIcon,
+}) => {
     const {
         data: userPackages,
         isLoading,
@@ -32,7 +41,15 @@ export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyCo
     if (isLoading) {
         return (
             <Screen className={styles.page}>
-                <PackageSkeleton />
+                {title && (
+                    <div className={styles.header}>
+                        {titleIcon && <div className={styles.titleIcon}>{titleIcon}</div>}
+                        <h1>{title}</h1>
+                    </div>
+                )}
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <PackageSkeleton key={index} />
+                ))}
             </Screen>
         );
     }
@@ -43,13 +60,23 @@ export const UserPackagesScreen: React.FC<Props> = ({ queryKey, queryFn, emptyCo
 
     return (
         <Screen className={styles.page}>
-            {userPackages.map(({ _id: date, packages }) => (
-                <div className={styles.packageContainer} key={date}>
-                    <h3 className={styles.dateHeader}>{date}</h3>
-                    {packages.map((singlePackage) => (
-                        <PackageCard singlePackage={singlePackage} backRoute={backRoute} />
-                    ))}
+            {title && (
+                <div className={styles.header}>
+                    {titleIcon && <div className={styles.titleIcon}>{titleIcon}</div>}
+                    <h1>{title}</h1>
                 </div>
+            )}
+            {userPackages.map(({ _id: date, packages }, index) => (
+                <>
+                    <div className={styles.packageSection} key={date}>
+                        <h3 className={styles.dateHeader}>{date}</h3>
+                        <div className={styles.packageContainer} key={date}>
+                            {packages.map((singlePackage) => (
+                                <PackageCard singlePackage={singlePackage} backRoute={backRoute} />
+                            ))}
+                        </div>
+                    </div>
+                </>
             ))}
         </Screen>
     );

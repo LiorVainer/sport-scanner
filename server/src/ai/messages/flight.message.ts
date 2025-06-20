@@ -2,6 +2,7 @@ import { FlightOffer } from '../../models/flights/flight-offer.model';
 import { CoreMessage } from 'ai';
 import { message } from './utils/message.utils';
 import { ExtendedFixtureItem } from '../../models/soccer/fixture.model';
+import { v4 as uuidv4 } from 'uuid';
 
 const getFlightPurpose = (origin: string, destination: string, userOrigin: string, matchCities: string[]): string => {
     const isFromOrigin = origin === userOrigin;
@@ -17,7 +18,7 @@ const getFlightPurpose = (origin: string, destination: string, userOrigin: strin
 
 const FlightMessageParser = {
     summaryLine: (flight: FlightOffer): string =>
-        `✈️ Flight Offer ${flight.id}: ${flight.price.total} ${flight.price.currency} | OneWay: ${flight.oneWay}`,
+        `✈️ Flight Offer ${uuidv4()}: ${flight.price.total} ${flight.price.currency} | OneWay: ${flight.itineraries.length === 1 ? 'Yes' : 'No'}`,
 
     purposeSegments: (flight: FlightOffer, matchCities: string[], userOrigin: string): string =>
         flight.itineraries
@@ -29,7 +30,7 @@ const FlightMessageParser = {
                         userOrigin,
                         matchCities
                     );
-                    return `  - ${seg.departure.iataCode} → ${seg.arrival.iataCode} on ${seg.departure.at} ${purpose}`;
+                    return `  - ${seg.departure.iataCode} → ${seg.arrival.iataCode} on ${seg.departure.at} ${purpose} (Duration: ${seg.duration})`;
                 })
             )
             .join('\n'),

@@ -1,57 +1,61 @@
+@use '../../../../theme/theme' as *;
+
+
 .package-voting {
-    padding: 16px;
+  padding: 2rem;
+  background: white;
+  border-radius: $card-border-radius;
 
-    h3 {
-        font-weight: 600;
-        margin-bottom: 16px;
-    }
+  h3 {
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
 
-    .bars-container {
-        display: flex;
-        gap: 24px;
-        justify-content: space-around;
-        align-items: flex-end;
-    }
+  .bars-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+  }
 
-    .vote-bar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 60px;
-    }
+  .vote-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60px;
+  }
 
-    .bar-bg {
-        position: relative;
-        background-color: #e8ecf1;
-        border-radius: 12px;
-        height: 120px;
-        width: 100%;
-        overflow: hidden;
-    }
+  .bar-bg {
+    position: relative;
+    background-color: $background;
+    border-radius: 12px;
+    height: 150px;
+    width: 100%;
+    overflow: hidden;
+  }
 
-    .bar-fill {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #1890ff;
-        border-radius: 0 0 12px 12px;
-        transition: height 0.3s ease;
-    }
+  .bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: $vertical-system-gradient;
+    border-radius: 0 0 12px 12px;
+    transition: height 0.3s ease;
+  }
 
-    .bar-percent {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        font-weight: 600;
-        font-size: 13px;
-        color: #333;
-    }
+  .bar-percent {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+  }
 
-    .bar-title {
-        margin-top: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        white-space: nowrap;
-    }
+  .bar-title {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
 }

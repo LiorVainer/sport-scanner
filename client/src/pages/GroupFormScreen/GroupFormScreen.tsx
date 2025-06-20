@@ -1,9 +1,9 @@
-import { Button, DatePicker, Input, Select } from 'antd';
+import { DatePicker, Input, Select } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { CalendarOutlined, DollarOutlined, EditOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classes from './group-form-screen.module.scss';
 import { UsersService } from '@/api/services/users.service';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -13,7 +13,8 @@ import { GroupFormDefaultValues, GroupFormSchema, GroupFormValues } from './grou
 import { TextCursorInput } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext.tsx';
 import { GroupService } from '@api/services/group.service.ts';
-import { ROUTES } from '@/constants/routes.const';
+import { CreateGroupPayload } from '@/models/group.model.ts';
+import { ROUTES } from '@/constants/routes.const.ts';
 
 const { RangePicker } = DatePicker;
 
@@ -23,28 +24,59 @@ export const GroupFormScreen = () => {
     const isEditMode = !!groupId;
     const navigate = useNavigate();
 
-    //TODO: Implement Group Fetch From Server
     const { data: group } = useQuery({
         queryKey: ['group', groupId],
         queryFn: async () => GroupService.getById(groupId!),
         enabled: !!groupId,
     });
 
-    //TODO: Implement Group Create / Update with Server
     const { mutateAsync: submitGroupForm } = useMutation({
-        mutationKey: ['group', isEditMode ? 'create' : 'update'],
-        mutationFn: async (group: GroupFormValues) =>
-            isEditMode ? GroupService.create(group) : GroupService.create(group),
+        mutationKey: ['group', isEditMode ? 'update' : 'create'],
+        mutationFn: async (formData: GroupFormValues) => {
+            const newGroup: CreateGroupPayload = {
+                title: formData.title,
+                users: formData.users.map(({ value }) => value),
+                dates: {
+                    start: new Date(formData.dates[0]),
+                    end: new Date(formData.dates[1]),
+                },
+                maxBudget: formData.maxBudget,
+            };
+
+            if (!isEditMode) {
+                return await GroupService.create(newGroup);
+            } else {
+                return await GroupService.update(group?._id!, newGroup);
+            }
+        },
     });
 
     const {
         control,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm<GroupFormValues>({
         resolver: zodResolver(GroupFormSchema),
-        defaultValues: group ?? GroupFormDefaultValues,
+        defaultValues: GroupFormDefaultValues, // always provide initial values
     });
+
+    // Reset when group data is loaded
+    useEffect(() => {
+        if (group) {
+            reset({
+                title: group.title,
+                users: group.users
+                    .filter((user) => user._id !== loggedInUser?._id)
+                    .map((user) => ({
+                        value: user._id,
+                        label: user.username,
+                    })),
+                dates: [new Date(group.dates.start).toISOString(), new Date(group.dates.end).toISOString()],
+                maxBudget: group.maxBudget,
+            });
+        }
+    }, [group, reset]);
 
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -56,23 +88,29 @@ export const GroupFormScreen = () => {
 
     const userOptions = useMemo(
         () =>
-            usersData.map((user) => ({
-                label: user.username,
-                value: user._id,
-            })),
+            usersData
+                .filter((user) => user._id !== loggedInUser?._id)
+                .map((user) => ({
+                    label: user.username,
+                    value: user._id,
+                })),
         [usersData]
     );
 
     const onSubmit = async (data: GroupFormValues) => {
-        submitGroupForm(data); // TODO: get the group created?
-        
-        navigate(ROUTES.GROUP_DETAILS, { state: { group } });
+        const group = await submitGroupForm(data);
+
+        navigate(`${ROUTES.GROUP_DETAILS}/${group._id}`);
+    };
+
+    const onError = (errors: any) => {
+        console.error('Validation errors:', errors);
     };
 
     if (isEditMode) {
-        const isUserInGroup = group?.users?.find((user) => user._id === loggedInUser?._id);
+        const isUserCreatedTheGroup = group?.createdBy._id === loggedInUser?._id;
 
-        if (isUserInGroup) {
+        if (!isUserCreatedTheGroup) {
             return (
                 <div className={classes.container}>
                     <h1>You Are Not Part Of This Group</h1>
@@ -85,19 +123,19 @@ export const GroupFormScreen = () => {
         <div className={classes.container}>
             <h1>{isEditMode ? 'Edit Group' : 'Create Your Group for the Ultimate Sports Experience'}</h1>
 
-            <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <form onSubmit={handleSubmit(onSubmit, onError)} className={classes.form}>
                 <div className={classes.formItem}>
                     <label className={classes.formTitle}>
                         <TextCursorInput size={18} className={classes.icon} /> Group Name
                     </label>
                     <Controller
-                        name="groupName"
+                        name="title"
                         control={control}
                         render={({ field }) => (
                             <Input {...field} className={classes.input} placeholder="Enter your group name" />
                         )}
                     />
-                    {errors.groupName && <p className={classes.error}>{errors.groupName.message}</p>}
+                    {errors.title && <p className={classes.error}>{errors.title.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -105,7 +143,7 @@ export const GroupFormScreen = () => {
                         <UsergroupAddOutlined className={classes.icon} /> Group Members
                     </label>
                     <Controller
-                        name="members"
+                        name="users"
                         control={control}
                         render={({ field }) => (
                             <Select
@@ -117,11 +155,12 @@ export const GroupFormScreen = () => {
                                 className={classes.input}
                                 onSearch={(value) => setSearchTerm(value)}
                                 filterOption={false}
+                                labelInValue
                                 options={userOptions}
                             />
                         )}
                     />
-                    {errors.members && <p className={classes.error}>{errors.members.message}</p>}
+                    {errors.users && <p className={classes.error}>{errors.users.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -129,7 +168,7 @@ export const GroupFormScreen = () => {
                         <CalendarOutlined className={classes.icon} /> Preferred Trip Dates
                     </label>
                     <Controller
-                        name="tripDates"
+                        name="dates"
                         control={control}
                         render={({ field }) => (
                             <RangePicker
@@ -151,7 +190,7 @@ export const GroupFormScreen = () => {
                             />
                         )}
                     />
-                    {errors.tripDates && <p className={classes.error}>{errors.tripDates.message}</p>}
+                    {errors.dates && <p className={classes.error}>{errors.dates.message}</p>}
                 </div>
 
                 <div className={classes.formItem}>
@@ -177,9 +216,10 @@ export const GroupFormScreen = () => {
                     {errors.maxBudget && <p className={classes.error}>{errors.maxBudget.message}</p>}
                 </div>
 
-                <Button type="primary" htmlType="submit" icon={<EditOutlined />} className={classes.submitButton}>
-                    Create Group
-                </Button>
+                <button className={classes.submitButton}>
+                    <EditOutlined />
+                    {isEditMode ? 'Update Group' : 'Create Group'}
+                </button>
             </form>
         </div>
     );

@@ -1,6 +1,6 @@
 import { ArrowRightOutlined, RightOutlined } from '@ant-design/icons';
 import styles from './package-footer.module.scss';
-import { Button, Typography } from 'antd';
+import { Typography } from 'antd';
 import { formattedDate } from '@/utils/date.utils';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
@@ -26,6 +26,7 @@ export const PackageFooter = ({ singlePackage, backRoute, actionLabel, variant =
     const isSavedPackage = (pkg: Package | PackageDocument): pkg is PackageDocument => '_id' in pkg && Boolean(pkg._id);
 
     const addToHistory = async () => {
+        console.log('got here');
         try {
             if (isSavedPackage(singlePackage)) {
                 await UsersService.addToUsersHistory(singlePackage._id);
@@ -64,13 +65,13 @@ export const PackageFooter = ({ singlePackage, backRoute, actionLabel, variant =
                             className={clsx(styles.icon, variant === 'compact' && styles.compactIcon)}
                         />
                         <Text strong className={clsx(styles.range, variant === 'compact' && styles.compactText)}>
-                            {totalPrice.min}$ - {totalPrice.max}$
+                            from {totalPrice.min}$
                         </Text>
                     </div>
                 </div>
-                <Button type="primary" onClick={addToHistory}>
+                <button onClick={addToHistory} className={styles.footerButton}>
                     {actionLabel ?? 'Continue'} <RightOutlined />
-                </Button>
+                </button>
             </div>
         </div>
     );

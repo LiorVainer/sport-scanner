@@ -1,7 +1,18 @@
 {
     "files": [],
-    "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.node.json"
+        }
+    ],
     "compilerOptions": {
-        "lib": ["ES2020", "dom", "DOM.Iterable"]
+        "lib": [
+            "ES2020",
+            "dom",
+            "DOM.Iterable"
+        ]
     }
 }

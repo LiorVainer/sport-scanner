@@ -1,0 +1,74 @@
+@use '../../../../theme/theme' as *;
+
+.flightDetailsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  @include card;
+  flex-direction: row;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flightRouteInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flightRouteSection {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.flightRoute {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.airplaneIcon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  color: #000;
+}
+
+.arrowIcon {
+  font-size: 1.25rem;
+}
+
+.citySkeleton {
+  width: 100px;
+}
+
+.dateSkeleton {
+  width: 60px !important;
+  margin-left: 0.5rem;
+}
+
+.flightPriceInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.priceTextSkeleton {
+  width: 40px;
+}
+
+.priceAmountSkeleton {
+  width: 60px;
+  height: 20px;
+}
+
+.ticketButtonSkeleton {
+  width: 140px;
+  height: 40px;
+}

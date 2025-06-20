@@ -2,12 +2,13 @@
 
 .container {
   background-color: #fff;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: theme.$card-border-radius;
+  padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-bottom: 32px;
-  margin-top: 32px;
   width: 100%;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
@@ -20,7 +21,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
 }
 
 .groupInfo {
@@ -50,7 +50,7 @@
 
 .avatars {
   display: flex;
-  gap: -8px;
+  align-self: flex-start;
 }
 
 .avatars :global(.ant-avatar) {
@@ -78,4 +78,31 @@
   font-weight: bold;
   color: #1890ff;
 }
-  
+
+
+/* group-card.module.scss additions */
+.avatars {
+  /* ensure avatars stacking looks good during load */
+  display: flex;
+
+  /* override inline avatar margin if needed */
+  .ant-skeleton-avatar {
+    border: 2px solid #fff;
+  }
+}
+
+.selectedPackage {
+  /* keep same padding/layout but adjust for skeleton */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: theme.gray-scale(90%) solid 1px;
+  border-radius: theme.$card-border-radius;
+  padding: 1rem;
+
+  .matchList {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}

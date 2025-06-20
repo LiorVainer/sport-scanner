@@ -25,14 +25,15 @@ import {
     PackagesGenerationFormValuesSchema,
 } from '@/models/packages/package-generate-params.model.ts';
 import {
+    DEFAULT_COUNTRIES,
+    DEFAULT_MAX_PRICE,
     DEFAULT_TEAMS,
     MAX_AIRPORT_SEARCH_KEYWORD_LEN,
+    MAX_PRICE,
     MAX_TEAMS_LIMIT,
     MIN_COUNTRY_SEARCH_KEYWORD_LEN,
-    MIN_SEARCH_KEYWORD_LEN,
-    TopFootballCountries,
-    MAX_PRICE,
     MIN_PRICE,
+    MIN_SEARCH_KEYWORD_LEN,
 } from './filter-search.const';
 
 const { RangePicker } = DatePicker;
@@ -54,10 +55,6 @@ const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () => {
         country: undefined,
     };
 };
-
-const DefaultCountryOptions = TopFootballCountries.map((country) => ({
-    value: country,
-}));
 
 const FilterSearch = () => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
@@ -220,7 +217,10 @@ const FilterSearch = () => {
                                             range
                                             min={MIN_PRICE}
                                             max={MAX_PRICE}
-                                            value={[field.value?.min ?? MIN_PRICE, field.value?.max ?? MAX_PRICE]}
+                                            value={[
+                                                field.value?.min ?? MIN_PRICE,
+                                                field.value?.max ?? DEFAULT_MAX_PRICE,
+                                            ]}
                                             onChange={(val) => field.onChange({ min: val[0], max: val[1] })}
                                             tooltip={{ formatter: (val) => `$${val}` }}
                                         />
@@ -258,12 +258,15 @@ const FilterSearch = () => {
                                     setValue('league', undefined);
                                     setLeagueNameSearch(undefined);
                                 }}
-                                options={
-                                    countryNameSearch
-                                        ? countries.map((country) => ({ value: country.name }))
-                                        : DefaultCountryOptions
-                                }
-                                value={countryNameSearch || field.value || ''}
+                                options={(countryNameSearch ? countries : DEFAULT_COUNTRIES).map((country) => ({
+                                    value: country.name,
+                                    label: (
+                                        <div className={classes.teamItem}>
+                                            <img src={country.flag} alt={country.name} />
+                                            {country.name}
+                                        </div>
+                                    ),
+                                }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<EnvironmentOutlined />}
                             />
@@ -303,7 +306,15 @@ const FilterSearch = () => {
                                     setValue('league', undefined);
                                     setLeagueNameSearch(undefined);
                                 }}
-                                options={leagues.map((league) => ({ value: league.league.name }))}
+                                options={leagues.map((league) => ({
+                                    value: league.league.name,
+                                    label: (
+                                        <div className={classes.teamItem}>
+                                            <img src={league.league.logo} alt={league.league.name} />
+                                            {league.league.name}
+                                        </div>
+                                    ),
+                                }))}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TrophyOutlined />}
                             />
@@ -380,16 +391,10 @@ const FilterSearch = () => {
             </div>
 
             <div className={classes.buttonGroup}>
-                <Button
-                    type="primary"
-                    icon={<SearchOutlined />}
-                    shape="round"
-                    size="large"
-                    htmlType="submit"
-                    disabled={!isValid}
-                >
+                <button type="submit" className={classes.searchButton} disabled={!isValid}>
+                    <SearchOutlined />
                     Search
-                </Button>
+                </button>
                 {isDirty && (
                     <Button danger icon={<CloseCircleOutlined />} shape="round" size="large" onClick={onClear}>
                         Clear

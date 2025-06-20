@@ -16,6 +16,7 @@ import soccerRoutes from './routes/soccer.route';
 import geoRoutes from './routes/geo.route';
 import { ENV } from './env/env.config';
 import packageRoutes from './routes/package.route';
+import groupRoutes from './routes/group.route';
 import { requestContextMiddleware } from './middlewares/request-context.middleware';
 import { jwtParserMiddleware } from './middlewares/auth.middlware';
 
@@ -72,6 +73,7 @@ db.once('open', () => console.log('Connected to database'));
 app.use('/geo', geoRoutes);
 app.use('/auth', authRoutes);
 app.use('/packages', packageRoutes);
+app.use('/groups', groupRoutes);
 app.use('/users', usersRoutes);
 app.use('/chat', chatRoutes);
 app.use('/match-experiences', matchExperienceRoutes);

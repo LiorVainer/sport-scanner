@@ -1,0 +1,72 @@
+@use '../../../../../theme/theme' as *;
+
+.groupDetails {
+  background: $background;
+  padding: 5rem 20%;
+  box-sizing: border-box;
+  flex: 1;
+
+  @media (max-width: 1600px) {
+    padding: 5rem 10rem;
+  }
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  height: 100%;
+  overflow: auto;
+}
+
+.suggestedPackagesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: white;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.packagesGrid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.packageNewCard {
+  position: relative;
+  display: grid;
+}
+
+.packageCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+}
+
+.packageCardContent {
+  overflow: hidden;
+}

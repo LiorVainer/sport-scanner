@@ -3,6 +3,11 @@ import mongoose, { PipelineStage } from 'mongoose';
 export const populateAggregation = (matchStage: PipelineStage): mongoose.PipelineStage[] => [
     matchStage,
     {
+        $sort: {
+            createdAt: -1,
+        },
+    },
+    {
         $lookup: {
             from: 'packages',
             localField: 'packageId',
@@ -10,19 +15,27 @@ export const populateAggregation = (matchStage: PipelineStage): mongoose.Pipelin
             as: 'package',
         },
     },
-    { $unwind: '$package' },
     {
-        $sort: { package: -1 },
+        $unwind: '$package',
     },
     {
         $group: {
             _id: {
                 $dateToString: { format: '%d/%m/%Y', date: '$createdAt' },
             },
-            packages: { $push: '$package' },
+            packages: {
+                $push: {
+                    $mergeObjects: [
+                        '$package',
+                        { createdAt: '$createdAt' }, // Optionally attach history's createdAt
+                    ],
+                },
+            },
         },
     },
     {
-        $sort: { _id: -1 },
+        $sort: {
+            _id: -1,
+        },
     },
 ];

@@ -1,10 +1,11 @@
+@use '../../../../theme/theme' as *;
+
 .flightDetailsContainer {
+  @include card;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: white;
-  border-radius: 0.5rem;
+  flex-direction: row;
+
+
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -71,12 +72,15 @@
 .flightTicketButton {
   font-size: 1rem;
   font-weight: 500;
+  @include font;
   padding: 1.3rem 2.27rem;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
+  @include gradient-filled-button();
+  width: 200px;
 }
 
 .airplaneIcon {
