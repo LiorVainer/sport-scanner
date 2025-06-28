@@ -6,7 +6,7 @@ import { PackageService } from '@api/services/package.service';
 import { PackagesGenerationProgressUpdate } from '@/models/packages/package-generation-progress-update.model.ts';
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
 import { useLocalStorage } from '@hooks/useLocalStorage.hooks.ts';
-import { PackagesGenerationParamsWithFreeText } from '@/models/packages/package-generate-params.model.ts';
+import { PackagesGenerationFormValues, PackagesGenerationParamsWithFreeText } from '@/models/packages/package-generate-params.model.ts';
 
 interface PackagesContextType {
     packages: Package[] | undefined;
@@ -15,6 +15,7 @@ interface PackagesContextType {
     fetchPackages: UseMutateFunction<Package[], Error, PackagesGenerationParamsWithFreeText>;
     hideProgressTimeline: boolean;
     setHideProgressTimeline: (hide: boolean) => void;
+    parseTextIntoParams: (text: string) => Promise<PackagesGenerationFormValues>;
 }
 
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
@@ -44,6 +45,11 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
         retry: false,
     });
 
+    const { mutateAsync: parseTextIntoParams } = useMutation({
+        mutationFn: (text: string) => PackageService.parseTextIntoParams(text),
+        retry: false,
+    });
+
     const fetchPackages = async (params: PackagesGenerationParamsWithFreeText) => {
         setHideProgressTimeline(false);
         setProgressUpdates([]);
@@ -59,6 +65,7 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
                 fetchPackages,
                 hideProgressTimeline,
                 setHideProgressTimeline,
+                parseTextIntoParams,
             }}
         >
             {children}

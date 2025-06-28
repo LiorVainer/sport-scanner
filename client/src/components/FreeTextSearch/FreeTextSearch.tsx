@@ -1,22 +1,30 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Form, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import classes from './free-text-search.module.scss';
-import { useNavigate } from 'react-router';
 import { usePackages } from '@/context/PackagesContext';
-import { ROUTES } from '@/constants/routes.const';
+import { useLocalStorage } from '@/hooks/useLocalStorage.hooks';
+import { PackagesGenerationFormValues } from '@/models/packages/package-generate-params.model';
+import { calcDefaultGenerateParams } from '../FilterSearch';
 
-const FreeTextSearch = () => {
+export interface FreeTextSearchProps {
+    setMode: (mode: 'filter' | 'free') => void;
+}
+
+const FreeTextSearch = ({ setMode }: FreeTextSearchProps) => {
+    const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
     const [searchText, setSearchText] = useState('');
-    const navigate = useNavigate();
-    const { fetchPackages } = usePackages();
+    const { parseTextIntoParams } = usePackages();
+    const [_storedSearchParams, setStoredSearchParams] = useLocalStorage<PackagesGenerationFormValues>(
+        'searchParams',
+        defaultGenerateParamsRef.current
+    );
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (searchText) {
-            navigate(ROUTES.PACKAGES);
-            fetchPackages({
-                freeText: searchText,
-            });
+            const params = await parseTextIntoParams(searchText);
+            setStoredSearchParams(params);
+            setMode('filter');
         }
     };
     return (

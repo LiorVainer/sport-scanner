@@ -6,7 +6,10 @@ import {
 } from '@/models/packages/package-generation-progress-update.model.ts';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
-import { PackagesGenerationParamsWithFreeText } from '@/models/packages/package-generate-params.model.ts';
+import {
+    PackagesGenerationFormValues,
+    PackagesGenerationParamsWithFreeText,
+} from '@/models/packages/package-generate-params.model.ts';
 
 export const ROUTE_PREFIX = '/packages';
 
@@ -81,6 +84,18 @@ export const PackageService = {
             return data;
         } catch (error) {
             console.error('Error creating package:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async parseTextIntoParams(text: string): Promise<PackagesGenerationFormValues> {
+        try {
+            const { data } = await axiosInstance.get<PackagesGenerationFormValues>(`${ROUTE_PREFIX}/parse-text`, {
+                params: { text },
+            });
+            return data;
+        } catch (error) {
+            console.error('Error parsing text into params:', (error as any).message);
             throw error;
         }
     },

@@ -35,7 +35,7 @@ const SearchBar = () => {
                     </Button>
                 </div>
 
-                {mode === 'filter' ? <FilterSearch /> : <FreeTextSearch />}
+                {mode === 'filter' ? <FilterSearch /> : <FreeTextSearch setMode={setMode} />}
             </div>
         </div>
     );

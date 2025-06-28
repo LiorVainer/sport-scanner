@@ -13,7 +13,7 @@ ENV.NODE_ENV === 'production' && router.use(authMiddleware);
  *   name: Package
  *   description: API for generating travel + match packages
  */
-
+router.get('/parse-text', packageController.parseTextIntoParams);
 router.get('/:id', packageController.getById);
 
 /**
