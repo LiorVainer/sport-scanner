@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { Form, Input } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Form, Input, Spin } from 'antd';
+import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import classes from './free-text-search.module.scss';
 import { usePackages } from '@/context/PackagesContext';
 import { useLocalStorage } from '@/hooks/useLocalStorage.hooks';
@@ -14,7 +14,7 @@ export interface FreeTextSearchProps {
 const FreeTextSearch = ({ setMode }: FreeTextSearchProps) => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
     const [searchText, setSearchText] = useState('');
-    const { parseTextIntoParams } = usePackages();
+    const { parseFreeTextSearchIntoGenerationParams, isParsingFreeTextSearch } = usePackages();
     const [_storedSearchParams, setStoredSearchParams] = useLocalStorage<PackagesGenerationFormValues>(
         'searchParams',
         defaultGenerateParamsRef.current
@@ -22,8 +22,14 @@ const FreeTextSearch = ({ setMode }: FreeTextSearchProps) => {
 
     const handleSubmit = async () => {
         if (searchText) {
-            const params = await parseTextIntoParams(searchText);
-            setStoredSearchParams(params);
+            const { country, league, teams, ...rest } = await parseFreeTextSearchIntoGenerationParams(searchText);
+
+            if (country || league) {
+                setStoredSearchParams({ ...rest, league, country });
+            } else if (teams && teams.length > 0) {
+                setStoredSearchParams({ ...rest, teams });
+            }
+
             setMode('filter');
         }
     };
@@ -36,8 +42,12 @@ const FreeTextSearch = ({ setMode }: FreeTextSearchProps) => {
                 size="large"
                 className={classes.searchInput}
             />
-            <button type="submit" className={classes.searchButton} disabled={!searchText}>
-                <SearchOutlined />
+            <button type="submit" className={classes.searchButton} disabled={!searchText || isParsingFreeTextSearch}>
+                {isParsingFreeTextSearch ? (
+                    <Spin indicator={<LoadingOutlined spin style={{ color: 'white' }} />} />
+                ) : (
+                    <SearchOutlined />
+                )}
                 Search
             </button>
         </Form>

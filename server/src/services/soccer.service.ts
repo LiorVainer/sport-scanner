@@ -130,6 +130,7 @@ export const soccerService = {
 
         if (league) {
             const actualLeagues = await soccerService.getLeaguesByName(league);
+
             if (actualLeagues.length > 0) {
                 actualLeague = actualLeagues[0].league;
             }

@@ -25,6 +25,7 @@ export const FreeTextToPackageParamsMessageGenerator = {
 
 📌 **Rules**:
 - All required fields (\`originIATA\`, \`date\`, \`price\`) must be present.
+- If "league" is provided, must provide a "country" as well.
 - If \`originIATA\` is not explicitly mentioned but the user says "I am from X" or similar, use that location to infer the origin.
 - Otherwise, default to "TLV".
 - Normalize dates to ISO 8601 (YYYY-MM-DD).

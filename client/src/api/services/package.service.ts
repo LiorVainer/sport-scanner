@@ -88,7 +88,7 @@ export const PackageService = {
         }
     },
 
-    async parseTextIntoParams(text: string): Promise<PackagesGenerationFormValues> {
+    async parseFreeTextSearchIntoGenerationParams(text: string): Promise<PackagesGenerationFormValues> {
         try {
             const { data } = await axiosInstance.get<PackagesGenerationFormValues>(`${ROUTE_PREFIX}/parse-text`, {
                 params: { text },

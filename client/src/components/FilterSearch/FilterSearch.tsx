@@ -88,6 +88,7 @@ const FilterSearch = () => {
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeams = watch('teams');
+    console.log('storedSearchParams', watchCountry);
 
     const watchAllFields = watch();
 
@@ -253,6 +254,7 @@ const FilterSearch = () => {
                         render={({ field }) => (
                             <AutoComplete
                                 allowClear
+                                value={watchCountry ?? countryNameSearch}
                                 className={classes.selectCountry}
                                 placeholder="Select Country"
                                 disabled={!!watchTeams && !!watchTeams?.length}

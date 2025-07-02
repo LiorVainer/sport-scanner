@@ -6,7 +6,10 @@ import { PackageService } from '@api/services/package.service';
 import { PackagesGenerationProgressUpdate } from '@/models/packages/package-generation-progress-update.model.ts';
 import { GeneratePackagesSteps } from '@/models/packages/packages-generate-steps.model.ts';
 import { useLocalStorage } from '@hooks/useLocalStorage.hooks.ts';
-import { PackagesGenerationFormValues, PackagesGenerationParamsWithFreeText } from '@/models/packages/package-generate-params.model.ts';
+import {
+    PackagesGenerationFormValues,
+    PackagesGenerationParamsWithFreeText,
+} from '@/models/packages/package-generate-params.model.ts';
 
 interface PackagesContextType {
     packages: Package[] | undefined;
@@ -15,7 +18,8 @@ interface PackagesContextType {
     fetchPackages: UseMutateFunction<Package[], Error, PackagesGenerationParamsWithFreeText>;
     hideProgressTimeline: boolean;
     setHideProgressTimeline: (hide: boolean) => void;
-    parseTextIntoParams: (text: string) => Promise<PackagesGenerationFormValues>;
+    parseFreeTextSearchIntoGenerationParams: (text: string) => Promise<PackagesGenerationFormValues>;
+    isParsingFreeTextSearch: boolean;
 }
 
 const PackagesContext = createContext<PackagesContextType | undefined>(undefined);
@@ -45,8 +49,8 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
         retry: false,
     });
 
-    const { mutateAsync: parseTextIntoParams } = useMutation({
-        mutationFn: (text: string) => PackageService.parseTextIntoParams(text),
+    const { mutateAsync: parseFreeTextSearchIntoGenerationParams, isPending: isParsingFreeTextSearch } = useMutation({
+        mutationFn: (text: string) => PackageService.parseFreeTextSearchIntoGenerationParams(text),
         retry: false,
     });
 
@@ -65,7 +69,8 @@ export const PackagesProvider = ({ children }: { children: React.ReactNode }) =>
                 fetchPackages,
                 hideProgressTimeline,
                 setHideProgressTimeline,
-                parseTextIntoParams,
+                parseFreeTextSearchIntoGenerationParams,
+                isParsingFreeTextSearch,
             }}
         >
             {children}
