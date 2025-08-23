@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router';
 import { Screen } from '@components/Screen';
 import { AuthFormValidationRules } from '@pages/AuthPage/auth.validation.ts';
 import clsx from 'clsx';
-import { AuthFormAnimationVariants } from '@pages/AuthPage/auth.animations.ts';
+import { SideSwitchAnimationVariants } from '@/constants/sides.animations.ts';
 import { ROUTES } from '@/constants/routes.const';
 
 const { Text } = Typography;
@@ -128,7 +128,7 @@ export const AuthPage = () => {
                     initial={direction === 'right' ? 'hiddenRight' : 'hiddenLeft'}
                     animate="visible"
                     exit={direction === 'right' ? 'exitRight' : 'exitLeft'}
-                    variants={AuthFormAnimationVariants}
+                    variants={SideSwitchAnimationVariants}
                     className={styles.authForm}
                 >
                     <Form form={form} layout="vertical" onFinish={onFinish}>

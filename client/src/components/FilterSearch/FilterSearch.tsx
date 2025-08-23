@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AutoComplete, Button, DatePicker, Form, Select, Slider } from 'antd';
 import dayjs from 'dayjs';
 import {
@@ -39,7 +39,7 @@ import {
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () => {
+export const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () => {
     const today = dayjs();
     const inTwoWeeks = today.add(2, 'weeks');
 
@@ -71,23 +71,30 @@ const FilterSearch = () => {
     );
 
     const [originKeyword, setOriginKeyword] = useState(storedSearchParams.originIATA);
+    const initialDefaults = storedSearchParams ?? calcDefaultGenerateParams();
 
     const {
         control,
         handleSubmit,
         watch,
-        formState: { isValid, isDirty },
+        formState: { isValid },
         reset,
         resetField,
         setValue,
     } = useForm<PackagesGenerationFormValues>({
+        defaultValues: initialDefaults,
         resolver: zodResolver(PackagesGenerationFormValuesSchema),
-        defaultValues: storedSearchParams,
     });
-
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeams = watch('teams');
+    console.log('storedSearchParams', watchCountry);
+
+    const watchAllFields = watch();
+
+    const isFormDirty = React.useMemo(() => {
+        return JSON.stringify(watchAllFields) !== JSON.stringify(defaultGenerateParamsRef.current);
+    }, [watchAllFields]);
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
@@ -135,8 +142,15 @@ const FilterSearch = () => {
     };
 
     const onClear = () => {
-        reset(defaultGenerateParamsRef.current);
-        setStoredSearchParams(defaultGenerateParamsRef.current);
+        const defaults = calcDefaultGenerateParams();
+
+        reset(defaults, { keepDirty: false });
+        setStoredSearchParams(defaults);
+
+        setOriginKeyword(defaults.originIATA);
+        setCountryNameSearch(undefined);
+        setLeagueNameSearch(undefined);
+        setTeamNameSearch(undefined);
     };
 
     useEffect(() => {
@@ -240,6 +254,7 @@ const FilterSearch = () => {
                         render={({ field }) => (
                             <AutoComplete
                                 allowClear
+                                value={watchCountry ?? countryNameSearch}
                                 className={classes.selectCountry}
                                 placeholder="Select Country"
                                 disabled={!!watchTeams && !!watchTeams?.length}
@@ -395,7 +410,7 @@ const FilterSearch = () => {
                     <SearchOutlined />
                     Search
                 </button>
-                {isDirty && (
+                {isFormDirty && (
                     <Button danger icon={<CloseCircleOutlined />} shape="round" size="large" onClick={onClear}>
                         Clear
                     </Button>

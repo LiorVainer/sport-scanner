@@ -29,7 +29,10 @@ export const PackagesGenerationParamsSchema = z
             })
             .describe('Price constraints for the entire trip'),
 
-        country: z.string().optional().describe('Preferred country of destination (optional)'),
+        country: z
+            .string()
+            .optional()
+            .describe('Preferred country of destination. Must be provided if "league" was provided'),
 
         league: z
             .object({
@@ -71,7 +74,7 @@ export const PackagesGenerationParamsFromFreeTextSchema = PackagesGenerationPara
         from: zodDateString.describe('Earliest departure date (ISO format: YYYY-MM-DD)'),
         to: zodDateString.describe('Latest return date (ISO format: YYYY-MM-DD)'),
     }),
-    country: z.string().optional().describe('Preferred country of destination (optional)'),
+    country: z.string().describe('Preferred country of destination. Must Get it if `league` is provided'),
     league: z.string().optional().describe('Target football league (optional)'),
     teams: z
         .object({

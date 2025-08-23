@@ -206,10 +206,14 @@ class PackageService {
             noTokensLimit: true,
         });
 
+        console.log({ data });
+
         const { league, teams, ...rest } = data;
         const result = await soccerService.transformFieldsToActualGenerationParams({ league, teams });
 
-        return { ...result, ...rest };
+        console.log({ result });
+
+        return { ...rest, ...result };
     };
 
     private generateMetadataForGeneratedPackages = async (

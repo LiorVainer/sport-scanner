@@ -65,6 +65,19 @@ export const packageController = {
         res.status(200).send(packageData);
     },
 
+    parseTextIntoParams: async (req: Request, res: Response) => {
+        const { text } = req.query;
+        let params;
+        if (text) {
+            packagesLogger.info(`💬 Received free text input: ${text}`);
+            params = await packageService.transformFreeTextIntoPackagesGenerationParams(text as string);
+            packagesLogger.info(`✨ Transform the free text input into: ${JSON.stringify(params)}`);
+            res.status(200).send(params);
+        } else {
+            res.status(400).send({ message: 'No text provided' });
+        }
+    },
+
     createPackage: async (req: Request, res: Response) => {
         const { id, ...rest } = req.body;
 
