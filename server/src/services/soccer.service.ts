@@ -130,6 +130,7 @@ export const soccerService = {
 
         if (league) {
             const actualLeagues = await soccerService.getLeaguesByName(league);
+
             if (actualLeagues.length > 0) {
                 actualLeague = actualLeagues[0].league;
             }
@@ -152,7 +153,7 @@ export const soccerService = {
             league: actualLeague ? { id: actualLeague.id, name: actualLeague.name } : undefined,
             teams:
                 actualTeams && actualTeams.length > 0
-                    ? actualTeams.map((team) => ({ id: team.id, name: team.name }))
+                    ? actualTeams.map((team) => ({ id: team.id, name: team.name, logo: team.logo }))
                     : undefined,
         };
 

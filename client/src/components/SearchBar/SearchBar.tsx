@@ -4,9 +4,19 @@ import classes from './search-bar.module.scss';
 import { Button } from 'antd';
 import { FilterOutlined, MenuOutlined } from '@ant-design/icons';
 import FreeTextSearch from '../FreeTextSearch/FreeTextSearch';
+import { AnimatePresence, motion } from 'framer-motion';
+import { SideSwitchAnimationVariants } from '@/constants/sides.animations.ts';
 
 const SearchBar = () => {
     const [mode, setMode] = useState<'filter' | 'free'>('filter');
+    const [direction, setDirection] = useState<'left' | 'right'>('right');
+
+    const handleToggle = (newMode: 'filter' | 'free') => {
+        if (newMode !== mode) {
+            setDirection(newMode === 'filter' ? 'right' : 'left');
+            setMode(newMode);
+        }
+    };
 
     return (
         <div className={classes.main}>
@@ -21,21 +31,44 @@ const SearchBar = () => {
                 <div className={classes.toggleWrapper}>
                     <Button
                         className={`${classes.toggleBtn} ${mode === 'free' ? classes.active : ''}`}
-                        onClick={() => setMode('free')}
+                        onClick={() => handleToggle('free')}
                         icon={<MenuOutlined />}
                     >
                         Free Text Search
                     </Button>
                     <Button
                         className={`${classes.toggleBtn} ${mode === 'filter' ? classes.active : ''}`}
-                        onClick={() => setMode('filter')}
+                        onClick={() => handleToggle('filter')}
                         icon={<FilterOutlined />}
                     >
                         Filter Search
                     </Button>
                 </div>
 
-                {mode === 'filter' ? <FilterSearch /> : <FreeTextSearch />}
+                <AnimatePresence mode="wait">
+                    {mode === 'filter' ? (
+                        <motion.div
+                            key="filter"
+                            initial={direction === 'right' ? 'hiddenRight' : 'hiddenLeft'}
+                            animate="visible"
+                            exit={direction === 'right' ? 'exitRight' : 'exitLeft'}
+                            variants={SideSwitchAnimationVariants}
+                        >
+                            <FilterSearch />
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="free"
+                            initial={direction === 'right' ? 'hiddenRight' : 'hiddenLeft'}
+                            animate="visible"
+                            exit={direction === 'right' ? 'exitRight' : 'exitLeft'}
+                            className={classes.freeSearch}
+                            variants={SideSwitchAnimationVariants}
+                        >
+                            <FreeTextSearch setMode={setMode} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

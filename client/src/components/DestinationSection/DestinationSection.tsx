@@ -12,8 +12,8 @@ export const DestinationSection = ({ destination, variant }: DestinationSectionP
     return (
         <div className={classes.destinationSection}>
             <DestinationHeader destination={destination} />
-            {destination.matches.map((match) => (
-                <MatchDetails match={match} includeDivider variant={variant} />
+            {destination.matches.map((match, index) => (
+                <MatchDetails match={match} includeDivider={index === 0} variant={variant} />
             ))}
         </div>
     );
