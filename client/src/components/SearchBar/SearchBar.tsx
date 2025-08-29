@@ -54,7 +54,7 @@ const SearchBar = () => {
                             exit={direction === 'right' ? 'exitRight' : 'exitLeft'}
                             variants={SideSwitchAnimationVariants}
                         >
-                            <FilterSearch />
+                            <FilterSearch fromFree={direction === 'left'}/>
                         </motion.div>
                     ) : (
                         <motion.div

@@ -30,8 +30,8 @@ export const partitionPackagesByRules = (packages: Package[], originIataCode: st
             packagesLogger.info(`Package validation failed`, { validationError, package: pkg });
             invalid.push({ ...validationError, package: pkg });
         } else {
+            valid.push(pkg);
         }
-        valid.push(pkg);
     }
 
     return { valid, invalid };
