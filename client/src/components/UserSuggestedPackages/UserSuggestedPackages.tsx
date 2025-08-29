@@ -44,19 +44,17 @@ export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
                 </>
             ) : (
                 <div className={classes.container}>
-                    <div className={classes.noPackagesHeader}>
-                        <h2>No Suggested Packages Available</h2>
-                        <div className={classes.noPackagesText}>
-                            <span>We couldn't find packages that are suitable for your preferences. 😔</span>
-                            <span>Try adjusting your preferences or check back later!</span>
-                        </div>
+                    <h2>No Suggested Packages Available</h2>
+                    <div className={classes.noPackagesText}>
+                        <span>We couldn't find packages that are suitable for your preferences. 😔</span>
+                        <span>Try adjusting your preferences or check back later!</span>
                     </div>
 
-                    <div className={classes.suggestedPackagesContainer}>
-                        {Array.from({ length: 3 }).map((_, index) => (
-                            <PackageSkeleton key={index} variant={'compact'} isActive={false} />
-                        ))}
-                    </div>
+                    {/*<div className={classes.suggestedPackagesContainer}>*/}
+                    {/*    {Array.from({ length: 3 }).map((_, index) => (*/}
+                    {/*        <PackageSkeleton key={index} variant={'compact'} isActive={false} />*/}
+                    {/*    ))}*/}
+                    {/*</div>*/}
                 </div>
             )}
         </div>
