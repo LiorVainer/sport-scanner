@@ -56,7 +56,7 @@ export const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () 
     };
 };
 
-const FilterSearch = () => {
+const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
     const [countryNameSearch, setCountryNameSearch] = useState<string>();
     const [leagueNameSearch, setLeagueNameSearch] = useState<string>();
@@ -93,7 +93,9 @@ const FilterSearch = () => {
     const watchAllFields = watch();
 
     const isFormDirty = React.useMemo(() => {
-        return JSON.stringify(watchAllFields) !== JSON.stringify(defaultGenerateParamsRef.current);
+        const current = { ...watchAllFields, teams: watchAllFields.teams ?? [] };
+        const defaults = { ...defaultGenerateParamsRef.current, teams: [] };
+        return JSON.stringify(current) !== JSON.stringify(defaults);
     }, [watchAllFields]);
 
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
@@ -144,13 +146,18 @@ const FilterSearch = () => {
     const onClear = () => {
         const defaults = calcDefaultGenerateParams();
 
-        reset(defaults, { keepDirty: false });
-        setStoredSearchParams(defaults);
+        reset({ ...defaults, teams: [] }, { keepDirty: false });
 
         setOriginKeyword(defaults.originIATA);
+
         setCountryNameSearch(undefined);
+        setValue('league', undefined);
         setLeagueNameSearch(undefined);
+
+        resetField('teams');
         setTeamNameSearch(undefined);
+
+        setStoredSearchParams({ ...defaults, teams: [] });
     };
 
     useEffect(() => {
@@ -257,7 +264,7 @@ const FilterSearch = () => {
                                 value={watchCountry ?? countryNameSearch}
                                 className={classes.selectCountry}
                                 placeholder="Select Country"
-                                disabled={!!watchTeams && !!watchTeams?.length}
+                                disabled={!fromFree && !!watchTeams && !!watchTeams?.length}
                                 onChange={(text) => setCountryNameSearch(text)}
                                 onSelect={(value) => {
                                     setCountryNameSearch(undefined);
@@ -299,7 +306,7 @@ const FilterSearch = () => {
                                 allowClear
                                 className={classes.selectLeague}
                                 placeholder="Select League"
-                                disabled={!watchCountry || (!!watchTeams && !!watchTeams?.length)}
+                                disabled={!fromFree && (!watchCountry || (!!watchTeams && !!watchTeams?.length))}
                                 onSearch={(value) => setLeagueNameSearch(value)}
                                 onChange={(text) => {
                                     if (text === '') return;
@@ -349,7 +356,7 @@ const FilterSearch = () => {
                                 maxTagCount="responsive"
                                 className={classes.selectTeams}
                                 placeholder="Select Teams"
-                                disabled={!!watchLeague || !!watchCountry}
+                                disabled={!fromFree && (!!watchLeague || !!watchCountry)}
                                 labelInValue
                                 onSearch={(value) => setTeamNameSearch(value)}
                                 onChange={(selectedOptions) => {
@@ -377,15 +384,17 @@ const FilterSearch = () => {
                                     setTeamNameSearch(undefined);
                                 }}
                                 value={
-                                    field.value?.map((team) => ({
-                                        value: team.name,
-                                        label: (
-                                            <div className={classes.teamItem}>
-                                                <img src={team.logo} alt={team.name} />
-                                                {field.value && field.value?.length <= 1 && team.name}
-                                            </div>
-                                        ),
-                                    })) ?? []
+                                    Array.isArray(field.value) && field.value.length > 0
+                                        ? field.value.map((team) => ({
+                                              value: team.name,
+                                              label: (
+                                                  <div className={classes.teamItem}>
+                                                      <img src={team.logo} alt={team.name} />
+                                                      {team.name}
+                                                  </div>
+                                              ),
+                                          }))
+                                        : []
                                 }
                                 options={(!teamNameSearch ? DEFAULT_TEAMS : teams).map((team) => ({
                                     value: team.name,

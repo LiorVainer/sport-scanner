@@ -24,10 +24,13 @@ const FreeTextSearch = ({ setMode }: FreeTextSearchProps) => {
         if (searchText) {
             const { country, league, teams, ...rest } = await parseFreeTextSearchIntoGenerationParams(searchText);
 
-            if (country || league) {
-                setStoredSearchParams({ ...rest, league, country });
-            } else if (teams && teams.length > 0) {
-                setStoredSearchParams({ ...rest, teams });
+            if (country || league || (teams && teams.length > 0)) {
+                setStoredSearchParams({
+                    ...rest,
+                    ...(country ? { country } : {}),
+                    ...(league ? { league } : {}),
+                    ...(teams && teams.length > 0 ? { teams } : {}),
+                });
             }
 
             setMode('filter');

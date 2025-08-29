@@ -205,7 +205,6 @@ export const GroupService = {
     },
 
     async voteForPackage(groupId: string, userId: string, packageId: string) {
-        // 1. record the user’s vote
         const voteKey = `suggestedPackagesVotes.${userId}`;
         const voted = await GroupRepository.findByIdAndUpdate(
             groupId,
@@ -214,7 +213,6 @@ export const GroupService = {
         ).lean();
         if (!voted) return null;
 
-        // 2. recompute winner
         const votesMap = voted.suggestedPackagesVotes ?? {};
         const counts: Record<string, number> = {};
         Object.values(votesMap).forEach((pkgOid) => {
@@ -222,12 +220,10 @@ export const GroupService = {
             counts[idStr] = (counts[idStr] || 0) + 1;
         });
 
-        // find the packageId with highest votes (ties pick first)
         const winnerId = Object.entries(counts)
             .sort(([, a], [, b]) => b - a)
             .map(([id]) => id)[0];
 
-        // 3. update selectedPackage
         const updated = await GroupRepository.findByIdAndUpdate(
             groupId,
             { selectedPackage: winnerId ? new mongoose.Types.ObjectId(winnerId) : undefined },
@@ -238,6 +234,7 @@ export const GroupService = {
             .populate('suggestedPackages')
             .populate('createdBy')
             .lean();
+
         return updated;
     },
 
@@ -261,12 +258,14 @@ export const GroupService = {
         const entries = Object.entries(counts);
         const winnerId = entries.length > 0 ? entries.sort(([, a], [, b]) => b - a)[0][0] : null;
 
-        // 3. update selectedPackage (or clear if no votes remain)
-        const updated = await GroupRepository.findByIdAndUpdate(
-            groupId,
-            { selectedPackage: winnerId ? new mongoose.Types.ObjectId(winnerId) : undefined },
-            { new: true }
-        )
+        let updateOperation;
+        if (winnerId) {
+            updateOperation = { selectedPackage: new mongoose.Types.ObjectId(winnerId) };
+        } else {
+            updateOperation = { $unset: { selectedPackage: 1 } };
+        }
+
+        const updated = await GroupRepository.findByIdAndUpdate(groupId, updateOperation, { new: true })
             .populate('users')
             .populate('selectedPackage')
             .populate('suggestedPackages')
