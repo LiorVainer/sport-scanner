@@ -22,7 +22,7 @@ export const NavbarUserDropdown = ({ showModal, showPreferencesModal }: NavbarUs
                     <div className={classes.profileImageContainer}>
                         <Avatar 
                             className={classes.profileImage}
-                            src={getPictureSrcUrl(loggedInUser.picture)}
+                            src={getPictureSrcUrl(loggedInUser?.picture)}
                             icon={<UserOutlined />}
                         />
                     </div>
