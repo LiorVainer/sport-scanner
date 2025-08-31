@@ -4,10 +4,12 @@ import { PopulatedGroup } from '@/models/group.model.ts';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes.const';
 import { GroupService } from '@/api/services/group.service';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, UserOutlined } from '@ant-design/icons';
 import classes from '@pages/GroupsScreen/groups-screen.module.scss';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { Calendar, CircleDollarSignIcon } from 'lucide-react';
+import { Avatar } from 'antd';
+import { getPictureSrcUrl } from '@/utils/picture.utils';
 
 interface Props {
     group: PopulatedGroup;
@@ -37,7 +39,10 @@ const GroupHeader: React.FC<Props> = ({ group }) => {
                     <div className="avatars">
                         {users.map((user) => (
                             <div key={user._id} className="avatar-block">
-                                <img src={user.picture} alt={user.username} />
+                                <Avatar 
+                                    src={getPictureSrcUrl(user.picture)}
+                                    icon={<UserOutlined />}
+                                />
                                 <span>{getUserAvatarDisplayName(user.username)}</span>
                             </div>
                         ))}

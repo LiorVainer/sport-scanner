@@ -1,8 +1,8 @@
 import { useAuth } from '@/context/AuthContext';
 import classes from './navbar-user-dropdown.module.scss';
-import { Button, Divider, Dropdown, MenuProps, Typography } from 'antd';
+import { Avatar, Button, Divider, Dropdown, MenuProps, Typography } from 'antd';
 import { getPictureSrcUrl } from '@/utils/picture.utils';
-import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
+import { EditOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 
 export interface NavbarUserDropdownProps {
     showModal: () => void;
@@ -20,10 +20,10 @@ export const NavbarUserDropdown = ({ showModal, showPreferencesModal }: NavbarUs
             label: loggedInUser ? (
                 <div className={classes.dropdownContainer}>
                     <div className={classes.profileImageContainer}>
-                        <img
-                            src={getPictureSrcUrl(loggedInUser?.picture)}
-                            alt="User Avatar"
+                        <Avatar 
                             className={classes.profileImage}
+                            src={getPictureSrcUrl(loggedInUser?.picture)}
+                            icon={<UserOutlined />}
                         />
                     </div>
 
@@ -71,7 +71,11 @@ export const NavbarUserDropdown = ({ showModal, showPreferencesModal }: NavbarUs
     return (
         <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
             {loggedInUser && (
-                <img src={getPictureSrcUrl(loggedInUser.picture)} alt="User Avatar" className={classes.avatarSmall} />
+                <Avatar 
+                    src={getPictureSrcUrl(loggedInUser.picture)}
+                    icon={<UserOutlined />}
+                    className={classes.avatarSmall}
+                />
             )}
         </Dropdown>
     );
