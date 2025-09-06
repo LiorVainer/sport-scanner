@@ -75,7 +75,7 @@ export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
                             disabled={regenerateMutation.isPending}
                             aria-label="Regenerate suggested packages"
                         >
-                            <Shuffle size={20} />
+                            <Shuffle size={12} />
                             Reshuffle
                         </button>
                     </div>
@@ -93,8 +93,13 @@ export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
                 </>
             ) : (
                 <div className={classes.emptyContainer}>
-                    <div className={classes.header}>
+                    <div className={classes.emptyHeader}></div>
+                    <div className={classes.emptyContent}>
                         <h2>No Suggested Packages Available</h2>
+                        <div className={classes.noPackagesText}>
+                            <span>We couldn't find packages that are suitable for your preferences. 😔</span>
+                            <span>Try adjusting your preferences or click "Generate New" to try again!</span>
+                        </div>
                         <button
                             className={classes.reshuffleButton}
                             onClick={handleReshuffle}
@@ -104,10 +109,6 @@ export const UserSuggestedPackages = ({}: UserSuggestedPackagesProps) => {
                             <Shuffle size={20} />
                             {regenerateMutation.isPending ? 'Generating...' : 'Generate New'}
                         </button>
-                    </div>
-                    <div className={classes.noPackagesText}>
-                        <span>We couldn't find packages that are suitable for your preferences. 😔</span>
-                        <span>Try adjusting your preferences or click "Generate New" to try again!</span>
                     </div>
                 </div>
             )}

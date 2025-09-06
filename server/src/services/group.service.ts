@@ -86,6 +86,8 @@ export const GroupService = {
                 users.push(new mongoose.Types.ObjectId(userId));
             }
 
+            console.log({ parsedBody });
+
             const updatedGroup = await GroupRepository.findByIdAndUpdate(id, parsedBody, {
                 new: true,
             })

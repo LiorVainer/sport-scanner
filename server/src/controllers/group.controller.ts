@@ -47,7 +47,7 @@ export const groupController = {
             const updateData = req.body;
             const userId = req.userId;
 
-            const updatedGroup = await GroupService.updateGroup(id, { ...updateData, createdBy: req.userId }, userId);
+            const updatedGroup = await GroupService.updateGroup(id, { ...updateData }, userId);
 
             if (!updatedGroup) {
                 res.status(404).send({ message: 'Group not found' });

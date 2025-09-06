@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import { GroupService } from '@api/services/group.service.ts';
 import { Screen } from '@components/Screen';
 import { GroupCardSkeleton } from '@components/GroupCardSkeleton/GroupCardSkeleton.tsx';
-import React from 'react';
 import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
