@@ -58,6 +58,7 @@ const UserMongoSchema = new Schema(
         },
         isFirstVisit: { type: Boolean, default: true },
         suggestedPackages: [{ type: Schema.Types.ObjectId, ref: 'Packages' }],
+        showPackageInvalidity: { type: Boolean, default: false },
     },
     {
         timestamps: { createdAt: true, updatedAt: true },

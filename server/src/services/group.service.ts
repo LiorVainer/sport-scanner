@@ -82,11 +82,37 @@ export const GroupService = {
             }
 
             const { users } = parsedBody;
-            if (users && !users.includes(new mongoose.Types.ObjectId(userId))) {
-                users.push(new mongoose.Types.ObjectId(userId));
-            }
 
-            console.log({ parsedBody });
+            // If users array is being updated and we have a userId, preserve the current user's position
+            if (users && userId) {
+                // First, get the current group to find the user's existing position
+                const currentGroup = await GroupRepository.findById(id).lean();
+                if (currentGroup) {
+                    const userObjectId = new mongoose.Types.ObjectId(userId);
+                    const currentUsers = currentGroup.users || [];
+
+                    // Find the current user's position in the existing users array
+                    const currentUserIndex = currentUsers.findIndex(
+                        (user) => user.toString() === userObjectId.toString()
+                    );
+
+                    // Check if the user exists in the new users array
+                    const userExistsInNewArray = users.some((user) => user.toString() === userObjectId.toString());
+
+                    if (currentUserIndex !== -1 && !userExistsInNewArray) {
+                        // User exists in current group but not in new array - insert at same position
+                        if (currentUserIndex < users.length) {
+                            users.splice(currentUserIndex, 0, userObjectId);
+                        } else {
+                            users.push(userObjectId);
+                        }
+                    } else if (currentUserIndex === -1 && !userExistsInNewArray) {
+                        // User doesn't exist in either - add to end
+                        users.push(userObjectId);
+                    }
+                    // If user exists in new array, don't modify (their position is already set)
+                }
+            }
 
             const updatedGroup = await GroupRepository.findByIdAndUpdate(id, parsedBody, {
                 new: true,

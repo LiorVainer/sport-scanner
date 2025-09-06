@@ -30,6 +30,7 @@ export const UserSchema = z.object({
     favoriteTeams: FavoriteTeamSchema.array().optional(),
     favoriteLeagues: FavoriteLeagueSchema.array().optional(),
     isFirstVisit: z.boolean().optional(),
+    showPackageInvalidity: z.boolean().optional(),
 });
 
 export const RegisterPayload = UserSchema.omit({ createdAt: true, updatedAt: true });
