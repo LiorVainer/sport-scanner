@@ -19,23 +19,33 @@ export const populateAggregation = (matchStage: PipelineStage): mongoose.Pipelin
         $unwind: '$package',
     },
     {
+        $addFields: {
+            // Extract the date parts for proper sorting
+            dateForGrouping: {
+                $dateToString: { format: '%d/%m/%Y', date: '$package.createdAt' },
+            },
+            sortableDate: '$package.createdAt',
+        },
+    },
+    {
         $group: {
-            _id: {
-                $dateToString: { format: '%d/%m/%Y', date: '$createdAt' },
-            },
+            _id: '$dateForGrouping',
             packages: {
-                $push: {
-                    $mergeObjects: [
-                        '$package',
-                        { createdAt: '$createdAt' }, // Optionally attach history's createdAt
-                    ],
-                },
+                $push: '$package',
             },
+            sortDate: { $min: '$sortableDate' },
         },
     },
     {
         $sort: {
+            sortDate: -1, // Sort by actual date, newest first
+        },
+    },
+    {
+        $project: {
             _id: 1,
+            packages: 1,
+            // Remove the sortDate field from final output
         },
     },
 ];
