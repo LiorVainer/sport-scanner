@@ -35,6 +35,7 @@ import {
     MIN_PRICE,
     MIN_SEARCH_KEYWORD_LEN,
 } from './filter-search.const';
+import { useAuth } from '@/context/AuthContext.tsx';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -58,6 +59,7 @@ export const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () 
 
 const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
     const defaultGenerateParamsRef = useRef(calcDefaultGenerateParams());
+    const { loggedInUser } = useAuth();
     const [countryNameSearch, setCountryNameSearch] = useState<string>();
     const [leagueNameSearch, setLeagueNameSearch] = useState<string>();
     const [teamNameSearch, setTeamNameSearch] = useState<string>();
@@ -70,7 +72,7 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
         defaultGenerateParamsRef.current
     );
 
-    const [originKeyword, setOriginKeyword] = useState(storedSearchParams.originIATA);
+    const [originKeyword, setOriginKeyword] = useState<string | undefined>(storedSearchParams.originIATA);
     const initialDefaults = storedSearchParams ?? calcDefaultGenerateParams();
 
     const {
@@ -81,10 +83,12 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
         reset,
         resetField,
         setValue,
+        trigger,
     } = useForm<PackagesGenerationFormValues>({
         defaultValues: initialDefaults,
         resolver: zodResolver(PackagesGenerationFormValuesSchema),
     });
+
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeams = watch('teams');
@@ -100,10 +104,12 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
     const { data: airportSuggestions = [], isLoading: isAirportLoading } = useQuery({
         queryKey: ['originAirports', originKeyword],
         queryFn: async () => {
-            return GeoService.getCities(originKeyword);
+            return GeoService.getCities(originKeyword!);
         },
         enabled:
-            originKeyword.length >= MIN_SEARCH_KEYWORD_LEN && originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
+            !!originKeyword &&
+            originKeyword.length >= MIN_SEARCH_KEYWORD_LEN &&
+            originKeyword.length <= MAX_AIRPORT_SEARCH_KEYWORD_LEN,
     });
 
     const { data: countries = [] } = useQuery({
@@ -165,6 +171,14 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
         });
         return () => subscription.unsubscribe();
     }, [watch]);
+
+    useEffect(() => {
+        console.log(loggedInUser);
+        if (!loggedInUser?.homeAirport) return;
+        setValue('originIATA', loggedInUser?.homeAirport?.iataCode);
+        setOriginKeyword(loggedInUser?.homeAirport?.iataCode);
+        trigger();
+    }, [loggedInUser]);
 
     return (
         <Form layout="vertical" className={classes.content} onFinish={handleSubmit(onSubmit)}>

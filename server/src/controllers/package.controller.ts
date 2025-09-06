@@ -3,7 +3,6 @@ import { PackageRepository } from '../repositories/package.repository';
 import {
     PackagesGenerationParams,
     PackagesGenerationParamsSchema,
-    PackagesGenerationParamsWithStringDatesAndFreeText,
 } from '../models/packages/package-generate-params.model';
 import { packageService } from '../services/package.service';
 import { PackagesGenerationProgressUpdate } from '../models/packages/package-generation-progress-update.model';
@@ -22,10 +21,7 @@ export const packageController = {
         res.status(200).send(generatedPackage);
     },
 
-    streamPackageGeneration: async (
-        req: Request<any, any, PackagesGenerationParamsWithStringDatesAndFreeText>,
-        res: Response
-    ) => {
+    streamPackageGeneration: async (req: Request, res: Response) => {
         const { freeText, ...initialParams } = req.body;
         let params = initialParams;
         if (freeText) {

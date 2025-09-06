@@ -206,12 +206,8 @@ class PackageService {
             noTokensLimit: true,
         });
 
-        console.log({ data });
-
         const { league, teams, ...rest } = data;
         const result = await soccerService.transformFieldsToActualGenerationParams({ league, teams });
-
-        console.log({ result });
 
         return { ...rest, ...result };
     };
