@@ -66,6 +66,7 @@ export const GroupService = {
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
                 .populate('createdBy')
+                .sort({ updatedAt: -1 })
                 .lean();
         } catch (error) {
             console.error(`Error fetching groups for user ${userId}:`, error);
