@@ -118,6 +118,10 @@ export const PackageMetadataSchema = z
 
 export const PackageSchema = z
     .object({
+        invalidity: z.object({
+            reason: z.string().describe('Reason for the package being invalid'),
+            params: z.record(z.any()).describe('Additional parameters for the invalidity reason'),
+        }),
         title: z
             .string()
             .describe(

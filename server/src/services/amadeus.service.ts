@@ -39,6 +39,7 @@ export const AmadeusService = {
             throw error;
         }
 
+        // @ts-ignore
         const { data, request } = response;
 
         logger.remote.success(`Amadeus flight search response`, {

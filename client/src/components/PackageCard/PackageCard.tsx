@@ -27,6 +27,7 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full', isFull
         >
             <div className={styles.packageHeader}>
                 <h4 className={styles.packageTitle}>⚽ {singlePackage.title}</h4>
+                {singlePackage.invalidity && <span className={styles.invalidity}>⚠️</span>}
             </div>
             <div className={styles.packageCard}>
                 <div className={styles.content}>

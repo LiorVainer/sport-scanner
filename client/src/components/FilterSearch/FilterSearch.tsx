@@ -88,7 +88,6 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
     const watchCountry = watch('country');
     const watchLeague = watch('league');
     const watchTeams = watch('teams');
-    console.log('storedSearchParams', watchCountry);
 
     const watchAllFields = watch();
 

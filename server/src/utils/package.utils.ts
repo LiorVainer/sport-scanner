@@ -9,9 +9,12 @@ import { isBefore, parseISO } from 'date-fns';
 import { packagesLogger } from '../logs/packages.logger';
 import moment from 'moment';
 
-type InvalidPackage = {
+type InvalidityMetadata = {
     reason: string;
     params: Record<string, any>;
+};
+
+type InvalidPackage = InvalidityMetadata & {
     package: Package;
 };
 
@@ -30,8 +33,9 @@ export const partitionPackagesByRules = (packages: Package[], originIataCode: st
             packagesLogger.info(`Package validation failed`, { validationError, package: pkg });
             invalid.push({ ...validationError, package: pkg });
         } else {
-            valid.push(pkg);
         }
+        console.log('validationError', validationError);
+        valid.push({ ...pkg, invalidity: validationError });
     }
 
     return { valid, invalid };

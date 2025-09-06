@@ -17,6 +17,11 @@ export const PackageSchema = new Schema<
     }
 >(
     {
+        invalidity: {
+            type: Schema.Types.Mixed, // allows storing any object
+            required: false, // optional
+            default: null, // will always exist in schema (null if not set)
+        },
         title: { type: String, required: true },
         description: { type: String, required: true },
         startDate: { type: String, required: true },
