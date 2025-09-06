@@ -21,7 +21,7 @@ const MAX_PACKAGES_PER_USER_WITH_OFFSET =
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_PER_USER +
     ENV.USER_SUGGESTED_PACKAGES_GENERATION_MAX_PACKAGES_OFFSET;
 
-const schedule = ENV.NODE_ENV === 'development' ? CronTime.everyHour() : CronTime.everyDay();
+const schedule = ENV.NODE_ENV === 'development' ? CronTime.everyHour() : CronTime.everyFriday();
 
 /**
  * Cron Job that runs once a day at midnight (00:00).
@@ -116,6 +116,18 @@ cron.schedule(schedule, async () => {
 
                     if (generatedPackages.length > MAX_PACKAGES_PER_USER) {
                         generatedPackages = generatedPackages.slice(0, MAX_PACKAGES_PER_USER);
+                    }
+
+                    if (generatedPackages.length === 0) {
+                        userSuggestedPackagesGenerationLogger.warn(
+                            `⚠️ No packages generated for user ${user.username}`,
+                            {
+                                userId: user._id.toString(),
+                                searchParams,
+                            }
+                        );
+                        timer.stop(`${ProcessTypes.USER_SUGGESTED_PACKAGES_GENERATION}_${user._id}`);
+                        return;
                     }
 
                     const savedPackages = await PackageRepository.insertMany(generatedPackages);

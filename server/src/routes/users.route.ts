@@ -47,12 +47,13 @@ router.use(authMiddleware);
 
 router.get('/packages/history', authMiddleware, userController.getUsersHistory);
 router.get('/packages/saved', authMiddleware, userController.getUsersSavedPackages);
+router.get('/packages/suggested', authMiddleware, userController.getUsersSuggestedPackages);
 
 router.post('/packages/:packageId/history', authMiddleware, userController.addToUsersHistory);
 router.post('/packages/:packageId/save', authMiddleware, userController.savePackageForUser);
+router.post('/packages/suggested/regenerate', authMiddleware, userController.regenerateSuggestedPackages);
 
 router.delete('/packages/:packageId/unsave', authMiddleware, userController.unsavePackageForUser);
-router.get('/packages/suggested', authMiddleware, userController.getUsersSuggestedPackages);
 
 /**
  * @swagger

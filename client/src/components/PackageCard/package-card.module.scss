@@ -61,6 +61,7 @@
 .packageHeader {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   width: 100%;
   background: gray-scale(98%);
   //border-bottom: solid 0.5px $accent;

@@ -90,16 +90,16 @@ export const UsersService = {
 
     async getUsers(username?: string) {
         try {
-          const { data } = await axiosInstance.get(`${ROUTE_PREFIX}`, {
-            params: { username },
-          });
-          return data;
+            const { data } = await axiosInstance.get(`${ROUTE_PREFIX}`, {
+                params: { username },
+            });
+            return data;
         } catch (error) {
-          console.error('Error fetching users:', error);
-          throw error;
+            console.error('Error fetching users:', error);
+            throw error;
         }
     },
-      
+
     async getUsersSuggestedPackages() {
         try {
             const { data } = await axiosInstance.get<PopulatedSavedPackage[]>(
@@ -115,6 +115,16 @@ export const UsersService = {
             return validPackages;
         } catch (error) {
             console.error('Error:', (error as any).message);
+            throw error;
+        }
+    },
+
+    async regenerateUserSuggestedPackages() {
+        try {
+            const { data } = await axiosInstance.post(`${ROUTE_PREFIX}${PACKAGES_ROUTE_PREFIX}/suggested/regenerate`);
+            return data;
+        } catch (error) {
+            console.error('Error regenerating suggested packages:', (error as any).message);
             throw error;
         }
     },

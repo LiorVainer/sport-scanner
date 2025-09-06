@@ -67,20 +67,37 @@ export const userController = {
 
     getUsers: async (req: Request, res: Response) => {
         try {
-          const { username } = req.query;
-          const users = await UserService.getUsers(username as string);
-          res.status(200).send(users);
+            const { username } = req.query;
+            const users = await UserService.getUsers(username as string);
+            res.status(200).send(users);
         } catch (err) {
-          res.status(500).send({ message: 'Error fetching users', error: err });
+            res.status(500).send({ message: 'Error fetching users', error: err });
         }
     },
-      
+
     getUsersSuggestedPackages: async (req: Request, res: Response) => {
         try {
             const userWithPackages = await UserService.getSuggestedPackages(req.userId!);
             res.status(200).send(userWithPackages?.suggestedPackages || []);
         } catch (err) {
             res.status(500).send({ message: 'Failed to get suggested packages', error: err });
+        }
+    },
+
+    regenerateSuggestedPackages: async (req: Request, res: Response) => {
+        try {
+            const result = await UserService.generateSuggestedPackagesForUser(req.userId!);
+
+            if (result.success) {
+                res.status(200).send({
+                    message: result.message,
+                    packageCount: result.packageCount,
+                });
+            } else {
+                res.status(400).send({ message: result.message });
+            }
+        } catch (err) {
+            res.status(500).send({ message: 'Failed to regenerate suggested packages', error: err });
         }
     },
 };

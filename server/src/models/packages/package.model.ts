@@ -85,6 +85,7 @@ export const TimelineItemSchema = z
 
 export const PackageMetadataSchema = z
     .object({
+        invalidReason: z.string().optional(),
         destinationsCount: z.number().describe('Number of different cities (destinations) included in this package'),
 
         flightsCount: z.number().describe(`
@@ -120,6 +121,13 @@ Do NOT deduplicate based on city names or flight IDs — every timeline flight i
 
 export const PackageSchema = z
     .object({
+        invalidity: z
+            .object({
+                reason: z.string().describe('Reason why the package is invalid'),
+                params: z.record(z.any()).describe('Additional parameters for the invalidity reason'),
+            })
+            .nullable()
+            .optional(),
         title: z
             .string()
             .describe(
@@ -163,7 +171,7 @@ This array determines values such as flightsCount and trip duration.`),
     })
     .describe('Travel package that combines multiple destinations, flights, and football matches');
 
-export const PackageArraySchema = z.array(PackageSchema).describe('packages-array');
+export const PackageArraySchema = z.array(PackageSchema.omit({ invalidity: true })).describe('packages-array');
 
 export const PackageWithMetadataSchema = PackageSchema.extend({
     metadata: PackageMetadataSchema,

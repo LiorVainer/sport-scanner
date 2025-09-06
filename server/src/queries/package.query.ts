@@ -35,7 +35,7 @@ export const populateAggregation = (matchStage: PipelineStage): mongoose.Pipelin
     },
     {
         $sort: {
-            _id: -1,
+            _id: 1,
         },
     },
 ];
