@@ -69,21 +69,23 @@ export const PackagesGenerationParamsWithStringDatesAndFreeTextSchema =
             .describe('Date range of the user’s availability for travel'),
     }).describe('Structured input used to generate travel packages based on user preferences');
 
-export const PackagesGenerationParamsFromFreeTextSchema = PackagesGenerationParamsSchema.extend({
-    date: z.object({
-        from: zodDateString.describe('Earliest departure date (ISO format: YYYY-MM-DD)'),
-        to: zodDateString.describe('Latest return date (ISO format: YYYY-MM-DD)'),
-    }),
-    country: z.string().describe('Preferred country of destination. Must Get it if `league` is provided'),
-    league: z.string().optional().describe('Target football league (optional)'),
-    teams: z
-        .object({
-            name: z.string().describe('Name of the preferred team'),
-        })
-        .array()
-        .optional()
-        .describe('List of preferred teams (optional)'),
-}).describe('Structured input used to generate travel packages based on user free text input');
+export const PackagesGenerationParamsFromFreeTextSchema = PackagesGenerationParamsSchema.omit({ originIATA: true })
+    .extend({
+        date: z.object({
+            from: zodDateString.describe('Earliest departure date (ISO format: YYYY-MM-DD)'),
+            to: zodDateString.describe('Latest return date (ISO format: YYYY-MM-DD)'),
+        }),
+        country: z.string().describe('Preferred country of destination. Must Get it if `league` is provided'),
+        league: z.string().optional().describe('Target football league (optional)'),
+        teams: z
+            .object({
+                name: z.string().describe('Name of the preferred team'),
+            })
+            .array()
+            .optional()
+            .describe('List of preferred teams (optional)'),
+    })
+    .describe('Structured input used to generate travel packages based on user free text input');
 
 export const InnerPackagesGenerationParamsSchema = PackagesGenerationParamsSchema.omit({ date: true }).extend({
     date: z.object({
