@@ -107,18 +107,6 @@ export const GroupFormScreen = () => {
         console.error('Validation errors:', errors);
     };
 
-    if (isEditMode) {
-        const isUserCreatedTheGroup = group?.createdBy._id === loggedInUser?._id;
-
-        if (!isUserCreatedTheGroup) {
-            return (
-                <div className={classes.container}>
-                    <h1>You Are Not Part Of This Group</h1>
-                </div>
-            );
-        }
-    }
-
     return (
         <div className={classes.container}>
             <h1>{isEditMode ? 'Edit Group' : 'Create Your Group for the Ultimate Sports Experience'}</h1>

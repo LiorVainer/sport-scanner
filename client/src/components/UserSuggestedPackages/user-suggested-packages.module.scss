@@ -1,7 +1,7 @@
 @use '../../theme/theme' as *;
 
 
-.container {
+.emptyContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -11,6 +11,20 @@
   justify-content: center;
   align-items: center;
   border-radius: $card-border-radius;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .suggestedPackagesContainer {
@@ -23,6 +37,13 @@
   min-height: 0;
   overflow: hidden;
 }
+
+.reshuffleButton {
+  @include gradient-filled-button($gradient: $stubhub-gradient);
+  @include font;
+  font-weight: 600;
+}
+
 
 .noPackagesContainer {
   display: flex;

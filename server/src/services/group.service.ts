@@ -56,7 +56,12 @@ export const GroupService = {
 
     async getGroupsByUserId(userId: string) {
         try {
-            return await GroupRepository.find({ createdBy: new mongoose.Types.ObjectId(userId) })
+            return await GroupRepository.find({
+                $or: [
+                    { createdBy: new mongoose.Types.ObjectId(userId) },
+                    { users: new mongoose.Types.ObjectId(userId) },
+                ],
+            })
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
