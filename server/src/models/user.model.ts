@@ -31,6 +31,7 @@ export const UserSchema = z.object({
     homeAirport: CityInfoSchema.optional(),
     isFirstVisit: z.boolean().optional(),
     suggestedPackages: z.string().array().optional(),
+    showPackageInvalidity: z.boolean().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

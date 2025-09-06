@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { Destination, Package } from '@/models/packages/package.model';
 import { DestinationSection } from '@components/DestinationSection';
 import clsx from 'clsx';
+import { useAuth } from '@/context/AuthContext.tsx';
 
 export interface PackageCardProps {
     singlePackage: Package;
@@ -19,6 +20,8 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full', isFull
         [singlePackage]
     );
 
+    const { loggedInUser } = useAuth();
+
     return (
         <div
             className={clsx(styles.packageCardContainer, {
@@ -27,7 +30,9 @@ export const PackageCard = ({ singlePackage, backRoute, variant = 'full', isFull
         >
             <div className={styles.packageHeader}>
                 <h4 className={styles.packageTitle}>⚽ {singlePackage.title}</h4>
-                {singlePackage.invalidity && <span className={styles.invalidity}>⚠️</span>}
+                {loggedInUser?.showPackageInvalidity && singlePackage.invalidity && (
+                    <span className={styles.invalidity}>⚠️</span>
+                )}
             </div>
             <div className={styles.packageCard}>
                 <div className={styles.content}>
