@@ -18,6 +18,7 @@ export const LeagueSchema = z.object({
     season: z.number().optional(),
     round: z.string().optional(),
 });
+
 export type League = z.infer<typeof LeagueSchema>;
 
 export const VenueSchema = z.object({
@@ -28,7 +29,7 @@ export const VenueSchema = z.object({
     country: z.string().optional(),
     capacity: z.number().optional(),
     surface: z.string().optional(),
-    image: z.string().url().optional(),
+    image: z.string().optional(),
 });
 
 export type Venue = z.infer<typeof VenueSchema>;
