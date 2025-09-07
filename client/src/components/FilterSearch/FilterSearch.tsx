@@ -53,7 +53,7 @@ export const calcDefaultGenerateParams: () => PackagesGenerationFormValues = () 
         price: { min: MIN_PRICE, max: MAX_PRICE },
         league: undefined,
         teams: undefined,
-        country: undefined,
+        country: '',
     };
 };
 
@@ -145,13 +145,15 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
             teams: minimizedTeams,
         };
 
+        console.log({ params });
+
         fetchPackages(params);
     };
 
     const onClear = () => {
         const defaults = calcDefaultGenerateParams();
 
-        reset({ ...defaults, teams: [] }, { keepDirty: false });
+        reset({ ...defaults, teams: [], country: '' }, { keepDirty: false });
 
         setOriginKeyword(defaults.originIATA);
 
@@ -162,8 +164,10 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
         resetField('teams');
         setTeamNameSearch(undefined);
 
-        setStoredSearchParams({ ...defaults, teams: [] });
+        setStoredSearchParams({ ...defaults, teams: [], country: undefined });
     };
+
+    console.log({ watch: watchCountry, countryNameSearch });
 
     useEffect(() => {
         const subscription = watch((value) => {
@@ -283,7 +287,7 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
                                     setCountryNameSearch(undefined);
                                     setValue('league', undefined);
                                     setLeagueNameSearch(undefined);
-                                    setValue('teams', undefined);
+                                    setValue('teams', []);
                                     setTeamNameSearch(undefined);
                                     field.onChange(value);
                                 }}
@@ -391,6 +395,7 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
                                     ];
 
                                     field.onChange(merged);
+                                    setTeamNameSearch(undefined);
                                 }}
                                 onClear={() => {
                                     resetField('teams');
@@ -409,15 +414,36 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
                                           }))
                                         : []
                                 }
-                                options={(!teamNameSearch ? DEFAULT_TEAMS : teams).map((team) => ({
-                                    value: team.name,
-                                    label: (
-                                        <div className={classes.teamItem}>
-                                            <img src={team.logo} alt={team.name} />
-                                            {team.name}
-                                        </div>
-                                    ),
-                                }))}
+                                options={(() => {
+                                    // Determine which teams array to use based on search state
+                                    let teamsToShow;
+
+                                    if (teamNameSearch) {
+                                        // If user is searching, show search results
+                                        teamsToShow = teams;
+                                    } else if (watchTeams && watchTeams.length > 0) {
+                                        // If user has selected teams but not searching, show default teams + selected teams
+                                        // This ensures selected teams remain visible even if not in DEFAULT_TEAMS
+                                        const selectedTeamIds = watchTeams.map((t) => t.id);
+                                        const defaultTeamsNotSelected = DEFAULT_TEAMS.filter(
+                                            (t) => !selectedTeamIds.includes(t.id)
+                                        );
+                                        teamsToShow = [...watchTeams, ...defaultTeamsNotSelected];
+                                    } else {
+                                        // Default state: show default teams
+                                        teamsToShow = DEFAULT_TEAMS;
+                                    }
+
+                                    return teamsToShow.map((team) => ({
+                                        value: team.name,
+                                        label: (
+                                            <div className={classes.teamItem}>
+                                                <img src={team.logo} alt={team.name} />
+                                                {team.name}
+                                            </div>
+                                        ),
+                                    }));
+                                })()}
                                 notFoundContent={isAirportLoading ? 'Loading...' : 'No matches'}
                                 suffixIcon={<TeamOutlined />}
                                 filterOption={false}
