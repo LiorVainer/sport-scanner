@@ -360,7 +360,15 @@ export const GroupService = {
             const savedPackages = await PackageRepository.insertMany(generatedPackages);
             const packageIds = savedPackages.map((pkg) => pkg._id);
 
-            return await GroupRepository.findByIdAndUpdate(groupId, { suggestedPackages: packageIds }, { new: true })
+            return await GroupRepository.findByIdAndUpdate(
+                groupId,
+                {
+                    suggestedPackages: packageIds,
+                    suggestedPackagesVotes: {},
+                    selectedPackage: null,
+                },
+                { new: true }
+            )
                 .populate('users')
                 .populate('selectedPackage')
                 .populate('suggestedPackages')
