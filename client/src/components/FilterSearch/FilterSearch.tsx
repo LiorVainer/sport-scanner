@@ -408,7 +408,7 @@ const FilterSearch = ({ fromFree = false }: { fromFree?: boolean }) => {
                                               label: (
                                                   <div className={classes.teamItem}>
                                                       <img src={team.logo} alt={team.name} />
-                                                      {team.name}
+                                                      {field.value && field.value?.length <= 1 && team.name}
                                                   </div>
                                               ),
                                           }))
