@@ -1,0 +1,1 @@
+export { UserAvatarWithFavorites } from './UserAvatarWithFavorites';
