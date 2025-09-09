@@ -65,7 +65,7 @@ export const PackageFooter = ({ singlePackage, backRoute, actionLabel, variant =
                             className={clsx(styles.icon, variant === 'compact' && styles.compactIcon)}
                         />
                         <Text strong className={clsx(styles.range, variant === 'compact' && styles.compactText)}>
-                            from {totalPrice.min}$
+                            from {Math.round(totalPrice.min)}$
                         </Text>
                     </div>
                 </div>
