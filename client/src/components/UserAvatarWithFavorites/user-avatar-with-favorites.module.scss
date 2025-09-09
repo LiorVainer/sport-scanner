@@ -1,0 +1,103 @@
+@use '../../theme/theme' as *;
+
+.avatarBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.avatar {
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+
+  &:hover {
+    border-color: $primary;
+    transform: scale(1.05);
+  }
+}
+
+.displayName {
+  margin-top: 4px;
+  max-width: 48px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.favoriteTeamsContainer {
+  padding: 8px;
+}
+
+.title {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.teamsGrid {
+  display: flex;
+  //flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.teamItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.teamLogo {
+  width: 34px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 6px;
+  background: white;
+}
+
+.teamName {
+  font-size: 13px;
+  font-weight: 400;
+  color: #333;
+  flex: 1;
+}
+
+.noFavorites {
+  padding: 16px;
+  text-align: center;
+  min-width: 150px;
+}
+
+// Custom popover styling
+:global(.user-avatar-favorites-popover) {
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+
+  .ant-popover-title {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 16px 8px;
+    margin: 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+.favoriteTeamsPopover {
+
+  :global(.ant-popover-inner-content) {
+    padding: 0;
+  }
+
+  :global(.ant-popover-title) {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px;
+    margin: 0;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+}

@@ -1,5 +1,5 @@
-import { Avatar, Tooltip, Typography } from 'antd';
-import { CalendarOutlined, DollarOutlined, UserOutlined } from '@ant-design/icons';
+import { Typography } from 'antd';
+import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 import { PopulatedGroup } from '@/models/group.model';
 import { MatchDetails } from '@/components/MatchDetails/MatchDetails';
 import styles from './group-card.module.scss';
@@ -8,7 +8,7 @@ import { PackageFooter } from '@pages/PackagesScreen/PackageFooter';
 import { formattedDate } from '@/utils/date.utils.ts';
 import { useNavigate } from 'react-router-dom';
 import { Package } from '@/models/packages/package.model.ts';
-import { getPictureSrcUrl } from '@/utils/picture.utils';
+import { UserAvatarWithFavorites } from '@/components/UserAvatarWithFavorites';
 
 const { Title, Text } = Typography;
 
@@ -41,12 +41,7 @@ export const GroupCard = ({ group }: GroupCardProps) => {
                 </div>
                 <div className={styles.avatars}>
                     {users.map((member) => (
-                        <Tooltip key={member._id} title={member.username}>
-                            <Avatar 
-                                src={getPictureSrcUrl(member.picture)}
-                                icon={<UserOutlined />}
-                            />
-                        </Tooltip>
+                        <UserAvatarWithFavorites key={member._id} user={member} showName={false} size={32} />
                     ))}
                 </div>
             </div>
